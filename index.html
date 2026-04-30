@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamite Speed — Athlete Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --gold: #F5C518;
+  --gold-dim: #c9a012;
+  --black: #0e0e0e;
+  --surface: #1a1a1a;
+  --surface2: #242424;
+  --surface3: #2e2e2e;
+  --border: #333;
+  --text: #f0f0f0;
+  --text-dim: #888;
+  --text-muted: #555;
+  --green: #4caf72;
+  --red: #e05555;
+  --orange: #e08844;
+  --blue: #5599dd;
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body: 'Barlow', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* ── HEADER ── */
+.app-header {
+  background: var(--surface);
+  border-bottom: 2px solid var(--gold);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo span { color: var(--text); font-weight: 400; font-size: 16px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.user-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+  display: none;
+}
+.user-pill.visible { display: block; }
+.btn-signout {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font-body);
+  display: none;
+  transition: all .15s;
+}
+.btn-signout:hover { border-color: var(--text-dim); color: var(--text); }
+.btn-signout.visible { display: block; }
+
+/* ── LOGIN ── */
+.login-page {
+  min-height: calc(100vh - 56px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(ellipse at 50% 0%, #2a2400 0%, transparent 60%), var(--black);
+}
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--gold);
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+.login-cat { font-size: 48px; margin-bottom: 12px; }
+.login-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.login-sub { color: var(--text-dim); font-size: 14px; margin-bottom: 28px; }
+.login-label { text-align: left; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+.login-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-size: 18px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 16px;
+  transition: border-color .15s;
+}
+.login-input:focus { outline: none; border-color: var(--gold); }
+.btn-login {
+  width: 100%;
+  background: var(--gold);
+  color: var(--black);
+  border: none;
+  border-radius: 8px;
+  padding: 13px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.btn-login:hover { background: #e6b800; }
+.btn-login:active { transform: scale(.98); }
+.login-error { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 18px; }
+.login-hint { margin-top: 24px; font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.login-hint strong { color: var(--text-dim); }
+
+/* ── MAIN LAYOUT ── */
+.main { display: none; }
+.main.visible { display: block; }
+.page { display: none; padding: 24px; max-width: 1100px; margin: 0 auto; }
+.page.visible { display: block; }
+
+/* ── TABS ── */
+.tab-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex;
+  gap: 2px;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-dim);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  padding: 14px 16px 11px;
+  cursor: pointer;
+  transition: all .15s;
+  text-transform: uppercase;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ── ATHLETE HEADER ── */
+.athlete-hero {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.athlete-avatar {
+  width: 52px; height: 52px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--black);
+  flex-shrink: 0;
+}
+.athlete-name-big {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  color: var(--text);
+}
+.athlete-meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 3px; }
+.meta-chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.meta-chip.gold { background: #2a2200; border-color: var(--gold-dim); color: var(--gold); }
+
+/* ── KPI CARDS ── */
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.kpi-card:hover::before { opacity: 1; }
+.kpi-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+.kpi-unit { font-size: 14px; color: var(--text-dim); margin-left: 2px; font-family: var(--font-body); font-weight: 400; }
+.kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.kpi-pr {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #2a2200; border: 1px solid var(--gold-dim);
+  border-radius: 10px; padding: 2px 7px;
+  font-size: 10px; font-weight: 600; color: var(--gold);
+  margin-top: 5px;
+}
+
+/* ── SECTION TITLE ── */
+.section-head {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── CHART ── */
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.chart-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+.chart-wrap { position: relative; height: 200px; }
+
+/* ── TABLES ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid #1e1e1e;
+  color: var(--text);
+  vertical-align: middle;
+}
+.data-table tr:hover td { background: var(--surface2); }
+.data-table tr:last-child td { border-bottom: none; }
+.table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.table-card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+.table-scroll { overflow-x: auto; }
+
+/* ── TAGS ── */
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  letter-spacing: .5px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.tag-speed { background: #1a2a3a; color: var(--blue); }
+.tag-lactate { background: #2a1a1a; color: var(--red); }
+.tag-xfactor { background: #1a2a1a; color: var(--green); }
+.tag-meet { background: #2a2000; color: var(--gold); }
+.tag-g1fly { background: #1f1a2e; color: #9b7fdd; }
+.tag-23drill { background: #1a2218; color: #7abf82; }
+.tag-g2200p { background: #2a1a1e; color: #dd7f9b; }
+.tag-g2150p { background: #1e2226; color: #7fbfdd; }
+
+/* ── DROP % COLORS ── */
+.drop-elite { color: var(--green); font-weight: 600; }
+.drop-good { color: var(--gold); }
+.drop-warn { color: var(--orange); }
+.drop-bad { color: var(--red); font-weight: 600; }
+
+/* ── GOALS ── */
+.goals-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+.goal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.goal-c { border-top: 3px solid var(--text-muted); }
+.goal-b { border-top: 3px solid var(--blue); }
+.goal-a { border-top: 3px solid var(--gold); background: #1a1500; border-color: var(--gold-dim); }
+.goal-badge { font-size: 10px; font-weight: 700; font-family: var(--font-display); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.goal-c .goal-badge { color: var(--text-muted); }
+.goal-b .goal-badge { color: var(--blue); }
+.goal-a .goal-badge { color: var(--gold); }
+.goal-val { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--text); }
+.goal-def { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* ── COACH ROSTER GRID ── */
+.roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.roster-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all .15s;
+  position: relative;
+}
+.roster-card:hover { border-color: var(--gold-dim); background: var(--surface2); transform: translateY(-1px); }
+.rc-name { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text); }
+.rc-event { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.rc-mph { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--gold); margin: 8px 0 2px; }
+.rc-code { font-size: 11px; color: var(--text-muted); font-family: monospace; }
+.rc-badge {
+  position: absolute; top: 12px; right: 12px;
+  font-size: 10px; font-weight: 700; font-family: var(--font-display);
+  padding: 2px 7px; border-radius: 3px;
+}
+.rc-g1 { background: #1a2a3a; color: var(--blue); }
+.rc-g2 { background: #2a1a2a; color: #dd7fdd; }
+
+/* ── LEADERBOARD ── */
+.lb-rank { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--text-muted); width: 36px; }
+.lb-rank-1 { color: var(--gold); }
+.lb-rank-2 { color: #aaa; }
+.lb-rank-3 { color: #cd7f32; }
+.lb-name { font-family: var(--font-display); font-size: 15px; font-weight: 700; }
+.lb-mph { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--gold); }
+
+/* ── BACK BTN ── */
+.back-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--text-dim); padding: 6px 14px;
+  border-radius: 6px; cursor: pointer;
+  font-family: var(--font-body); font-size: 13px;
+  margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px;
+  transition: all .15s;
+}
+.back-btn:hover { border-color: var(--text-dim); color: var(--text); }
+
+/* ── LOG SESSION FORM ── */
+.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+.form-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 16px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 10px; margin-bottom: 10px; }
+.form-group label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.form-input, .form-select {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 10px; color: var(--text);
+  font-size: 13px; font-family: var(--font-body);
+  transition: border-color .15s;
+}
+.form-input:focus, .form-select:focus { outline: none; border-color: var(--gold); }
+.form-select option { background: var(--surface2); }
+.btn-save {
+  background: var(--gold); color: var(--black);
+  border: none; border-radius: 6px;
+  padding: 9px 20px;
+  font-family: var(--font-display); font-size: 15px; font-weight: 800;
+  cursor: pointer; letter-spacing: .5px;
+  transition: background .15s;
+}
+.btn-save:hover { background: #e6b800; }
+.save-msg { font-size: 12px; color: var(--green); margin-left: 10px; }
+
+/* ── REPS ROW ── */
+.reps-row { display: flex; gap: 6px; align-items: center; }
+.rep-chip {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 4px; padding: 2px 7px;
+  font-size: 12px; font-family: monospace; color: var(--text);
+}
+.rep-best { border-color: var(--gold-dim); color: var(--gold); }
+
+/* ── EMPTY STATE ── */
+.empty { padding: 40px; text-align: center; color: var(--text-muted); font-size: 14px; }
+.empty-icon { font-size: 32px; margin-bottom: 8px; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .page { padding: 16px; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .goals-grid { grid-template-columns: repeat(3, 1fr); }
+  .app-header { padding: 0 16px; }
+  .tab-btn { font-size: 13px; padding: 12px 10px 9px; }
+  .athlete-hero { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="logo">🐆 DYNAMITE SPEED <span>/ DASHBOARD</span></div>
+  <div class="header-right">
+    <div class="user-pill" id="userPill"></div>
+    <button class="btn-signout" id="signoutBtn" onclick="signOut()">Sign out</button>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<div class="login-page" id="loginPage">
+  <div class="login-card">
+    <div class="login-cat">🐆</div>
+    <div class="login-title">ATHLETE DASHBOARD</div>
+    <div class="login-sub">Enter your access code to view your data</div>
+    <div class="login-label">Access Code</div>
+    <input class="login-input" id="codeInput" type="text" placeholder="e.g. DNU2T8" maxlength="10" autocomplete="off" />
+    <button class="btn-login" onclick="doLogin()">GO →</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-hint">
+      Athletes & parents use your assigned Roster ID.<br>
+      <strong>Coach code:</strong> COACH2025
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mainArea">
+  <!-- TABS -->
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" data-tab="overview" onclick="switchTab(this,'overview')">Overview</button>
+    <button class="tab-btn" data-tab="speed" onclick="switchTab(this,'speed')">Speed</button>
+    <button class="tab-btn" data-tab="lactate" onclick="switchTab(this,'lactate')">Lactate</button>
+    <button class="tab-btn coach-only" data-tab="roster" onclick="switchTab(this,'roster')" style="display:none">Roster</button>
+    <button class="tab-btn coach-only" data-tab="leaderboard" onclick="switchTab(this,'leaderboard')" style="display:none">Leaderboard</button>
+    <button class="tab-btn coach-only" data-tab="log" onclick="switchTab(this,'log')" style="display:none">Log Session</button>
+  </div>
+
+  <!-- OVERVIEW TAB -->
+  <div class="page visible" id="tab-overview">
+    <div class="athlete-hero" id="athleteHero"></div>
+    <div class="goals-grid" id="goalsGrid"></div>
+    <div class="kpi-row" id="kpiRow"></div>
+    <div class="chart-card">
+      <div class="chart-title">10m Fly MPH — Season Trend</div>
+      <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- SPEED TAB -->
+  <div class="page" id="tab-speed">
+    <div class="table-card">
+      <div class="table-card-header">Sprint Session History</div>
+      <div class="table-scroll">
+        <table class="data-table" id="sprintTable">
+          <thead>
+            <tr>
+              <th>Date</th><th>KPI</th>
+              <th>10FLY R1</th><th>10FLY R2</th><th>10FLY R3</th><th>Best</th><th>MPH</th><th>Drop%</th>
+              <th>40M Best</th><th>40Yd</th>
+              <th>TBJ (ft)</th><th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="sprintBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- LACTATE TAB -->
+  <div class="page" id="tab-lactate">
+    <div class="table-card">
+      <div class="table-card-header">Lactate Session History</div>
+      <div class="table-scroll">
+        <table class="data-table" id="lactateTable">
+          <thead>
+            <tr>
+              <th>Date</th><th>Workout</th>
+              <th>Rep 1</th><th>Rep 2</th><th>Rep 3</th><th>Sum</th>
+              <th>Predicted</th><th>Goal</th><th>vs Goal</th>
+              <th>Drop%</th><th>Tier</th>
+            </tr>
+          </thead>
+          <tbody id="lactateBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROSTER TAB (coach only) -->
+  <div class="page" id="tab-roster">
+    <div id="rosterContent"></div>
+  </div>
+
+  <!-- LEADERBOARD TAB (coach only) -->
+  <div class="page" id="tab-leaderboard">
+    <div class="table-card">
+      <div class="table-card-header">🏆 Speed Leaderboard — Best 10m Fly MPH</div>
+      <div class="table-scroll">
+        <table class="data-table" id="lbTable">
+          <thead>
+            <tr><th>#</th><th>Athlete</th><th>Group</th><th>Best MPH</th><th>Best 40M</th><th>Best TBJ</th><th>Sessions</th></tr>
+          </thead>
+          <tbody id="lbBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG SESSION TAB (coach only) -->
+  <div class="page" id="tab-log">
+    <div class="form-card">
+      <div class="form-title">Log New Sprint Session</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Athlete</label>
+          <select class="form-select" id="logAthlete"></select>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input class="form-input" id="logDate" type="date" />
+        </div>
+        <div class="form-group">
+          <label>KPI Code</label>
+          <select class="form-select" id="logKpi">
+            <option>10FLY</option><option>40M</option><option>20FLY</option><option>40FLY</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Supp Code</label>
+          <select class="form-select" id="logSupp">
+            <option>20FLY</option><option>40FLY</option><option>10FLY</option><option>—</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>10FLY Rep 1 (s)</label><input class="form-input" id="lf1" type="number" step="0.001" placeholder="1.082"></div>
+        <div class="form-group"><label>10FLY Rep 2 (s)</label><input class="form-input" id="lf2" type="number" step="0.001" placeholder="1.079"></div>
+        <div class="form-group"><label>10FLY Rep 3 (s)</label><input class="form-input" id="lf3" type="number" step="0.001" placeholder="1.085"></div>
+        <div class="form-group"><label>40M Best (s)</label><input class="form-input" id="ld40" type="number" step="0.01" placeholder="4.62"></div>
+        <div class="form-group"><label>TBJ (decimal ft)</label><input class="form-input" id="ltbj" type="number" step="0.01" placeholder="19.5"></div>
+        <div class="form-group"><label>Notes</label><input class="form-input" id="lnotes" type="text" placeholder="Optional"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+        <button class="btn-save" onclick="saveSprintSession()">Save Session</button>
+        <span class="save-msg" id="saveSprintMsg"></span>
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="form-title">Log New Lactate Session</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Athlete</label><select class="form-select" id="logLAthlete"></select></div>
+        <div class="form-group"><label>Date</label><input class="form-input" id="logLDate" type="date"></div>
+        <div class="form-group">
+          <label>Workout Type</label>
+          <select class="form-select" id="logLType">
+            <option>G1-FLY</option><option>23 DRILL</option><option>G2-200P</option><option>G2-150P</option><option>CZB</option><option>CZA</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Rep 1</label><input class="form-input" id="ll1" type="number" step="0.01" placeholder="10.24"></div>
+        <div class="form-group"><label>Rep 2</label><input class="form-input" id="ll2" type="number" step="0.01" placeholder="10.26"></div>
+        <div class="form-group"><label>Rep 3 (optional)</label><input class="form-input" id="ll3" type="number" step="0.01" placeholder=""></div>
+        <div class="form-group"><label>Goal Time</label><input class="form-input" id="lgoal" type="number" step="0.01" placeholder="21.00"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+        <button class="btn-save" onclick="saveLactateSession()">Save Session</button>
+        <span class="save-msg" id="saveLactateMsg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── EMBEDDED DATA (from Google Sheets) ──
+const ROSTER = [{"code":"DNU2T8","name":"Marcus Webb","grade":"11","gender":"M","group":"G1","goal200":"21","goal400":"","sport":"Football"},{"code":"TB3CGL","name":"Devon Price","grade":"10","gender":"M","group":"G1","goal200":"23","goal400":"","sport":"Football"},{"code":"APV3KJ","name":"Jaylen Scott","grade":"12","gender":"M","group":"G1","goal200":"23","goal400":"","sport":"Basketball"},{"code":"T2MWXY","name":"Zach Torres","grade":"9","gender":"M","group":"G1","goal200":"23","goal400":"","sport":"Football"},{"code":"JSA44W","name":"Chris Holt","grade":"11","gender":"M","group":"G1","goal200":"23","goal400":"","sport":"Football"},{"code":"AQJGEY","name":"Andre Mills","grade":"11","gender":"M","group":"G2","goal200":"23","goal400":"52","sport":"Football"},{"code":"EAWC5Z","name":"Tyler Brooks","grade":"10","gender":"M","group":"G2","goal200":"23","goal400":"52","sport":"Baseball"},{"code":"84TGM2","name":"Noah Reyes","grade":"12","gender":"M","group":"G2","goal200":"23","goal400":"52","sport":"Football"},{"code":"DBQNXK","name":"Kai Nakamura","grade":"9","gender":"M","group":"G2","goal200":"23","goal400":"52","sport":"Basketball"},{"code":"VQNYYA","name":"Brendan Walsh","grade":"11","gender":"M","group":"G2","goal200":"23","goal400":"52","sport":"Football"}];
+
+const COACH_CODE = "COACH2025";
+
+// ── LIVE CSV URLS (auto-refresh from Google Sheets) ──
+const CSV_URLS = {
+  roster:   "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXty6kbXAzypbn7AMnaCwGZO4itmBoP0wBCpNa5h8_4ZmpbTyN4F6pDbR9xFlzYwgE-O7HAKESuw4Q/pub?gid=818728268&single=true&output=csv",
+  sprint:   "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXty6kbXAzypbn7AMnaCwGZO4itmBoP0wBCpNa5h8_4ZmpbTyN4F6pDbR9xFlzYwgE-O7HAKESuw4Q/pub?gid=2011412149&single=true&output=csv",
+  lactate:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXty6kbXAzypbn7AMnaCwGZO4itmBoP0wBCpNa5h8_4ZmpbTyN4F6pDbR9xFlzYwgE-O7HAKESuw4Q/pub?gid=485984330&single=true&output=csv",
+};
+
+// ── STATE ──
+let state = { user: null, isCoach: false, athleteOverride: null };
+let liveData = { sprints: {}, lactate: {} };
+let chart = null;
+
+// ── CSV PARSER ──
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const row = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { inQ = !inQ; }
+      else if (c === ',' && !inQ) { row.push(cur); cur = ''; }
+      else { cur += c; }
+    }
+    row.push(cur);
+    rows.push(row);
+  }
+  return rows;
+}
+
+async function fetchLiveData() {
+  try {
+    const [sRes, lRes] = await Promise.allSettled([
+      fetch(CSV_URLS.sprint),
+      fetch(CSV_URLS.lactate)
+    ]);
+    if (sRes.status === 'fulfilled' && sRes.value.ok) {
+      const text = await sRes.value.text();
+      const rows = parseCSV(text);
+      const sprintMap = {};
+      for (const r of rows.slice(4)) {
+        if (!r[0] || !r[1]) continue;
+        const name = r[1].trim();
+        if (!sprintMap[name]) sprintMap[name] = [];
+        sprintMap[name].push({
+          date:r[0],kpi:r[5],supp:r[6],
+          f10r1:r[7],f10r2:r[8],f10r3:r[9],
+          f10best:r[10],f10mph:r[11],f10drop:r[12],
+          f20best:r[16],f20mph:r[17],f20drop:r[18],
+          f40best:r[22],f40mph:r[23],f40drop:r[24],
+          d40best:r[28],d40mph:r[29],d40drop:r[30],
+          d40yd:r[31],tbj:r[32],
+          notes:r[33]||''
+        });
+      }
+      liveData.sprints = sprintMap;
+    }
+    if (lRes.status === 'fulfilled' && lRes.value.ok) {
+      const text = await lRes.value.text();
+      const rows = parseCSV(text);
+      const lacMap = {};
+      for (const r of rows.slice(4)) {
+        if (!r[0] || !r[1]) continue;
+        const name = r[1].trim();
+        if (!lacMap[name]) lacMap[name] = [];
+        lacMap[name].push({
+          date:r[0],type:r[5],
+          r1:r[6],r2:r[7],r3:r[8],
+          sum:r[9],predicted:r[10],goal:r[11],
+          vsgoal:r[12],drop:r[13],tier:r[14]||''
+        });
+      }
+      liveData.lactate = lacMap;
+    }
+  } catch(e) { /* use embedded data */ }
+}
+
+// ── LOCAL SESSION STORAGE (for coach-logged sessions) ──
+function getLocalSprints(name) {
+  try { return JSON.parse(localStorage.getItem('ds_s_'+name)||'[]'); } catch(e) { return []; }
+}
+function getLocalLactate(name) {
+  try { return JSON.parse(localStorage.getItem('ds_l_'+name)||'[]'); } catch(e) { return []; }
+}
+function saveLocalSprint(name, session) {
+  const arr = getLocalSprints(name);
+  arr.unshift(session);
+  localStorage.setItem('ds_s_'+name, JSON.stringify(arr));
+}
+function saveLocalLactate(name, session) {
+  const arr = getLocalLactate(name);
+  arr.unshift(session);
+  localStorage.setItem('ds_l_'+name, JSON.stringify(arr));
+}
+
+// ── GET COMBINED DATA ──
+function getSprints(name) {
+  const live = liveData.sprints[name] || [];
+  const local = getLocalSprints(name);
+  return [...local, ...live];
+}
+function getLactate(name) {
+  const live = liveData.lactate[name] || [];
+  const local = getLocalLactate(name);
+  return [...local, ...live];
+}
+
+// ── HELPERS ──
+function fv(v) { return v && v !== '' ? v : null; }
+function getPRMph(sessions) {
+  const vals = sessions.map(s=>parseFloat(s.f10mph)).filter(v=>!isNaN(v));
+  return vals.length ? Math.max(...vals) : null;
+}
+function getPR40m(sessions) {
+  const vals = sessions.map(s=>parseFloat(s.d40best)).filter(v=>!isNaN(v));
+  return vals.length ? Math.min(...vals) : null;
+}
+function getBestTBJ(sessions) {
+  const vals = sessions.map(s=>parseFloat(s.tbj)).filter(v=>!isNaN(v)&&v>0);
+  return vals.length ? Math.max(...vals) : null;
+}
+function dropClass(v) {
+  if (!v) return '';
+  const n = parseFloat(v);
+  if (isNaN(n)) return '';
+  if (n <= 1) return 'drop-elite';
+  if (n <= 2) return 'drop-good';
+  if (n <= 3) return 'drop-warn';
+  return 'drop-bad';
+}
+function tierClass(tier) {
+  if (!tier) return '';
+  if (tier.includes('ELITE')) return 'drop-elite';
+  if (tier.includes('GOOD')) return 'drop-good';
+  if (tier.includes('WARN') || tier.includes('CLOSE')) return 'drop-warn';
+  if (tier.includes('RED') || tier.includes('FLAG')) return 'drop-bad';
+  return '';
+}
+function workoutTag(type) {
+  if (!type) return '';
+  const t = type.toUpperCase();
+  if (t.includes('G1-FLY')) return `<span class="tag tag-g1fly">G1-FLY</span>`;
+  if (t.includes('23')) return `<span class="tag tag-23drill">23 DRILL</span>`;
+  if (t.includes('G2-200')) return `<span class="tag tag-g2200p">G2-200P</span>`;
+  if (t.includes('G2-150')) return `<span class="tag tag-g2150p">G2-150P</span>`;
+  return `<span class="tag tag-lactate">${type}</span>`;
+}
+function initials(name) {
+  return name.split(' ').map(w=>w[0]).join('').toUpperCase();
+}
+function fmt(v, dec=2) {
+  const n = parseFloat(v);
+  return isNaN(n) ? '—' : n.toFixed(dec);
+}
+function fmtDate(d) {
+  if (!d) return '—';
+  try {
+    const dt = new Date(d);
+    return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  } catch(e) { return d; }
+}
+
+// ── LOGIN ──
+document.getElementById('codeInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+async function doLogin() {
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  const err = document.getElementById('loginError');
+  err.textContent = '';
+
+  if (code === COACH_CODE) {
+    state = { user: null, isCoach: true, athleteOverride: null };
+    await fetchLiveData();
+    showMain(true);
+    return;
+  }
+
+  const found = ROSTER.find(a => a.code === code);
+  if (found) {
+    state = { user: found, isCoach: false, athleteOverride: null };
+    await fetchLiveData();
+    showMain(false);
+    return;
+  }
+
+  err.textContent = 'Code not found. Check your Roster ID and try again.';
+}
+
+function showMain(isCoach) {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('mainArea').classList.add('visible');
+  document.getElementById('signoutBtn').classList.add('visible');
+  const pill = document.getElementById('userPill');
+  pill.classList.add('visible');
+  pill.textContent = isCoach ? '🐆 Coach View' : state.user.name;
+
+  if (isCoach) {
+    document.querySelectorAll('.coach-only').forEach(el => el.style.display = 'block');
+    populateLogAthletes();
+    renderRoster();
+    renderLeaderboard();
+    // default to roster tab for coach
+    switchTab(document.querySelector('[data-tab="roster"]'), 'roster');
+  } else {
+    renderAthleteView(state.user);
+  }
+}
+
+function signOut() {
+  state = { user: null, isCoach: false, athleteOverride: null };
+  liveData = { sprints: {}, lactate: {} };
+  if (chart) { chart.destroy(); chart = null; }
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('mainArea').classList.remove('visible');
+  document.getElementById('signoutBtn').classList.remove('visible');
+  document.getElementById('userPill').classList.remove('visible');
+  document.getElementById('codeInput').value = '';
+  document.querySelectorAll('.coach-only').forEach(el => el.style.display = 'none');
+  // reset tabs
+  switchTab(document.querySelector('[data-tab="overview"]'), 'overview');
+}
+
+// ── TAB SWITCHING ──
+function switchTab(btn, name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('visible'));
+  btn.classList.add('active');
+  const page = document.getElementById('tab-' + name);
+  if (page) page.classList.add('visible');
+}
+
+// ── ATHLETE VIEW ──
+function renderAthleteView(athlete) {
+  const sessions = getSprints(athlete.name);
+  const lacSessions = getLactate(athlete.name);
+  renderHero(athlete);
+  renderGoals(athlete);
+  renderKPIs(athlete, sessions);
+  renderTrendChart(sessions);
+  renderSprintTable(sessions);
+  renderLactateTable(lacSessions);
+}
+
+function renderHero(a) {
+  document.getElementById('athleteHero').innerHTML = `
+    <div class="athlete-avatar">${initials(a.name)}</div>
+    <div>
+      <div class="athlete-name-big">${a.name}</div>
+      <div class="athlete-meta-row">
+        <span class="meta-chip gold">Group ${a.group}</span>
+        <span class="meta-chip">Grade ${a.grade}</span>
+        ${a.sport ? `<span class="meta-chip">${a.sport}</span>` : ''}
+        <span class="meta-chip" style="font-family:monospace;font-size:11px">${a.code}</span>
+      </div>
+    </div>`;
+}
+
+function renderGoals(a) {
+  const g200 = a.goal200 || '—';
+  const g400 = a.goal400 || null;
+  const primary = a.group === 'G2' && g400 ? `400m Goal: ${g400}s` : `200m Goal: ${g200}s`;
+  document.getElementById('goalsGrid').innerHTML = `
+    <div class="goal-card goal-c">
+      <div class="goal-badge">C Goal</div>
+      <div class="goal-val">${g200}</div>
+      <div class="goal-def">200m — last PR</div>
+    </div>
+    <div class="goal-card goal-b">
+      <div class="goal-badge">B Goal</div>
+      <div class="goal-val">${g400||g200}</div>
+      <div class="goal-def">${a.group==='G2'&&g400?'400m realistic':'200m realistic'}</div>
+    </div>
+    <div class="goal-card goal-a">
+      <div class="goal-badge">A Goal</div>
+      <div class="goal-val">🐆</div>
+      <div class="goal-def">Dream season</div>
+    </div>`;
+}
+
+function renderKPIs(a, sessions) {
+  const prMph = getPRMph(sessions);
+  const pr40 = getPR40m(sessions);
+  const bestTBJ = getBestTBJ(sessions);
+  const last = sessions.find(s => s.f10mph);
+  const lastDrop = last ? last.f10drop : null;
+  const sessionCount = sessions.length;
+
+  document.getElementById('kpiRow').innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-label">Best MPH</div>
+      <div class="kpi-value">${prMph ? prMph.toFixed(2) : '—'}<span class="kpi-unit">mph</span></div>
+      <div class="kpi-sub">10m fly top speed</div>
+      ${prMph ? '<div class="kpi-pr">⭐ Season PR</div>' : ''}
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Best 40M</div>
+      <div class="kpi-value">${pr40 ? pr40.toFixed(2) : '—'}<span class="kpi-unit">s</span></div>
+      <div class="kpi-sub">40 meter dash</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Best TBJ</div>
+      <div class="kpi-value" style="font-size:22px">${bestTBJ ? bestTBJ.toFixed(2) : '—'}<span class="kpi-unit">ft</span></div>
+      <div class="kpi-sub">Triple broad jump</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Last Drop%</div>
+      <div class="kpi-value ${dropClass(lastDrop)}" style="font-size:22px">${lastDrop || '—'}</div>
+      <div class="kpi-sub">10FLY consistency</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Sessions</div>
+      <div class="kpi-value">${sessionCount}</div>
+      <div class="kpi-sub">Total logged</div>
+    </div>`;
+}
+
+function renderTrendChart(sessions) {
+  const pts = sessions.filter(s => s.f10mph).slice().reverse();
+  const labels = pts.map(s => fmtDate(s.date));
+  const data = pts.map(s => parseFloat(s.f10mph));
+  if (chart) { chart.destroy(); chart = null; }
+  if (!pts.length) return;
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        borderColor: '#F5C518',
+        backgroundColor: 'rgba(245,197,24,0.07)',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#F5C518',
+        pointRadius: 4,
+        tension: 0.35,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#666', font: { size: 11 }, callback: v => v.toFixed(1) + ' mph' }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: '#666', font: { size: 11 } }
+        }
+      }
+    }
+  });
+}
+
+function renderSprintTable(sessions) {
+  const tbody = document.getElementById('sprintBody');
+  if (!sessions.length) {
+    tbody.innerHTML = '<tr><td colspan="12"><div class="empty"><div class="empty-icon">⚡</div>No sprint sessions logged yet</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = sessions.map(s => {
+    const isBestR1 = s.f10r1 && s.f10r1 === s.f10best;
+    const isBestR2 = s.f10r2 && s.f10r2 === s.f10best;
+    const isBestR3 = s.f10r3 && s.f10r3 === s.f10best;
+    return `<tr>
+      <td style="white-space:nowrap;color:var(--text-dim)">${fmtDate(s.date)}</td>
+      <td><span class="tag tag-speed">${s.kpi||'—'}</span>${s.supp?` <span class="tag tag-speed" style="opacity:.5">${s.supp}</span>`:''}</td>
+      <td><span class="rep-chip ${isBestR1?'rep-best':''}">${fv(s.f10r1)||'—'}</span></td>
+      <td><span class="rep-chip ${isBestR2?'rep-best':''}">${fv(s.f10r2)||'—'}</span></td>
+      <td><span class="rep-chip ${isBestR3?'rep-best':''}">${fv(s.f10r3)||'—'}</span></td>
+      <td style="font-weight:600;color:var(--gold)">${fv(s.f10best)||'—'}</td>
+      <td style="font-weight:700;color:var(--gold);font-family:var(--font-display);font-size:15px">${fv(s.f10mph)||'—'}</td>
+      <td class="${dropClass(s.f10drop)}">${fv(s.f10drop)||'—'}</td>
+      <td>${fv(s.d40best)||'—'}</td>
+      <td style="color:var(--text-dim)">${fv(s.d40yd)||'—'}</td>
+      <td>${fv(s.tbj)?parseFloat(s.tbj).toFixed(2):'—'}</td>
+      <td style="font-size:12px;color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.notes||''}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderLactateTable(sessions) {
+  const tbody = document.getElementById('lactateBody');
+  if (!sessions.length) {
+    tbody.innerHTML = '<tr><td colspan="11"><div class="empty"><div class="empty-icon">🔥</div>No lactate sessions logged yet</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = sessions.map(s => {
+    const vs = parseFloat(s.vsgoal);
+    const vsColor = !isNaN(vs) ? (vs <= 0 ? 'color:var(--green)' : 'color:var(--red)') : '';
+    return `<tr>
+      <td style="white-space:nowrap;color:var(--text-dim)">${fmtDate(s.date)}</td>
+      <td>${workoutTag(s.type)}</td>
+      <td><span class="rep-chip">${fv(s.r1)||'—'}</span></td>
+      <td><span class="rep-chip">${fv(s.r2)||'—'}</span></td>
+      <td><span class="rep-chip">${fv(s.r3)||'—'}</span></td>
+      <td style="font-weight:600">${fv(s.sum)||'—'}</td>
+      <td style="font-weight:700;color:var(--gold);font-family:var(--font-display);font-size:15px">${fv(s.predicted)||'—'}</td>
+      <td>${fv(s.goal)||'—'}</td>
+      <td style="${vsColor};font-weight:600">${fv(s.vsgoal)||'—'}</td>
+      <td class="${dropClass(s.drop)}">${fv(s.drop)||'—'}</td>
+      <td class="${tierClass(s.tier)}" style="font-size:12px;font-weight:600">${s.tier||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── COACH ROSTER ──
+function renderRoster() {
+  const el = document.getElementById('rosterContent');
+  const cards = ROSTER.map(a => {
+    const sessions = getSprints(a.name);
+    const prMph = getPRMph(sessions);
+    const lastSession = sessions[0];
+    return `<div class="roster-card" onclick="coachViewAthlete('${a.code}')">
+      <span class="rc-badge ${a.group==='G1'?'rc-g1':'rc-g2'}">${a.group}</span>
+      <div class="rc-name">${a.name}</div>
+      <div class="rc-event">Grade ${a.grade} · ${a.sport}</div>
+      <div class="rc-mph">${prMph ? prMph.toFixed(2)+' mph' : 'No data'}</div>
+      <div class="rc-code">${a.code} · ${sessions.length} sessions</div>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="roster-grid">${cards}</div>`;
+}
+
+function coachViewAthlete(code) {
+  const a = ROSTER.find(r => r.code === code);
+  if (!a) return;
+  state.athleteOverride = a;
+  // switch to overview and render
+  const btn = document.querySelector('[data-tab="overview"]');
+  switchTab(btn, 'overview');
+  renderAthleteView(a);
+  // add back button
+  const hero = document.getElementById('athleteHero');
+  const backBtn = document.createElement('button');
+  backBtn.className = 'back-btn';
+  backBtn.style.cssText = 'margin-right:auto;margin-bottom:0;flex-shrink:0';
+  backBtn.innerHTML = '← Roster';
+  backBtn.onclick = () => {
+    state.athleteOverride = null;
+    switchTab(document.querySelector('[data-tab="roster"]'), 'roster');
+  };
+  hero.prepend(backBtn);
+}
+
+// ── LEADERBOARD ──
+function renderLeaderboard() {
+  const rows = ROSTER.map(a => {
+    const s = getSprints(a.name);
+    return { a, mph: getPRMph(s), d40: getPR40m(s), tbj: getBestTBJ(s), count: s.length };
+  }).sort((x,y) => (y.mph||0) - (x.mph||0));
+
+  const medals = ['🥇','🥈','🥉'];
+  document.getElementById('lbBody').innerHTML = rows.map((r,i) => `<tr>
+    <td class="lb-rank ${i===0?'lb-rank-1':i===1?'lb-rank-2':i===2?'lb-rank-3':''}">${medals[i]||i+1}</td>
+    <td class="lb-name">${r.a.name}</td>
+    <td><span class="tag ${r.a.group==='G1'?'tag-speed':'tag-lactate'}">${r.a.group}</span></td>
+    <td class="lb-mph">${r.mph ? r.mph.toFixed(2)+' mph' : '—'}</td>
+    <td>${r.d40 ? r.d40.toFixed(2)+'s' : '—'}</td>
+    <td>${r.tbj ? r.tbj.toFixed(2)+' ft' : '—'}</td>
+    <td style="color:var(--text-dim)">${r.count}</td>
+  </tr>`).join('');
+}
+
+// ── LOG SESSION ──
+function populateLogAthletes() {
+  const opts = ROSTER.map(a => `<option value="${a.name}">${a.name}</option>`).join('');
+  document.getElementById('logAthlete').innerHTML = opts;
+  document.getElementById('logLAthlete').innerHTML = opts;
+  // set today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('logDate').value = today;
+  document.getElementById('logLDate').value = today;
+}
+
+function saveSprintSession() {
+  const name = document.getElementById('logAthlete').value;
+  const date = document.getElementById('logDate').value;
+  const kpi = document.getElementById('logKpi').value;
+  const supp = document.getElementById('logSupp').value;
+  const r1 = document.getElementById('lf1').value;
+  const r2 = document.getElementById('lf2').value;
+  const r3 = document.getElementById('lf3').value;
+  const d40 = document.getElementById('ld40').value;
+  const tbj = document.getElementById('ltbj').value;
+  const notes = document.getElementById('lnotes').value;
+  if (!name || !date) { return; }
+
+  const reps = [r1,r2,r3].map(v=>parseFloat(v)).filter(v=>!isNaN(v));
+  const best = reps.length ? Math.min(...reps).toFixed(3) : '';
+  const mph = best ? (22.369/parseFloat(best)).toFixed(2) : '';
+  const maxRep = reps.length ? Math.max(...reps) : 0;
+  const minRep = reps.length ? Math.min(...reps) : 0;
+  const drop = (minRep && maxRep) ? (((maxRep-minRep)/minRep)*100).toFixed(1)+'%' : '';
+
+  const session = {
+    date, kpi, supp,
+    f10r1: r1, f10r2: r2, f10r3: r3,
+    f10best: best, f10mph: mph, f10drop: drop,
+    f20best:'',f20mph:'',f20drop:'',
+    f40best:'',f40mph:'',f40drop:'',
+    d40best: d40, d40mph:'', d40drop:'', d40yd:'',
+    tbj, notes
+  };
+  saveLocalSprint(name, session);
+
+  // refresh if viewing that athlete
+  if (state.athleteOverride && state.athleteOverride.name === name) {
+    renderAthleteView(state.athleteOverride);
+  }
+  renderRoster();
+  renderLeaderboard();
+
+  const msg = document.getElementById('saveSprintMsg');
+  msg.textContent = `✓ Saved for ${name}`;
+  setTimeout(() => msg.textContent = '', 3000);
+}
+
+function saveLactateSession() {
+  const name = document.getElementById('logLAthlete').value;
+  const date = document.getElementById('logLDate').value;
+  const type = document.getElementById('logLType').value;
+  const r1 = document.getElementById('ll1').value;
+  const r2 = document.getElementById('ll2').value;
+  const r3 = document.getElementById('ll3').value;
+  const goal = document.getElementById('lgoal').value;
+  if (!name || !date || !r1) return;
+
+  const reps = [r1,r2,r3].map(v=>parseFloat(v)).filter(v=>!isNaN(v));
+  const sum = reps.reduce((a,b)=>a+b,0).toFixed(2);
+  const maxR = Math.max(...reps), minR = Math.min(...reps);
+  const drop = reps.length > 1 ? (((maxR-minR)/minR)*100).toFixed(1)+'%' : '';
+
+  // auto-predict based on workout type
+  let predicted = '';
+  const s = parseFloat(sum);
+  if (type === 'G1-FLY') predicted = (s*0.667+0.19).toFixed(2);
+  else if (type === 'G2-200P') predicted = (s*0.67+2).toFixed(2);
+  else if (type === 'G2-150P') predicted = s.toFixed(2);
+
+  const vsgoal = (predicted && goal) ? (parseFloat(predicted)-parseFloat(goal)).toFixed(2) : '';
+  const dropN = parseFloat(drop);
+  const tier = isNaN(dropN) ? '' : dropN<=1?'ELITE 🔥':dropN<=3?'GOOD':dropN<=8?'CLOSE':'WARNING';
+
+  const session = {
+    date, type,
+    r1, r2, r3: r3||'', sum, predicted, goal,
+    vsgoal, drop, tier
+  };
+  saveLocalLactate(name, session);
+
+  const msg = document.getElementById('saveLactateMsg');
+  msg.textContent = `✓ Saved. Predicted: ${predicted||'—'}`;
+  setTimeout(() => msg.textContent = '', 4000);
+}
+
+// ── INIT ──
+document.getElementById('loginPage').style.display = 'flex';
+</script>
+</body>
+</html>
