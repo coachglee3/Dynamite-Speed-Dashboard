@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamite Speed — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --gold:#F5C518;--gold-dim:#c9a012;--black:#0e0e0e;
+  --surf:#1a1a1a;--surf2:#242424;--surf3:#2e2e2e;
+  --bdr:#333;--text:#f0f0f0;--dim:#888;--muted:#555;
+  --green:#4caf72;--red:#e05555;--orange:#e08844;--blue:#5599dd;
+  --fd:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--text);font-family:var(--fb);min-height:100vh;font-size:14px;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--surf);}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px;}
+
+/* HEADER */
+.hdr{background:var(--surf);border-bottom:2px solid var(--gold);padding:0 22px;height:54px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--fd);font-size:21px;font-weight:800;letter-spacing:1px;color:var(--gold);
+  display:flex;align-items:center;gap:8px;}
+.logo small{font-weight:400;font-size:14px;color:var(--dim);}
+.hdr-r{display:flex;align-items:center;gap:8px;}
+.upill{background:var(--surf2);border:1px solid var(--bdr);border-radius:20px;padding:3px 12px;
+  font-size:12px;color:var(--dim);display:none;}
+.upill.on{display:block;}
+.btn-out{background:transparent;border:1px solid var(--bdr);color:var(--dim);padding:5px 11px;
+  border-radius:6px;cursor:pointer;font-size:12px;font-family:var(--fb);display:none;transition:all .15s;}
+.btn-out:hover{border-color:var(--dim);color:var(--text);}
+.btn-out.on{display:block;}
+
+/* LOGIN */
+.login-page{min-height:calc(100vh - 54px);display:flex;align-items:center;justify-content:center;
+  padding:24px;background:radial-gradient(ellipse at 50% 0%,#2a2400 0%,transparent 55%),var(--black);}
+.lcard{background:var(--surf);border:1px solid var(--bdr);border-top:3px solid var(--gold);
+  border-radius:12px;padding:36px;width:100%;max-width:360px;text-align:center;}
+.lcat{font-size:40px;margin-bottom:10px;}
+.ltitle{font-family:var(--fd);font-size:26px;font-weight:800;letter-spacing:1px;color:var(--gold);margin-bottom:4px;}
+.lsub{color:var(--dim);font-size:13px;margin-bottom:24px;}
+.llbl{text-align:left;font-size:11px;color:var(--dim);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.linp{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;
+  padding:12px 16px;color:var(--text);font-size:18px;font-family:var(--fd);font-weight:600;
+  letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:12px;transition:border-color .15s;}
+.linp:focus{outline:none;border-color:var(--gold);}
+.btn-go{width:100%;background:var(--gold);color:var(--black);border:none;border-radius:8px;
+  padding:12px;font-family:var(--fd);font-size:18px;font-weight:800;letter-spacing:1px;
+  cursor:pointer;transition:all .15s;}
+.btn-go:hover{background:#e6b800;}
+.btn-go:active{transform:scale(.98);}
+.lerr{color:var(--red);font-size:13px;margin-top:8px;min-height:16px;}
+.lhint{margin-top:18px;font-size:12px;color:var(--muted);line-height:1.7;}
+.lhint strong{color:var(--dim);}
+
+/* LOADING */
+.lbar{height:3px;background:var(--surf2);border-radius:2px;margin-top:12px;overflow:hidden;display:none;}
+.lbar.on{display:block;}
+.lfill{height:100%;width:0%;background:var(--gold);border-radius:2px;transition:width .4s ease;}
+.lmsg{font-size:11px;color:var(--muted);margin-top:5px;min-height:14px;}
+
+/* APP */
+.app{display:none;}
+.app.on{display:block;}
+
+/* TABS */
+.tabs{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 20px;
+  display:flex;overflow-x:auto;}
+.tab{background:none;border:none;border-bottom:3px solid transparent;color:var(--dim);
+  font-family:var(--fd);font-size:14px;font-weight:600;letter-spacing:.5px;
+  padding:13px 15px 10px;cursor:pointer;transition:all .15s;text-transform:uppercase;white-space:nowrap;}
+.tab:hover{color:var(--text);}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* PAGES */
+.pg{display:none;padding:20px;max-width:1100px;margin:0 auto;}
+.pg.on{display:block;}
+
+/* HERO */
+.hero{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;
+  padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.av{width:50px;height:50px;border-radius:50%;background:var(--gold);display:flex;
+  align-items:center;justify-content:center;font-family:var(--fd);font-size:19px;
+  font-weight:800;color:var(--black);flex-shrink:0;}
+.aname{font-family:var(--fd);font-size:24px;font-weight:800;color:var(--text);}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;}
+.chip{background:var(--surf2);border:1px solid var(--bdr);border-radius:4px;
+  padding:2px 8px;font-size:11px;color:var(--dim);}
+.chip-g{background:#2a2200;border-color:var(--gold-dim);color:var(--gold);}
+
+/* GOALS */
+.goals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.goal{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:13px 15px;}
+.gc{border-top:3px solid var(--muted);}
+.gb{border-top:3px solid var(--blue);}
+.ga{border-top:3px solid var(--gold);background:#1a1500;}
+.glbl{font-size:10px;font-weight:700;font-family:var(--fd);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:4px;}
+.gc .glbl{color:var(--muted);}
+.gb .glbl{color:var(--blue);}
+.ga .glbl{color:var(--gold);}
+.gval{font-family:var(--fd);font-size:20px;font-weight:700;color:var(--text);}
+.gdef{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
+.kpi{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;
+  padding:14px 16px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--gold);opacity:0;transition:opacity .2s;}
+.kpi:hover::before{opacity:1;}
+.klbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.kval{font-family:var(--fd);font-size:28px;font-weight:700;color:var(--gold);line-height:1;}
+.kunit{font-size:13px;color:var(--dim);margin-left:2px;font-family:var(--fb);font-weight:400;}
+.ksub{font-size:11px;color:var(--muted);margin-top:4px;}
+.kpr{display:inline-flex;align-items:center;gap:3px;background:#2a2200;border:1px solid var(--gold-dim);
+  border-radius:10px;padding:2px 7px;font-size:10px;font-weight:600;color:var(--gold);margin-top:5px;}
+
+/* CHARTS */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+@media(max-width:640px){.chart-row{grid-template-columns:1fr;}}
+.ccard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:16px 18px;}
+.ctitle{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--dim);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;}
+.cwrap{position:relative;height:170px;}
+
+/* TABLES */
+.tcard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;
+  overflow:hidden;margin-bottom:18px;}
+.thdr{padding:13px 18px;border-bottom:1px solid var(--bdr);font-family:var(--fd);
+  font-size:14px;font-weight:700;letter-spacing:.5px;color:var(--dim);text-transform:uppercase;}
+.tscroll{overflow-x:auto;}
+.dt{width:100%;border-collapse:collapse;font-size:13px;}
+.dt th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;
+  letter-spacing:.5px;text-align:left;padding:8px 10px;border-bottom:1px solid var(--bdr);white-space:nowrap;}
+.dt td{padding:8px 10px;border-bottom:1px solid #1d1d1d;color:var(--text);vertical-align:middle;}
+.dt tr:hover td{background:var(--surf2);}
+.dt tr:last-child td{border-bottom:none;}
+
+/* TAGS */
+.tag{display:inline-block;font-size:10px;font-weight:700;font-family:var(--fd);
+  letter-spacing:.5px;padding:2px 7px;border-radius:3px;text-transform:uppercase;}
+.ts{background:#1a2a3a;color:var(--blue);}
+.tfly{background:#1f1a2e;color:#9b7fdd;}
+.t23{background:#1a2218;color:#7abf82;}
+.t200{background:#2a1a1e;color:#dd7f9b;}
+.t150{background:#1e2226;color:#7fbfdd;}
+.tczb{background:#2a1e10;color:#e09944;}
+
+/* REP CHIPS */
+.rep{background:var(--surf2);border:1px solid var(--bdr);border-radius:3px;
+  padding:2px 6px;font-size:11px;font-family:monospace;}
+.repb{border-color:var(--gold-dim);color:var(--gold);}
+
+/* DROP COLORS */
+.de{color:var(--green);font-weight:600;}
+.dg{color:var(--gold);}
+.dw{color:var(--orange);}
+.db{color:var(--red);font-weight:600;}
+
+/* ROSTER GRID */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+.rcard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:15px;
+  cursor:pointer;transition:all .15s;position:relative;}
+.rcard:hover{border-color:var(--gold-dim);background:var(--surf2);transform:translateY(-1px);}
+.rcname{font-family:var(--fd);font-size:17px;font-weight:700;color:var(--text);}
+.rcmeta{font-size:12px;color:var(--dim);margin-top:2px;}
+.rcmph{font-family:var(--fd);font-size:24px;font-weight:700;color:var(--gold);margin:7px 0 2px;}
+.rccode{font-size:11px;color:var(--muted);font-family:monospace;}
+.rcbadge{position:absolute;top:11px;right:11px;font-size:10px;font-weight:700;
+  font-family:var(--fd);padding:2px 7px;border-radius:3px;}
+.bg1{background:#1a2a3a;color:var(--blue);}
+.bg2{background:#2a1a2a;color:#dd7fdd;}
+
+/* LEADERBOARD */
+.lbr{font-family:var(--fd);font-size:18px;font-weight:800;color:var(--muted);}
+.lb1{color:var(--gold);}
+.lb2{color:#aaa;}
+.lb3{color:#cd7f32;}
+.lbn{font-family:var(--fd);font-size:15px;font-weight:700;}
+.lbv{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--gold);}
+
+/* FORM */
+.fcard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;
+  padding:18px;margin-bottom:16px;}
+.ftitle{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--dim);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:8px;}
+.fg label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:4px;}
+.fi,.fs{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:6px;
+  padding:7px 10px;color:var(--text);font-size:13px;font-family:var(--fb);transition:border-color .15s;}
+.fi:focus,.fs:focus{outline:none;border-color:var(--gold);}
+.fs option{background:var(--surf2);}
+.btn-save{background:var(--gold);color:var(--black);border:none;border-radius:6px;
+  padding:8px 18px;font-family:var(--fd);font-size:15px;font-weight:800;
+  cursor:pointer;letter-spacing:.5px;transition:background .15s;}
+.btn-save:hover{background:#e6b800;}
+.smsg{font-size:12px;color:var(--green);margin-left:10px;}
+
+/* BACK BTN */
+.bbtn{background:none;border:1px solid var(--bdr);color:var(--dim);padding:5px 12px;
+  border-radius:6px;cursor:pointer;font-family:var(--fb);font-size:12px;
+  margin-bottom:14px;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
+.bbtn:hover{border-color:var(--dim);color:var(--text);}
+
+/* EMPTY */
+.empty{padding:36px;text-align:center;color:var(--muted);font-size:13px;}
+.ei{font-size:28px;margin-bottom:6px;}
+
+/* STATUS BAR */
+.status-bar{background:var(--surf2);border-bottom:1px solid var(--bdr);
+  padding:6px 22px;font-size:11px;color:var(--muted);display:none;
+  justify-content:space-between;align-items:center;}
+.status-bar.on{display:flex;}
+.status-live{color:var(--green);font-weight:600;}
+.status-fallback{color:var(--orange);font-weight:600;}
+
+@media(max-width:580px){
+  .pg{padding:14px;}
+  .kpis{grid-template-columns:repeat(2,1fr);}
+  .goals{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="logo">🐆 DYNAMITE SPEED <small>/ DASHBOARD</small></div>
+  <div class="hdr-r">
+    <span class="upill" id="upill"></span>
+    <button class="btn-out on" id="btnOut" onclick="signOut()" style="display:none">Sign out</button>
+  </div>
+</header>
+
+<!-- STATUS BAR -->
+<div class="status-bar" id="statusBar">
+  <span id="statusMsg"></span>
+  <span id="statusTime"></span>
+</div>
+
+<!-- LOGIN -->
+<div class="login-page" id="loginPage">
+  <div class="lcard">
+    <div class="lcat">🐆</div>
+    <div class="ltitle">ATHLETE DASHBOARD</div>
+    <div class="lsub">Enter your Roster ID to view your data</div>
+    <div class="llbl">Access Code</div>
+    <input class="linp" id="codeInp" type="text" placeholder="e.g. DNU2T8" maxlength="12" autocomplete="off" />
+    <button class="btn-go" onclick="doLogin()">GO →</button>
+    <div class="lerr" id="loginErr"></div>
+    <div class="lhint">
+      Athletes &amp; parents — use your assigned Roster ID.<br>
+      <strong>Coach code:</strong> COACH2025
+    </div>
+    <div class="lbar" id="lbar"><div class="lfill" id="lfill"></div></div>
+    <div class="lmsg" id="lmsg"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="appArea">
+  <div class="tabs" id="tabBar"></div>
+  <div id="pages"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// SHEET CONFIG
+// ═══════════════════════════════════════
+const SHEET_ID = '1TfF3PsRYBA2mtbSnj90TGPJvV0PTLLbTJcRY_DNIPlA';
+const COACH_CODE = 'COACH2025';
+
+// gviz JSON endpoint — works cross-origin, no CORS issues
+const GVIZ = gid =>
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
+
+const SHEET_GIDS = {
+  roster:  '818728268',
+  sprint:  '2011412149',
+  lactate: '485984330',
+};
+
+// ═══════════════════════════════════════
+// EMBEDDED FALLBACK DATA
+// (used if live fetch fails — always up to date from last build)
+// ═══════════════════════════════════════
+const FALLBACK_ROSTER = [{"code":"DNU2T8","name":"Marcus Webb","grade":"11","gender":"M","group":"G1","goal200":"21","goal400":"","sport":"Football","program":"HS"},{"code":"TB3CGL","name":"Devon Price","grade":"10","gender":"M","group":"G1","goal200":"23","goal400":"","sport":"Football","program":"HS"},{"code":"APV3KJ","name":"Jaylen Scott","grade":"12","gender":"M","group":"G1","goal200":"23","goal400":"","sport":"Basketball","program":"HS"},{"code":"T2MWXY","name":"Zach Torres","grade":"9","gender":"M","group":"G1","goal200":"23","goal400":"","sport":"Football","program":"HS"},{"code":"JSA44W","name":"Chris Holt","grade":"11","gender":"M","group":"G1","goal200":"23","goal400":"","sport":"Football","program":"HS"},{"code":"AQJGEY","name":"Andre Mills","grade":"11","gender":"M","group":"G2","goal200":"23","goal400":"52","sport":"Football","program":"HS"},{"code":"EAWC5Z","name":"Tyler Brooks","grade":"10","gender":"M","group":"G2","goal200":"23","goal400":"52","sport":"Baseball","program":"HS"},{"code":"84TGM2","name":"Noah Reyes","grade":"12","gender":"M","group":"G2","goal200":"23","goal400":"52","sport":"Football","program":"HS"},{"code":"DBQNXK","name":"Kai Nakamura","grade":"9","gender":"M","group":"G2","goal200":"23","goal400":"52","sport":"Basketball","program":"HS"},{"code":"VQNYYA","name":"Brendan Walsh","grade":"11","gender":"M","group":"G2","goal200":"23","goal400":"52","sport":"Football","program":"HS"}];
+
+const FALLBACK_SPRINTS = {"Marcus Webb":[{"date":"2026-04-13","kpi":"10FLY","supp":"20FLY","f10r1":"1.033","f10r2":"1.035","f10r3":"1.037","f10best":"1.033","f10mph":"21.65","f10drop":"0.4%","f20best":"2.152","f20mph":"20.78","d40best":"4.48","d40mph":"","d40drop":"","d40yd":"4.10","tbj":"20.54","notes":""},{"date":"2026-04-06","kpi":"10FLY","supp":"20FLY","f10r1":"1.038","f10r2":"1.040","f10r3":"1.041","f10best":"1.038","f10mph":"21.55","f10drop":"0.3%","f20best":"2.161","f20mph":"20.70","d40best":"4.50","d40mph":"","d40drop":"","d40yd":"4.11","tbj":"20.37","notes":""},{"date":"2026-03-30","kpi":"10FLY","supp":"20FLY","f10r1":"1.045","f10r2":"1.043","f10r3":"1.046","f10best":"1.043","f10mph":"21.44","f10drop":"0.3%","f20best":"2.168","f20mph":"20.63","d40best":"4.52","d40mph":"","d40drop":"","d40yd":"4.13","tbj":"20.21","notes":""},{"date":"2026-03-23","kpi":"10FLY","supp":"20FLY","f10r1":"1.049","f10r2":"1.051","f10r3":"1.050","f10best":"1.049","f10mph":"21.32","f10drop":"0.2%","f20best":"2.175","f20mph":"20.56","d40best":"4.55","d40mph":"","d40drop":"","d40yd":"4.16","tbj":"19.98","notes":""},{"date":"2026-03-16","kpi":"10FLY","supp":"20FLY","f10r1":"1.054","f10r2":"1.056","f10r3":"1.055","f10best":"1.054","f10mph":"21.22","f10drop":"0.2%","f20best":"2.181","f20mph":"20.50","d40best":"4.57","d40mph":"","d40drop":"","d40yd":"4.17","tbj":"19.87","notes":""},{"date":"2026-03-09","kpi":"10FLY","supp":"20FLY","f10r1":"1.058","f10r2":"1.060","f10r3":"1.059","f10best":"1.058","f10mph":"21.14","f10drop":"0.2%","f20best":"2.188","f20mph":"20.43","d40best":"4.59","d40mph":"","d40drop":"","d40yd":"4.19","tbj":"19.76","notes":""},{"date":"2026-03-02","kpi":"10FLY","supp":"20FLY","f10r1":"1.063","f10r2":"1.065","f10r3":"1.064","f10best":"1.063","f10mph":"21.04","f10drop":"0.2%","f20best":"2.195","f20mph":"20.36","d40best":"4.61","d40mph":"","d40drop":"","d40yd":"4.21","tbj":"19.54","notes":""},{"date":"2026-02-23","kpi":"10FLY","supp":"20FLY","f10r1":"1.068","f10r2":"1.070","f10r3":"1.069","f10best":"1.068","f10mph":"20.94","f10drop":"0.2%","f20best":"2.201","f20mph":"20.30","d40best":"4.63","d40mph":"","d40drop":"","d40yd":"4.23","tbj":"19.43","notes":""},{"date":"2026-02-16","kpi":"10FLY","supp":"20FLY","f10r1":"1.071","f10r2":"1.073","f10r3":"1.072","f10best":"1.071","f10mph":"20.88","f10drop":"0.2%","f20best":"2.207","f20mph":"20.24","d40best":"4.65","d40mph":"","d40drop":"","d40yd":"4.25","tbj":"19.32","notes":""},{"date":"2026-02-09","kpi":"10FLY","supp":"20FLY","f10r1":"1.074","f10r2":"1.076","f10r3":"1.075","f10best":"1.074","f10mph":"20.82","f10drop":"0.2%","f20best":"2.212","f20mph":"20.19","d40best":"4.67","d40mph":"","d40drop":"","d40yd":"4.27","tbj":"19.12","notes":""},{"date":"2026-02-02","kpi":"10FLY","supp":"20FLY","f10r1":"1.070","f10r2":"1.076","f10r3":"1.075","f10best":"1.070","f10mph":"20.91","f10drop":"0.6%","f20best":"2.194","f20mph":"20.39","d40best":"","d40mph":"","d40drop":"","d40yd":"","tbj":"19.87","notes":""}]};
+
+const FALLBACK_LACTATE = {"Marcus Webb":[{"date":"2026-04-10","type":"G1-FLY","r1":"10.18","r2":"10.20","r3":"10.19","sum":"30.57","predicted":"20.58","goal":"21.00","vsgoal":"-0.42","drop":"0.2%","tier":"ELITE 🔥"},{"date":"2026-03-27","type":"G1-FLY","r1":"10.21","r2":"10.22","r3":"10.23","sum":"30.66","predicted":"20.64","goal":"21.00","vsgoal":"-0.36","drop":"0.2%","tier":"ELITE 🔥"},{"date":"2026-03-13","type":"23 DRILL","r1":"23.1","r2":"23.3","r3":"","sum":"23.1","predicted":"","goal":"23.0","vsgoal":"0.1","drop":"0.9%","tier":"ELITE 🔥"},{"date":"2026-02-27","type":"G1-FLY","r1":"10.24","r2":"10.25","r3":"10.26","sum":"30.75","predicted":"20.71","goal":"21.00","vsgoal":"-0.29","drop":"0.2%","tier":"ELITE 🔥"},{"date":"2026-02-13","type":"G1-FLY","r1":"10.24","r2":"10.24","r3":"10.25","sum":"30.73","predicted":"20.69","goal":"21.00","vsgoal":"-0.31","drop":"0.1%","tier":"ELITE 🔥"},{"date":"2026-02-05","type":"G1-FLY","r1":"10.24","r2":"10.24","r3":"10.25","sum":"30.73","predicted":"20.69","goal":"21.00","vsgoal":"-0.31","drop":"0.1%","tier":"ELITE 🔥"}]};
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let S = {
+  user: null, isCoach: false,
+  roster: [], sprints: {}, lactate: {},
+  usingLive: false, loadedAt: null,
+  charts: {}, coachOverride: null
+};
+
+// ═══════════════════════════════════════
+// GVIZ FETCH & PARSE
+// ═══════════════════════════════════════
+async function gvizFetch(gid) {
+  try {
+    const res = await fetch(GVIZ(gid));
+    if (!res.ok) return null;
+    const text = await res.text();
+    // Strip JSONP wrapper: /*O_o*/\ngoogle.visualization.Query.setResponse({...});
+    const clean = text.replace(/^[^{]*/, '').replace(/\s*\);\s*$/, '');
+    return JSON.parse(clean);
+  } catch(e) { return null; }
+}
+
+function gvizRows(data) {
+  if (!data || !data.table) return [];
+  const cols = (data.table.cols || []).map(c => c.label || '');
+  return (data.table.rows || []).map(row => {
+    const obj = {};
+    cols.forEach((col, i) => {
+      const cell = row.c ? row.c[i] : null;
+      if (cell === null || cell === undefined) { obj[col] = ''; return; }
+      // Prefer formatted value (f) for dates/numbers, fall back to raw (v)
+      obj[col] = (cell.f !== null && cell.f !== undefined) ? String(cell.f) :
+                 (cell.v !== null && cell.v !== undefined) ? String(cell.v) : '';
+    });
+    return obj;
+  });
+}
+
+function parseRosterRows(rows) {
+  return rows.filter(r => {
+    const id = r['ROSTER ID'] || r[Object.keys(r)[0]] || '';
+    const name = r['FULL NAME\n(auto)'] || r['FULL NAME'] || r['ATHLETE NAME'] || '';
+    return id.length > 3 && name.length > 1 && !/test/i.test(name);
+  }).map(r => ({
+    code:    (r['ROSTER ID'] || '').trim(),
+    name:    (r['FULL NAME\n(auto)'] || r['FULL NAME'] || r['ATHLETE NAME'] || '').trim(),
+    grade:   r['GRADE'] || '',
+    gender:  r['Gender'] || r['GENDER'] || '',
+    group:   r['GROUP'] || '',
+    goal200: r['Goal: 200m'] || r['GOAL 200'] || '',
+    goal400: r['Goal: 400m'] || r['GOAL 400'] || '',
+    sport:   r['MULTI-SPORT'] || r['SPORT'] || '',
+    program: r['PROGRAM'] || 'HS',
+  })).filter(a => a.code && a.name);
+}
+
+function parseSprintRows(rows) {
+  const map = {};
+  rows.forEach(r => {
+    // Filter out header-like rows — look for a date pattern
+    const dateVal = r['DATE'] || '';
+    if (!dateVal || !/\d/.test(dateVal)) return;
+    const name = (r['ATHLETE\nNAME'] || r['ATHLETE NAME'] || '').trim();
+    if (!name) return;
+    if (!map[name]) map[name] = [];
+    map[name].push({
+      date:    dateVal,
+      kpi:     r['KPI\nCODE']   || r['KPI CODE']   || '',
+      supp:    r['SUPP\nCODE']  || r['SUPP CODE']  || '',
+      f10r1:   r['10FLY\nR1']   || r['10FLY R1']   || '',
+      f10r2:   r['10FLY\nR2']   || r['10FLY R2']   || '',
+      f10r3:   r['10FLY\nR3']   || r['10FLY R3']   || '',
+      f10best: r['10FLY\nBEST'] || r['10FLY BEST'] || '',
+      f10mph:  r['10FLY\nMPH']  || r['10FLY MPH']  || '',
+      f10drop: r['10FLY\nDROP%']|| r['10FLY DROP%']|| '',
+      f20best: r['20FLY\nBEST'] || r['20FLY BEST'] || '',
+      f20mph:  r['20FLY\nMPH']  || r['20FLY MPH']  || '',
+      d40best: r['40M\nBEST']   || r['40M BEST']   || '',
+      d40yd:   r['40YD\nEQUIV'] || r['40YD EQUIV'] || '',
+      tbj:     r['TBJ\n(ft)']   || r['TBJ (ft)']   || r['TBJ']   || '',
+      notes:   r['NOTES']       || '',
+    });
+  });
+  return map;
+}
+
+function parseLactateRows(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const dateVal = r['DATE'] || '';
+    if (!dateVal || !/\d/.test(dateVal)) return;
+    const name = (r['ATHLETE\nNAME'] || r['ATHLETE NAME'] || '').trim();
+    if (!name) return;
+    if (!map[name]) map[name] = [];
+    map[name].push({
+      date:      dateVal,
+      type:      r['WORKOUT\nTYPE'] || r['WORKOUT TYPE'] || r['TYPE'] || '',
+      r1:        r['Rep 1'] || r['REP 1'] || '',
+      r2:        r['Rep 2'] || r['REP 2'] || '',
+      r3:        r['Rep 3'] || r['REP 3'] || '',
+      sum:       r['Sum']   || r['SUM']   || '',
+      predicted: r['Predicted Time'] || r['PREDICTED'] || '',
+      goal:      r['Goal Time']      || r['GOAL']      || '',
+      vsgoal:    r['vs Goal']        || r['VS GOAL']   || '',
+      drop:      r['Drop Off %']     || r['DROP%']     || '',
+      tier:      r['Drop Off Tier']  || r['TIER']      || '',
+    });
+  });
+  return map;
+}
+
+// ═══════════════════════════════════════
+// LOCAL STORAGE (coach-logged sessions)
+// ═══════════════════════════════════════
+const lk = (t, n) => `ds_${t}_${n}`;
+function getLocal(type, name) {
+  try { return JSON.parse(localStorage.getItem(lk(type,name))||'[]'); } catch(e) { return []; }
+}
+function addLocal(type, name, obj) {
+  const a = getLocal(type, name); a.unshift(obj);
+  localStorage.setItem(lk(type,name), JSON.stringify(a));
+}
+
+// ═══════════════════════════════════════
+// DATA GETTERS (live + local combined)
+// ═══════════════════════════════════════
+function getSprints(name) {
+  const live = S.sprints[name] || FALLBACK_SPRINTS[name] || [];
+  return [...getLocal('sprint', name), ...live];
+}
+function getLactate(name) {
+  const live = S.lactate[name] || FALLBACK_LACTATE[name] || [];
+  return [...getLocal('lactate', name), ...live];
+}
+function getRoster() {
+  return S.roster.length ? S.roster : FALLBACK_ROSTER;
+}
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+const fv = v => v && String(v).trim() !== '' ? String(v).trim() : null;
+function fmtDate(d) {
+  if (!d) return '—';
+  try { return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+  catch(e) { return String(d); }
+}
+function getPRMph(ss)  { const v=ss.map(s=>parseFloat(s.f10mph)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.max(...v):null; }
+function getPR40(ss)   { const v=ss.map(s=>parseFloat(s.d40best)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.min(...v):null; }
+function getBestTBJ(ss){ const v=ss.map(s=>parseFloat(s.tbj)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.max(...v):null; }
+function dropCls(v) {
+  const n=parseFloat(v); if(isNaN(n)) return '';
+  return n<=1?'de':n<=2?'dg':n<=3?'dw':'db';
+}
+function tierCls(t='') {
+  if(t.includes('ELITE')) return 'de';
+  if(t.includes('GOOD')) return 'dg';
+  if(t.includes('CLOSE')||t.includes('WARN')) return 'dw';
+  return t.includes('RED')||t.includes('FLAG')?'db':'';
+}
+function wTag(type='') {
+  const t=type.toUpperCase();
+  if(t.includes('G1-FLY')||t.includes('G1 FLY')) return `<span class="tag tfly">G1-FLY</span>`;
+  if(t.includes('23'))  return `<span class="tag t23">23 DRILL</span>`;
+  if(t.includes('G2-200')||t.includes('G2 200')) return `<span class="tag t200">G2-200P</span>`;
+  if(t.includes('G2-150')||t.includes('G2 150')) return `<span class="tag t150">G2-150P</span>`;
+  if(t.includes('CZ'))  return `<span class="tag tczb">${type}</span>`;
+  return `<span class="tag tfly">${type||'—'}</span>`;
+}
+function inits(name) { return name.split(' ').map(w=>w[0]).join('').toUpperCase(); }
+function destroyChart(id) {
+  if(S.charts[id]){try{S.charts[id].destroy();}catch(e){} delete S.charts[id];}
+}
+function mkChart(id, labels, data, color, suffix='') {
+  destroyChart(id);
+  const el = document.getElementById(id);
+  if(!el || !data.length) return;
+  S.charts[id] = new Chart(el.getContext('2d'), {
+    type:'line',
+    data:{labels, datasets:[{data, borderColor:color, backgroundColor:color+'15',
+      borderWidth:2.5, pointBackgroundColor:color, pointRadius:4, tension:.35, fill:true}]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{grid:{color:'rgba(255,255,255,0.04)'},
+           ticks:{color:'#555',font:{size:10},callback:v=>v.toFixed(1)+suffix}},
+        x:{grid:{display:false}, ticks:{color:'#555',font:{size:10}}}
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════
+document.getElementById('codeInp').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+async function doLogin() {
+  const code = document.getElementById('codeInp').value.trim().toUpperCase();
+  const errEl = document.getElementById('loginErr');
+  errEl.textContent = '';
+
+  const isCoach = code === COACH_CODE;
+  const fallbackMatch = FALLBACK_ROSTER.find(a => a.code === code);
+
+  if (!isCoach && !fallbackMatch) {
+    errEl.textContent = 'Code not found. Check your Roster ID and try again.';
+    return;
+  }
+
+  // Show loading bar
+  const bar = document.getElementById('lbar');
+  const fill = document.getElementById('lfill');
+  const msg  = document.getElementById('lmsg');
+  bar.classList.add('on');
+  fill.style.width = '15%';
+  msg.textContent = 'Connecting to Google Sheets…';
+
+  // Fetch live data
+  let liveOk = false;
+  try {
+    msg.textContent = 'Loading roster…';
+    const rData = await gvizFetch(SHEET_GIDS.roster);
+    fill.style.width = '35%';
+
+    msg.textContent = 'Loading sprint data…';
+    const sData = await gvizFetch(SHEET_GIDS.sprint);
+    fill.style.width = '65%';
+
+    msg.textContent = 'Loading lactate data…';
+    const lData = await gvizFetch(SHEET_GIDS.lactate);
+    fill.style.width = '90%';
+
+    if (rData) { const rows = gvizRows(rData); S.roster = parseRosterRows(rows); }
+    if (sData) { const rows = gvizRows(sData); S.sprints = parseSprintRows(rows); }
+    if (lData) { const rows = gvizRows(lData); S.lactate = parseLactateRows(rows); }
+
+    liveOk = !!(rData || sData || lData);
+    S.usingLive = liveOk;
+    S.loadedAt  = new Date();
+  } catch(e) {
+    console.warn('Live fetch failed, using fallback:', e);
+  }
+
+  fill.style.width = '100%';
+  msg.textContent = liveOk ? '✓ Live data loaded!' : '⚠ Using offline data';
+  await new Promise(r => setTimeout(r, 400));
+
+  // Find user in live or fallback roster
+  const roster = getRoster();
+  const athlete = roster.find(a => a.code === code);
+
+  if (!isCoach && !athlete) {
+    errEl.textContent = 'Code not found. Check your Roster ID and try again.';
+    bar.classList.remove('on');
+    msg.textContent = '';
+    return;
+  }
+
+  S.user = isCoach ? null : athlete;
+  S.isCoach = isCoach;
+
+  bar.classList.remove('on');
+  showApp(isCoach, liveOk);
+}
+
+function showApp(isCoach, liveOk) {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appArea').classList.add('on');
+  document.getElementById('btnOut').style.display = 'block';
+
+  const pill = document.getElementById('upill');
+  pill.classList.add('on');
+  pill.textContent = isCoach ? '🐆 Coach View' : S.user.name;
+
+  // Status bar
+  const sb = document.getElementById('statusBar');
+  const sm = document.getElementById('statusMsg');
+  const st = document.getElementById('statusTime');
+  sb.classList.add('on');
+  if (liveOk) {
+    sm.innerHTML = `<span class="status-live">● LIVE</span> — Data pulled from Google Sheets`;
+    st.textContent = 'Updated ' + S.loadedAt.toLocaleTimeString();
+  } else {
+    sm.innerHTML = `<span class="status-fallback">⚠ OFFLINE</span> — Showing embedded data. Check sheet permissions.`;
+    st.textContent = '';
+  }
+
+  buildTabs(isCoach);
+}
+
+function signOut() {
+  S = {user:null,isCoach:false,roster:[],sprints:{},lactate:{},usingLive:false,loadedAt:null,charts:{},coachOverride:null};
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('appArea').classList.remove('on');
+  document.getElementById('btnOut').style.display = 'none';
+  document.getElementById('upill').classList.remove('on');
+  document.getElementById('statusBar').classList.remove('on');
+  document.getElementById('codeInp').value = '';
+  document.getElementById('loginErr').textContent = '';
+  document.getElementById('lbar').classList.remove('on');
+  document.getElementById('lfill').style.width = '0%';
+  document.getElementById('lmsg').textContent = '';
+  document.getElementById('tabBar').innerHTML = '';
+  document.getElementById('pages').innerHTML = '';
+}
+
+// ═══════════════════════════════════════
+// TAB SYSTEM
+// ═══════════════════════════════════════
+function buildTabs(isCoach) {
+  const tabs = isCoach
+    ? [{id:'roster',l:'Roster'},{id:'leaderboard',l:'Leaderboard'},{id:'log',l:'Log Session'}]
+    : [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
+
+  document.getElementById('tabBar').innerHTML = tabs.map((t,i) =>
+    `<button class="tab ${i===0?'on':''}" data-id="${t.id}" onclick="switchTab(this,'${t.id}')">${t.l}</button>`
+  ).join('');
+  document.getElementById('pages').innerHTML = tabs.map((t,i) =>
+    `<div class="pg ${i===0?'on':''}" id="pg-${t.id}"></div>`
+  ).join('');
+
+  renderPage(tabs[0].id);
+}
+
+function switchTab(btn, id) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  const pg = document.getElementById('pg-'+id);
+  if (pg) { pg.classList.add('on'); renderPage(id); }
+}
+
+function renderPage(id) {
+  const pg = document.getElementById('pg-'+id);
+  if (!pg) return;
+  const a = S.coachOverride || S.user;
+  if (id==='overview')    renderOverview(pg, a);
+  else if (id==='speed')  renderSpeed(pg, a);
+  else if (id==='lactate')renderLactate(pg, a);
+  else if (id==='roster') renderRoster(pg);
+  else if (id==='leaderboard') renderLeaderboard(pg);
+  else if (id==='log')    renderLog(pg);
+}
+
+// ═══════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════
+function renderOverview(pg, athlete) {
+  if (!athlete) { pg.innerHTML='<div class="empty">No athlete selected.</div>'; return; }
+  const ss = getSprints(athlete.name);
+  const prMph = getPRMph(ss);
+  const pr40  = getPR40(ss);
+  const prTBJ = getBestTBJ(ss);
+  const last  = ss.find(s=>s.f10mph);
+
+  pg.innerHTML = `
+    ${S.coachOverride ? `<button class="bbtn" id="bbtn">← Back to Roster</button>` : ''}
+    <div class="hero">
+      <div class="av">${inits(athlete.name)}</div>
+      <div>
+        <div class="aname">${athlete.name}</div>
+        <div class="chips">
+          ${athlete.group ? `<span class="chip chip-g">Group ${athlete.group}</span>` : ''}
+          ${athlete.grade ? `<span class="chip">Grade ${athlete.grade}</span>` : ''}
+          ${athlete.sport ? `<span class="chip">${athlete.sport}</span>` : ''}
+          <span class="chip" style="font-family:monospace;font-size:10px">${athlete.code}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="goals">
+      <div class="goal gc">
+        <div class="glbl">C Goal</div>
+        <div class="gval">${athlete.goal200||'—'}</div>
+        <div class="gdef">200m — last PR</div>
+      </div>
+      <div class="goal gb">
+        <div class="glbl">B Goal</div>
+        <div class="gval">${(athlete.group==='G2'&&athlete.goal400)?athlete.goal400:athlete.goal200||'—'}</div>
+        <div class="gdef">${(athlete.group==='G2'&&athlete.goal400)?'400m realistic':'200m realistic'}</div>
+      </div>
+      <div class="goal ga">
+        <div class="glbl">A Goal</div>
+        <div class="gval">🐆</div>
+        <div class="gdef">Dream season</div>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="klbl">Best MPH</div>
+        <div class="kval">${prMph?prMph.toFixed(2):'—'}<span class="kunit">mph</span></div>
+        <div class="ksub">10m fly top speed</div>
+        ${prMph?'<div class="kpr">⭐ Season PR</div>':''}
+      </div>
+      <div class="kpi">
+        <div class="klbl">Best 40M</div>
+        <div class="kval">${pr40?pr40.toFixed(2):'—'}<span class="kunit">s</span></div>
+        <div class="ksub">40 meter dash</div>
+      </div>
+      <div class="kpi">
+        <div class="klbl">Best TBJ</div>
+        <div class="kval" style="font-size:22px">${prTBJ?prTBJ.toFixed(2):'—'}<span class="kunit">ft</span></div>
+        <div class="ksub">Triple broad jump</div>
+        ${prTBJ?'<div class="kpr">⭐ Season PR</div>':''}
+      </div>
+      <div class="kpi">
+        <div class="klbl">Last Drop%</div>
+        <div class="kval ${dropCls(last&&last.f10drop)}" style="font-size:22px">${last&&last.f10drop?last.f10drop:'—'}</div>
+        <div class="ksub">10FLY consistency</div>
+      </div>
+      <div class="kpi">
+        <div class="klbl">Sessions</div>
+        <div class="kval">${ss.length}</div>
+        <div class="ksub">Total logged</div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="ccard">
+        <div class="ctitle">10m Fly MPH — Season Trend</div>
+        <div class="cwrap"><canvas id="cMph"></canvas></div>
+      </div>
+      <div class="ccard">
+        <div class="ctitle">Triple Broad Jump — Season Trend</div>
+        <div class="cwrap"><canvas id="cTBJ"></canvas></div>
+      </div>
+    </div>`;
+
+  if (S.coachOverride) {
+    document.getElementById('bbtn').onclick = () => {
+      S.coachOverride = null;
+      // rebuild tabs as coach
+      buildTabs(true);
+    };
+  }
+
+  setTimeout(() => {
+    const mphPts = ss.filter(s=>s.f10mph&&parseFloat(s.f10mph)>0).slice().reverse();
+    mkChart('cMph', mphPts.map(s=>fmtDate(s.date)), mphPts.map(s=>parseFloat(s.f10mph)), '#F5C518', ' mph');
+    const tbjPts = ss.filter(s=>s.tbj&&parseFloat(s.tbj)>0).slice().reverse();
+    mkChart('cTBJ', tbjPts.map(s=>fmtDate(s.date)), tbjPts.map(s=>parseFloat(s.tbj)), '#4caf72', ' ft');
+  }, 50);
+}
+
+// ═══════════════════════════════════════
+// SPEED TAB
+// ═══════════════════════════════════════
+function renderSpeed(pg, athlete) {
+  if (!athlete) { pg.innerHTML='<div class="empty">No athlete.</div>'; return; }
+  const ss = getSprints(athlete.name);
+  if (!ss.length) {
+    pg.innerHTML=`<div class="tcard"><div class="thdr">Sprint Sessions</div><div class="empty"><div class="ei">⚡</div>No sprint sessions logged yet.</div></div>`;
+    return;
+  }
+  const rows = ss.map(s => {
+    const b=s.f10best;
+    return `<tr>
+      <td style="color:var(--dim);white-space:nowrap">${fmtDate(s.date)}</td>
+      <td><span class="tag ts">${s.kpi||'—'}</span>${s.supp?` <span class="tag ts" style="opacity:.4">${s.supp}</span>`:''}</td>
+      <td><span class="rep ${b&&s.f10r1===b?'repb':''}">${fv(s.f10r1)||'—'}</span></td>
+      <td><span class="rep ${b&&s.f10r2===b?'repb':''}">${fv(s.f10r2)||'—'}</span></td>
+      <td><span class="rep ${b&&s.f10r3===b?'repb':''}">${fv(s.f10r3)||'—'}</span></td>
+      <td style="font-weight:600;color:var(--gold)">${fv(b)||'—'}</td>
+      <td style="font-family:var(--fd);font-size:15px;font-weight:700;color:var(--gold)">${fv(s.f10mph)||'—'}</td>
+      <td class="${dropCls(s.f10drop)}">${fv(s.f10drop)||'—'}</td>
+      <td>${fv(s.d40best)||'—'}</td>
+      <td style="color:var(--dim)">${fv(s.d40yd)||'—'}</td>
+      <td>${fv(s.tbj)?parseFloat(s.tbj).toFixed(2):'—'}</td>
+      <td style="font-size:12px;color:var(--muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.notes||''}</td>
+    </tr>`;
+  }).join('');
+  pg.innerHTML=`<div class="tcard">
+    <div class="thdr">Sprint Sessions — ${athlete.name}</div>
+    <div class="tscroll"><table class="dt">
+      <thead><tr>
+        <th>Date</th><th>KPI</th><th>R1</th><th>R2</th><th>R3</th>
+        <th>Best</th><th>MPH</th><th>Drop%</th>
+        <th>40M</th><th>40Yd</th><th>TBJ (ft)</th><th>Notes</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div></div>`;
+}
+
+// ═══════════════════════════════════════
+// LACTATE TAB
+// ═══════════════════════════════════════
+function renderLactate(pg, athlete) {
+  if (!athlete) { pg.innerHTML='<div class="empty">No athlete.</div>'; return; }
+  const ls = getLactate(athlete.name);
+  if (!ls.length) {
+    pg.innerHTML=`<div class="tcard"><div class="thdr">Lactate Sessions</div><div class="empty"><div class="ei">🔥</div>No lactate sessions logged yet.</div></div>`;
+    return;
+  }
+  const rows = ls.map(s => {
+    const vs=parseFloat(s.vsgoal);
+    const vsS=!isNaN(vs)?`color:${vs<=0?'var(--green)':'var(--red)'};font-weight:600`:'';
+    return `<tr>
+      <td style="color:var(--dim);white-space:nowrap">${fmtDate(s.date)}</td>
+      <td>${wTag(s.type)}</td>
+      <td><span class="rep">${fv(s.r1)||'—'}</span></td>
+      <td><span class="rep">${fv(s.r2)||'—'}</span></td>
+      <td><span class="rep">${fv(s.r3)||'—'}</span></td>
+      <td style="font-weight:600">${fv(s.sum)||'—'}</td>
+      <td style="font-family:var(--fd);font-size:15px;font-weight:700;color:var(--gold)">${fv(s.predicted)||'—'}</td>
+      <td>${fv(s.goal)||'—'}</td>
+      <td style="${vsS}">${fv(s.vsgoal)||'—'}</td>
+      <td class="${dropCls(s.drop)}">${fv(s.drop)||'—'}</td>
+      <td class="${tierCls(s.tier)}" style="font-size:12px;font-weight:600">${fv(s.tier)||'—'}</td>
+    </tr>`;
+  }).join('');
+  pg.innerHTML=`<div class="tcard">
+    <div class="thdr">Lactate Sessions — ${athlete.name}</div>
+    <div class="tscroll"><table class="dt">
+      <thead><tr>
+        <th>Date</th><th>Workout</th><th>Rep 1</th><th>Rep 2</th><th>Rep 3</th>
+        <th>Sum</th><th>Predicted</th><th>Goal</th><th>vs Goal</th>
+        <th>Drop%</th><th>Tier</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div></div>`;
+}
+
+// ═══════════════════════════════════════
+// ROSTER (coach)
+// ═══════════════════════════════════════
+function renderRoster(pg) {
+  const roster = getRoster();
+  const cards = roster.map(a => {
+    const ss=getSprints(a.name);
+    const mph=getPRMph(ss);
+    const tbj=getBestTBJ(ss);
+    return `<div class="rcard" onclick="coachView('${a.code}')">
+      ${a.group?`<span class="rcbadge ${a.group==='G1'?'bg1':'bg2'}">${a.group}</span>`:''}
+      <div class="rcname">${a.name}</div>
+      <div class="rcmeta">Grade ${a.grade||'—'} · ${a.sport||'—'}</div>
+      <div class="rcmph">${mph?mph.toFixed(2)+' mph':'No data'}</div>
+      <div class="rccode">${a.code} · ${ss.length} sessions${tbj?' · TBJ '+tbj.toFixed(1)+' ft':''}</div>
+    </div>`;
+  }).join('');
+  pg.innerHTML=`<div class="rgrid">${cards}</div>`;
+}
+
+function coachView(code) {
+  const a = getRoster().find(r=>r.code===code);
+  if (!a) return;
+  S.coachOverride = a;
+  // Switch to athlete view tabs
+  const tabs = [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
+  document.getElementById('tabBar').innerHTML =
+    tabs.map((t,i)=>`<button class="tab ${i===0?'on':''}" data-id="${t.id}" onclick="switchTab(this,'${t.id}')">${t.l}</button>`).join('')
+    + `<button class="tab" onclick="backToCoach()">← Roster</button>`;
+  document.getElementById('pages').innerHTML =
+    tabs.map((t,i)=>`<div class="pg ${i===0?'on':''}" id="pg-${t.id}"></div>`).join('');
+  renderPage('overview');
+}
+
+function backToCoach() {
+  S.coachOverride = null;
+  buildTabs(true);
+}
+
+// ═══════════════════════════════════════
+// LEADERBOARD (coach)
+// ═══════════════════════════════════════
+function renderLeaderboard(pg) {
+  const rows = getRoster().map(a => {
+    const ss=getSprints(a.name);
+    return {a, mph:getPRMph(ss), d40:getPR40(ss), tbj:getBestTBJ(ss), n:ss.length};
+  }).sort((x,y)=>(y.mph||0)-(x.mph||0));
+
+  const medals=['🥇','🥈','🥉'];
+  const trows = rows.map((r,i)=>`<tr>
+    <td class="lbr ${i===0?'lb1':i===1?'lb2':i===2?'lb3':''}">${medals[i]||i+1}</td>
+    <td class="lbn">${r.a.name}</td>
+    <td>${r.a.group?`<span class="tag ${r.a.group==='G1'?'ts':'tfly'}">${r.a.group}</span>`:'—'}</td>
+    <td class="lbv">${r.mph?r.mph.toFixed(2)+' mph':'—'}</td>
+    <td>${r.d40?r.d40.toFixed(2)+'s':'—'}</td>
+    <td>${r.tbj?r.tbj.toFixed(2)+' ft':'—'}</td>
+    <td style="color:var(--muted)">${r.n}</td>
+  </tr>`).join('');
+
+  pg.innerHTML=`<div class="tcard">
+    <div class="thdr">🏆 Speed Leaderboard — Best 10m Fly MPH</div>
+    <div class="tscroll"><table class="dt">
+      <thead><tr><th>#</th><th>Athlete</th><th>Group</th><th>Best MPH</th><th>Best 40M</th><th>Best TBJ</th><th>Sessions</th></tr></thead>
+      <tbody>${trows}</tbody>
+    </table></div></div>`;
+}
+
+// ═══════════════════════════════════════
+// LOG SESSION (coach)
+// ═══════════════════════════════════════
+function renderLog(pg) {
+  const opts = getRoster().map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
+  const today = new Date().toISOString().split('T')[0];
+
+  pg.innerHTML=`
+  <div class="fcard">
+    <div class="ftitle">Log Sprint Session</div>
+    <div class="fgrid">
+      <div class="fg"><label>Athlete</label><select class="fs" id="lA">${opts}</select></div>
+      <div class="fg"><label>Date</label><input class="fi" id="lD" type="date" value="${today}"></div>
+      <div class="fg"><label>KPI Code</label>
+        <select class="fs" id="lK"><option>10FLY</option><option>40M</option><option>20FLY</option><option>40FLY</option></select>
+      </div>
+      <div class="fg"><label>Supp Code</label>
+        <select class="fs" id="lSu"><option>20FLY</option><option>40FLY</option><option>10FLY</option><option>—</option></select>
+      </div>
+    </div>
+    <div class="fgrid">
+      <div class="fg"><label>10FLY Rep 1 (s)</label><input class="fi" id="lr1" type="number" step="0.001" placeholder="1.082"></div>
+      <div class="fg"><label>10FLY Rep 2 (s)</label><input class="fi" id="lr2" type="number" step="0.001" placeholder="1.079"></div>
+      <div class="fg"><label>10FLY Rep 3 (s)</label><input class="fi" id="lr3" type="number" step="0.001" placeholder="1.085"></div>
+      <div class="fg"><label>40M Best (s)</label><input class="fi" id="ld40" type="number" step="0.01" placeholder="4.62"></div>
+      <div class="fg"><label>TBJ (ft decimal)</label><input class="fi" id="ltbj" type="number" step="0.01" placeholder="19.50"></div>
+      <div class="fg"><label>Notes</label><input class="fi" id="lnotes" type="text" placeholder="Optional"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+      <button class="btn-save" onclick="saveSprintLog()">Save Session</button>
+      <span class="smsg" id="sSMsg"></span>
+    </div>
+  </div>
+
+  <div class="fcard">
+    <div class="ftitle">Log Lactate Session</div>
+    <div class="fgrid">
+      <div class="fg"><label>Athlete</label><select class="fs" id="lLA">${opts}</select></div>
+      <div class="fg"><label>Date</label><input class="fi" id="lLD" type="date" value="${today}"></div>
+      <div class="fg"><label>Workout Type</label>
+        <select class="fs" id="lLT">
+          <option>G1-FLY</option><option>23 DRILL</option><option>G2-200P</option>
+          <option>G2-150P</option><option>CZB</option><option>CZA</option>
+        </select>
+      </div>
+    </div>
+    <div class="fgrid">
+      <div class="fg"><label>Rep 1</label><input class="fi" id="ll1" type="number" step="0.01" placeholder="10.24"></div>
+      <div class="fg"><label>Rep 2</label><input class="fi" id="ll2" type="number" step="0.01" placeholder="10.26"></div>
+      <div class="fg"><label>Rep 3 (opt)</label><input class="fi" id="ll3" type="number" step="0.01"></div>
+      <div class="fg"><label>Goal Time</label><input class="fi" id="llg" type="number" step="0.01" placeholder="21.00"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+      <button class="btn-save" onclick="saveLactateLog()">Save Lactate</button>
+      <span class="smsg" id="sLMsg"></span>
+    </div>
+  </div>`;
+}
+
+function saveSprintLog() {
+  const name=document.getElementById('lA').value;
+  const date=document.getElementById('lD').value;
+  const kpi =document.getElementById('lK').value;
+  const supp=document.getElementById('lSu').value;
+  const r1  =document.getElementById('lr1').value;
+  const r2  =document.getElementById('lr2').value;
+  const r3  =document.getElementById('lr3').value;
+  const d40 =document.getElementById('ld40').value;
+  const tbj =document.getElementById('ltbj').value;
+  const notes=document.getElementById('lnotes').value;
+  if (!name||!date) return;
+
+  const reps=[r1,r2,r3].map(parseFloat).filter(n=>!isNaN(n));
+  const best=reps.length?Math.min(...reps).toFixed(3):'';
+  const mph =best?(22.369/parseFloat(best)).toFixed(2):'';
+  const drop=reps.length>1?(((Math.max(...reps)-Math.min(...reps))/Math.min(...reps))*100).toFixed(1)+'%':'';
+
+  addLocal('sprint', name, {date,kpi,supp,f10r1:r1,f10r2:r2,f10r3:r3,f10best:best,f10mph:mph,f10drop:drop,d40best:d40,d40yd:'',tbj,notes});
+  const m=document.getElementById('sSMsg');
+  m.textContent=`✓ Saved for ${name}${mph?' — '+mph+' mph':''}`;
+  setTimeout(()=>m.textContent='',4000);
+}
+
+function saveLactateLog() {
+  const name=document.getElementById('lLA').value;
+  const date=document.getElementById('lLD').value;
+  const type=document.getElementById('lLT').value;
+  const r1  =document.getElementById('ll1').value;
+  const r2  =document.getElementById('ll2').value;
+  const r3  =document.getElementById('ll3').value;
+  const goal=document.getElementById('llg').value;
+  if (!name||!date||!r1) return;
+
+  const reps=[r1,r2,r3].map(parseFloat).filter(n=>!isNaN(n));
+  const sum =reps.reduce((a,b)=>a+b,0).toFixed(2);
+  const drop=reps.length>1?(((Math.max(...reps)-Math.min(...reps))/Math.min(...reps))*100).toFixed(1)+'%':'';
+  const s=parseFloat(sum); let predicted='';
+  const t=type.toUpperCase();
+  if(t.includes('G1-FLY')) predicted=(s*0.667+0.19).toFixed(2);
+  else if(t.includes('G2-200')) predicted=(s*0.67+2).toFixed(2);
+  else if(t.includes('G2-150')) predicted=s.toFixed(2);
+  const vsgoal=(predicted&&goal)?(parseFloat(predicted)-parseFloat(goal)).toFixed(2):'';
+  const dn=parseFloat(drop);
+  const tier=isNaN(dn)?'':dn<=1?'ELITE 🔥':dn<=3?'GOOD':dn<=8?'CLOSE':'WARNING';
+
+  addLocal('lactate', name, {date,type,r1,r2,r3:r3||'',sum,predicted,goal,vsgoal,drop,tier});
+  const m=document.getElementById('sLMsg');
+  m.textContent=`✓ Saved — Predicted: ${predicted||'—'}`;
+  setTimeout(()=>m.textContent='',4000);
+}
+</script>
+</body>
+</html>
