@@ -278,7 +278,7 @@ const COACH_CODE = 'COACH2025';
 
 // gviz JSON endpoint — works cross-origin, no CORS issues
 const GVIZ = gid =>
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}&t=${Date.now()}`;
 
 const SHEET_GIDS = {
   roster:  '818728268',
