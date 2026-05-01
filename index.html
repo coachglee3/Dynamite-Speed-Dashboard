@@ -433,7 +433,7 @@ function getLactate(name) {
   return [...getLocal('lactate', name), ...live];
 }
 function getRoster() {
-  return S.roster.length ? S.roster : FALLBACK_ROSTER;
+  return S.roster.length ? S.roster = rosterRows || FALLBACK_ROSTER;
 }
 
 // ═══════════════════════════════════════
