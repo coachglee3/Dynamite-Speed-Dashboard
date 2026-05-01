@@ -502,7 +502,7 @@ async function doLogin() {
   errEl.textContent = '';
 
   const isCoach = code === COACH_CODE;
-  const fallbackMatch = FALLBACK_ROSTER.find(a => a.code === code);
+  const fallbackMatch = S.roster(a => a.code === code);
 
   if (!isCoach && !fallbackMatch) {
     errEl.textContent = 'Code not found. Check your Roster ID and try again.';
