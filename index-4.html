@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamite Speed — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --gold:#F5C518;--gold-dim:#c9a012;--black:#0e0e0e;
+  --surf:#1a1a1a;--surf2:#242424;--surf3:#2e2e2e;--bdr:#333;
+  --text:#f0f0f0;--dim:#888;--muted:#555;
+  --green:#4caf72;--red:#e05555;--orange:#e08844;--blue:#5599dd;
+  --youth:#38bdf8;--youth-dim:#0369a1;--youth-bg:#051825;
+  --fd:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--text);font-family:var(--fb);min-height:100vh;font-size:14px;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--surf);}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px;}
+
+/* HEADER */
+.hdr{background:var(--surf);border-bottom:2px solid var(--gold);padding:0 22px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.hdr.ya{border-bottom-color:var(--youth);}
+.logo{font-family:var(--fd);font-size:21px;font-weight:800;letter-spacing:1px;color:var(--gold);display:flex;align-items:center;gap:8px;}
+.logo.ya{color:var(--youth);}
+.logo small{font-weight:400;font-size:14px;color:var(--dim);}
+.hdr-r{display:flex;align-items:center;gap:8px;}
+.ppill{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:20px;display:none;}
+.ppill.hs{background:#2a2200;border:1px solid var(--gold-dim);color:var(--gold);}
+.ppill.ya{background:var(--youth-bg);border:1px solid var(--youth-dim);color:var(--youth);}
+.ppill.on{display:block;}
+.upill{background:var(--surf2);border:1px solid var(--bdr);border-radius:20px;padding:3px 12px;font-size:12px;color:var(--dim);display:none;}
+.upill.on{display:block;}
+.btn-out{background:transparent;border:1px solid var(--bdr);color:var(--dim);padding:5px 11px;border-radius:6px;cursor:pointer;font-size:12px;font-family:var(--fb);display:none;transition:all .15s;}
+.btn-out:hover{border-color:var(--dim);color:var(--text);}
+.btn-out.on{display:block;}
+
+/* STATUS BAR */
+.sbar{background:var(--surf2);border-bottom:1px solid var(--bdr);padding:5px 22px;font-size:11px;color:var(--muted);display:none;justify-content:space-between;align-items:center;}
+.sbar.on{display:flex;}
+.slive{color:var(--green);font-weight:600;}
+.soff{color:var(--orange);font-weight:600;}
+
+/* LOGIN */
+.login-page{min-height:calc(100vh - 54px);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:24px;background:radial-gradient(ellipse at 50% 0%,#2a2400 0%,transparent 55%),var(--black);}
+.prog-sel{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+.ps{background:var(--surf);border:2px solid var(--bdr);border-radius:12px;padding:22px 28px;cursor:pointer;text-align:center;transition:all .2s;min-width:155px;}
+.ps:hover{transform:translateY(-2px);}
+.ps-hs:hover,.ps-hs.sel{border-color:var(--gold);background:#1e1800;}
+.ps-ya:hover,.ps-ya.sel{border-color:var(--youth);background:var(--youth-bg);}
+.ps-icon{font-size:34px;margin-bottom:8px;}
+.ps-lbl{font-family:var(--fd);font-size:17px;font-weight:800;letter-spacing:.5px;}
+.ps-hs .ps-lbl{color:var(--gold);}
+.ps-ya .ps-lbl{color:var(--youth);}
+.ps-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+.lcard{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:34px;width:100%;max-width:350px;text-align:center;display:none;}
+.lcard.on{display:block;}
+.lcard.hs{border-top:3px solid var(--gold);}
+.lcard.ya{border-top:3px solid var(--youth);}
+.lcat{font-size:38px;margin-bottom:10px;}
+.ltitle{font-family:var(--fd);font-size:25px;font-weight:800;letter-spacing:1px;margin-bottom:4px;}
+.ltitle.hs{color:var(--gold);}
+.ltitle.ya{color:var(--youth);}
+.lsub{color:var(--dim);font-size:13px;margin-bottom:22px;}
+.llbl{text-align:left;font-size:11px;color:var(--dim);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.linp{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:12px 16px;color:var(--text);font-size:17px;font-family:var(--fd);font-weight:600;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:12px;transition:border-color .15s;}
+.linp:focus{outline:none;}
+.linp.hs:focus{border-color:var(--gold);}
+.linp.ya:focus{border-color:var(--youth);}
+.btn-go{width:100%;border:none;border-radius:8px;padding:12px;font-family:var(--fd);font-size:17px;font-weight:800;letter-spacing:1px;cursor:pointer;transition:all .15s;}
+.btn-go.hs{background:var(--gold);color:var(--black);}
+.btn-go.hs:hover{background:#e6b800;}
+.btn-go.ya{background:var(--youth);color:var(--black);}
+.btn-go.ya:hover{background:#7dd3fc;}
+.btn-go:active{transform:scale(.98);}
+.btn-back{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:10px;font-family:var(--fb);}
+.lerr{color:var(--red);font-size:13px;margin-top:8px;min-height:16px;}
+.lhint{margin-top:18px;font-size:12px;color:var(--muted);line-height:1.7;}
+.lhint strong{color:var(--dim);}
+.lbar{height:3px;background:var(--surf2);border-radius:2px;margin-top:12px;overflow:hidden;display:none;}
+.lbar.on{display:block;}
+.lfill{height:100%;width:0%;border-radius:2px;transition:width .4s ease;}
+.lfill.hs{background:var(--gold);}
+.lfill.ya{background:var(--youth);}
+.lmsg{font-size:11px;color:var(--muted);margin-top:5px;min-height:14px;}
+
+/* APP */
+.app{display:none;}
+.app.on{display:block;}
+.tabs{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 20px;display:flex;overflow-x:auto;}
+.tab{background:none;border:none;border-bottom:3px solid transparent;color:var(--dim);font-family:var(--fd);font-size:14px;font-weight:600;letter-spacing:.5px;padding:13px 15px 10px;cursor:pointer;transition:all .15s;text-transform:uppercase;white-space:nowrap;}
+.tab:hover{color:var(--text);}
+.tab.on.hs{color:var(--gold);border-bottom-color:var(--gold);}
+.tab.on.ya{color:var(--youth);border-bottom-color:var(--youth);}
+.pg{display:none;padding:20px;max-width:1100px;margin:0 auto;}
+.pg.on{display:block;}
+
+/* HERO */
+.hero{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.av{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:19px;font-weight:800;color:var(--black);flex-shrink:0;}
+.av.hs{background:var(--gold);}
+.av.ya{background:var(--youth);}
+.aname{font-family:var(--fd);font-size:24px;font-weight:800;color:var(--text);}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;}
+.chip{background:var(--surf2);border:1px solid var(--bdr);border-radius:4px;padding:2px 8px;font-size:11px;color:var(--dim);}
+.chip-g{background:#2a2200;border-color:var(--gold-dim);color:var(--gold);}
+.chip-y{background:var(--youth-bg);border-color:var(--youth-dim);color:var(--youth);}
+
+/* STATS ROW (replaces goals for HS) */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
+.stat-card{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:13px 15px;}
+.stat-card.hs{border-top:3px solid var(--gold);}
+.stat-card.ya{border-top:3px solid var(--youth);}
+.slbl{font-size:10px;font-weight:700;font-family:var(--fd);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;color:var(--dim);}
+.sval{font-family:var(--fd);font-size:20px;font-weight:700;color:var(--text);}
+.sdef{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* EDITABLE GOALS */
+.goals-section{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:16px 18px;margin-bottom:18px;}
+.goals-title{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.goals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.goal-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:12px 14px;}
+.gc{border-top:3px solid var(--muted);}
+.gb{border-top:3px solid var(--blue);}
+.ga{border-top:3px solid var(--gold);background:#1a1500;}
+.glbl{font-size:10px;font-weight:700;font-family:var(--fd);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.gc .glbl{color:var(--muted);}
+.gb .glbl{color:var(--blue);}
+.ga .glbl{color:var(--gold);}
+.goal-inp{width:100%;background:transparent;border:none;border-bottom:1px solid var(--bdr);color:var(--text);font-family:var(--fd);font-size:20px;font-weight:700;padding:2px 0;text-align:center;transition:border-color .15s;}
+.goal-inp:focus{outline:none;border-bottom-color:var(--gold);}
+.gdef{font-size:11px;color:var(--muted);margin-top:4px;}
+.btn-save-goals{background:var(--gold);color:var(--black);border:none;border-radius:5px;padding:4px 12px;font-family:var(--fd);font-size:12px;font-weight:700;cursor:pointer;transition:background .15s;}
+.btn-save-goals:hover{background:#e6b800;}
+.goals-saved{font-size:11px;color:var(--green);margin-left:8px;}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
+.kpi{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:0;transition:opacity .2s;}
+.kpi:hover::before{opacity:1;}
+.kpi.hs::before{background:var(--gold);}
+.kpi.ya::before{background:var(--youth);}
+.klbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.kval{font-family:var(--fd);font-size:28px;font-weight:700;line-height:1;}
+.kval.hs{color:var(--gold);}
+.kval.ya{color:var(--youth);}
+.kunit{font-size:13px;color:var(--dim);margin-left:2px;font-family:var(--fb);font-weight:400;}
+.ksub{font-size:11px;color:var(--muted);margin-top:4px;}
+.kpr{display:inline-flex;align-items:center;gap:3px;border-radius:10px;padding:2px 7px;font-size:10px;font-weight:600;margin-top:5px;}
+.kpr.hs{background:#2a2200;border:1px solid var(--gold-dim);color:var(--gold);}
+.kpr.ya{background:var(--youth-bg);border:1px solid var(--youth-dim);color:var(--youth);}
+
+/* CHARTS */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+@media(max-width:640px){.chart-row{grid-template-columns:1fr;}}
+.ccard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:16px 18px;}
+.ctitle{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;}
+.cwrap{position:relative;height:170px;}
+
+/* TABLES */
+.tcard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;overflow:hidden;margin-bottom:18px;}
+.thdr{padding:13px 18px;border-bottom:1px solid var(--bdr);font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.5px;color:var(--dim);text-transform:uppercase;}
+.tscroll{overflow-x:auto;}
+.dt{width:100%;border-collapse:collapse;font-size:13px;}
+.dt th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:8px 10px;border-bottom:1px solid var(--bdr);white-space:nowrap;}
+.dt td{padding:8px 10px;border-bottom:1px solid #1d1d1d;color:var(--text);vertical-align:middle;}
+.dt tr:hover td{background:var(--surf2);}
+.dt tr:last-child td{border-bottom:none;}
+
+/* TAGS */
+.tag{display:inline-block;font-size:10px;font-weight:700;font-family:var(--fd);letter-spacing:.5px;padding:2px 7px;border-radius:3px;text-transform:uppercase;}
+.ts{background:#1a2a3a;color:var(--blue);}
+.tfly{background:#1f1a2e;color:#9b7fdd;}
+.t23{background:#1a2218;color:#7abf82;}
+.t200{background:#2a1a1e;color:#dd7f9b;}
+.t150{background:#1e2226;color:#7fbfdd;}
+.tczb{background:#2a1e10;color:#e09944;}
+.rep{background:var(--surf2);border:1px solid var(--bdr);border-radius:3px;padding:2px 6px;font-size:11px;font-family:monospace;}
+.repb{border-color:var(--gold-dim);color:var(--gold);}
+
+/* DROP COLORS */
+.de{color:var(--green);font-weight:600;}
+.dg{color:var(--gold);}
+.dw{color:var(--orange);}
+.db{color:var(--red);font-weight:600;}
+
+/* SUPP TAG */
+.supp-tag{display:inline-block;font-size:10px;font-weight:600;font-family:var(--fd);padding:1px 6px;border-radius:3px;background:#1a2238;color:var(--blue);margin-left:4px;}
+
+/* ROSTER GRID */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+.rcard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:15px;cursor:pointer;transition:all .15s;position:relative;}
+.rcard.hs:hover{border-color:var(--gold-dim);background:var(--surf2);transform:translateY(-1px);}
+.rcard.ya:hover{border-color:var(--youth-dim);background:var(--surf2);transform:translateY(-1px);}
+.rcname{font-family:var(--fd);font-size:17px;font-weight:700;color:var(--text);}
+.rcmeta{font-size:12px;color:var(--dim);margin-top:2px;}
+.rcmph{font-family:var(--fd);font-size:24px;font-weight:700;margin:7px 0 2px;}
+.rcmph.hs{color:var(--gold);}
+.rcmph.ya{color:var(--youth);}
+.rccode{font-size:11px;color:var(--muted);font-family:monospace;}
+.rcbadge{position:absolute;top:11px;right:11px;font-size:10px;font-weight:700;font-family:var(--fd);padding:2px 7px;border-radius:3px;}
+.bg1{background:#1a2a3a;color:var(--blue);}
+.bg2{background:#2a1a2a;color:#dd7fdd;}
+.bgya{background:var(--youth-bg);color:var(--youth);}
+
+/* LEADERBOARD */
+.lb-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.lb-tab{background:var(--surf2);border:1px solid var(--bdr);border-radius:6px;padding:5px 14px;font-family:var(--fd);font-size:13px;font-weight:700;cursor:pointer;color:var(--dim);transition:all .15s;}
+.lb-tab.on.hs{background:#2a2200;border-color:var(--gold-dim);color:var(--gold);}
+.lb-tab.on.ya{background:var(--youth-bg);border-color:var(--youth-dim);color:var(--youth);}
+.lbr{font-family:var(--fd);font-size:18px;font-weight:800;color:var(--muted);}
+.lb1{color:var(--gold);}
+.lb2{color:#aaa;}
+.lb3{color:#cd7f32;}
+.lbn{font-family:var(--fd);font-size:15px;font-weight:700;}
+.lbv{font-family:var(--fd);font-size:15px;font-weight:700;}
+.lbv.hs{color:var(--gold);}
+.lbv.ya{color:var(--youth);}
+
+/* FORM */
+.fcard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:18px;margin-bottom:16px;}
+.ftitle{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:8px;}
+.fg label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.fi,.fs{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:6px;padding:7px 10px;color:var(--text);font-size:13px;font-family:var(--fb);transition:border-color .15s;}
+.fi:focus,.fs:focus{outline:none;border-color:var(--gold);}
+.fs option{background:var(--surf2);}
+.btn-save{background:var(--gold);color:var(--black);border:none;border-radius:6px;padding:8px 18px;font-family:var(--fd);font-size:15px;font-weight:800;cursor:pointer;transition:background .15s;}
+.btn-save:hover{background:#e6b800;}
+.smsg{font-size:12px;color:var(--green);margin-left:10px;}
+.bbtn{background:none;border:1px solid var(--bdr);color:var(--dim);padding:5px 12px;border-radius:6px;cursor:pointer;font-family:var(--fb);font-size:12px;margin-bottom:14px;transition:all .15s;}
+.bbtn:hover{border-color:var(--dim);color:var(--text);}
+.empty{padding:36px;text-align:center;color:var(--muted);font-size:13px;}
+.ei{font-size:28px;margin-bottom:6px;}
+@media(max-width:580px){.pg{padding:14px;}.kpis{grid-template-columns:repeat(2,1fr);}.goals-grid{grid-template-columns:repeat(3,1fr);}}
+</style>
+</head>
+<body>
+
+<header class="hdr" id="hdr">
+  <div class="logo" id="hdrLogo">🐆 DYNAMITE SPEED <small>/ DASHBOARD</small></div>
+  <div class="hdr-r">
+    <span class="ppill" id="ppill"></span>
+    <span class="upill" id="upill"></span>
+    <button class="btn-out" id="btnOut" onclick="signOut()">Sign out</button>
+  </div>
+</header>
+
+<div class="sbar" id="sbar">
+  <span id="smsg"></span>
+  <span id="stime"></span>
+</div>
+
+<!-- LOGIN -->
+<div class="login-page" id="loginPage">
+  <div class="prog-sel" id="progSel">
+    <div class="ps ps-hs" onclick="selectProg('hs')">
+      <div class="ps-icon">🐆</div>
+      <div class="ps-lbl">HS PROGRAM</div>
+      <div class="ps-sub">High School Athletes</div>
+    </div>
+    <div class="ps ps-ya" onclick="selectProg('ya')">
+      <div class="ps-icon">⚡</div>
+      <div class="ps-lbl">YOUTH ACADEMY</div>
+      <div class="ps-sub">Ages U6 – U12</div>
+    </div>
+  </div>
+
+  <div class="lcard hs" id="hsCard">
+    <div class="lcat">🐆</div>
+    <div class="ltitle hs">HS PROGRAM</div>
+    <div class="lsub">Enter your Roster ID to view your dashboard</div>
+    <div class="llbl">Roster ID</div>
+    <input class="linp hs" id="hsInp" type="text" placeholder="e.g. DNU2T8" maxlength="12" autocomplete="off"/>
+    <button class="btn-go hs" onclick="doLogin('hs')">GO →</button>
+    <button class="btn-back" onclick="backToSel()">← Back</button>
+    <div class="lerr" id="hsErr"></div>
+    <div class="lhint">Athletes & parents — use your Roster ID.<br><strong>Coach code:</strong> COACH2025</div>
+    <div class="lbar" id="hsBar"><div class="lfill hs" id="hsFill"></div></div>
+    <div class="lmsg" id="hsMsg"></div>
+  </div>
+
+  <div class="lcard ya" id="yaCard">
+    <div class="lcat">⚡</div>
+    <div class="ltitle ya">YOUTH ACADEMY</div>
+    <div class="lsub">Enter your Roster ID to view your dashboard</div>
+    <div class="llbl">Roster ID</div>
+    <input class="linp ya" id="yaInp" type="text" placeholder="e.g. YA001" maxlength="12" autocomplete="off"/>
+    <button class="btn-go ya" onclick="doLogin('ya')">GO →</button>
+    <button class="btn-back" onclick="backToSel()">← Back</button>
+    <div class="lerr" id="yaErr"></div>
+    <div class="lhint">Athletes & parents — use your Roster ID.<br><strong>Youth coach code:</strong> YACOACH25</div>
+    <div class="lbar" id="yaBar"><div class="lfill ya" id="yaFill"></div></div>
+    <div class="lmsg" id="yaMsg"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="tabs" id="tabBar"></div>
+  <div id="pages"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════
+const SHEET_ID   = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
+const COACH_HS   = 'COACH2025';
+const COACH_YA   = 'YACOACH25';
+const GIDS = {
+  roster:       '570350565',
+  sprintHS:     '1758897138',
+  sprintYouth:  '1689077697',
+  lactate:      '963377135',
+};
+const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
+
+// ═══════════════════════════════════════
+// EXACT COLUMN MAPS (row 1 headers)
+// ═══════════════════════════════════════
+const R = {
+  CODE:'ROSTER ID', NAME:'FULL NAME', PROG:'PROGRAM', GRADE:'GRADE',
+  AGE:'AGE\n(auto)', AGEGRP:'AGE GROUP', GENDER:'Gender', GROUP:'GROUP\n(HS)',
+  G200:'Goal\n200m', G400:'Goal\n400m', DOB:'DOB', SPORT:'MULTI-SPORT'
+};
+const HS = {
+  DATE:'DATE', NAME:'ATHLETE\nNAME', KPI:'KPI\nCODE', SUPP:'SUPP\nCODE',
+  F10R1:'10FLY\nR1', F10R2:'10FLY\nR2', F10R3:'10FLY\nR3',
+  F10BEST:'10FLY\nBEST', F10MPH:'10FLY\nMPH', F10DROP:'10FLY\nDROP%',
+  D40R1:'40M\nR1', D40R2:'40M\nR2', D40R3:'40M\nR3',
+  D40BEST:'40M\nBEST', D40DROP:'40M\nDROP%', D40YD:'40YD\nEQUIV',
+  SUPR1:'SUPP\nR1', SUPR2:'SUPP\nR2', SUPR3:'SUPP\nR3',
+  SUPBEST:'SUPP\nBEST', SUPMPH:'SUPP\nMPH', SUPDROP:'SUPP\nDROP%',
+  TBJFT:'TBJ\nft', TBJIN:'TBJ\nin', TBJDEC:'TBJ\ndecimal', NOTES:'NOTES'
+};
+const YA = {
+  DATE:'DATE', NAME:'ATHLETE\nNAME', AGE:'AGE\n(auto)', AGEGRP:'AGE GRP\n(auto)', GENDER:'Gender\n(auto)',
+  KPI:'KPI\nCODE', SUPP:'SUPP\nCODE',
+  F10R1:'10FLY\nR1', F10R2:'10FLY\nR2',
+  F10BEST:'10FLY\nBEST', F10MPH:'10FLY\nMPH', F10DROP:'10FLY\nDROP%',
+  D40R1:'40Y\nR1', D40R2:'40Y\nR2',
+  D40BEST:'40Y\nBEST', D40DROP:'40Y\nDROP%',
+  TBJFT:'TBJ\nft', TBJIN:'TBJ\nin', TBJDEC:'TBJ\ndecimal'
+};
+const LAC = {
+  DATE:'DATE', NAME:'ATHLETE\nNAME', TYPE:'WORKOUT\nTYPE',
+  R1:'Rep 1', R2:'Rep 2', R3:'Rep 3', SUM:'Sum',
+  PRED:'Predicted\nTime', GOAL:'Goal\nTime', VSGOAL:'vs Goal',
+  DROP:'Drop Off\n%', TIER:'Drop Off\nTier',
+  NOTES:'NOTES', MEET:'MEET\nRESULT'
+};
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let S = {
+  prog:null, user:null, isCoach:false,
+  roster:[], sprintsHS:{}, sprintsYA:{}, lactate:{},
+  live:false, loadedAt:null, charts:{}, override:null,
+  lbMode:'hs'
+};
+
+// ═══════════════════════════════════════
+// GVIZ FETCH + PARSE
+// ═══════════════════════════════════════
+async function gvizFetch(gid) {
+  try {
+    const res = await fetch(GVIZ(gid));
+    if (!res.ok) return null;
+    const txt = await res.text();
+    const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+    if (s < 0 || e < 0) return null;
+    return JSON.parse(txt.slice(s, e+1));
+  } catch(err) { console.warn('gviz fail:', err); return null; }
+}
+
+function parseGvizDate(v) {
+  if (!v) return '';
+  const m = String(v).match(/^Date\((\d+),(\d+),(\d+)\)/);
+  if (m) {
+    const yr=parseInt(m[1]), mo=parseInt(m[2]), dy=parseInt(m[3]);
+    return `${String(mo+1).padStart(2,'0')}/${String(dy).padStart(2,'0')}/${yr}`;
+  }
+  // Already a string date — normalize to MM/DD/YYYY
+  const iso = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return `${iso[2]}/${iso[3]}/${iso[1]}`;
+  return String(v);
+}
+
+function gvizRows(data) {
+  if (!data || !data.table) return [];
+  const cols = (data.table.cols||[]).map(c => c.label||'');
+  return (data.table.rows||[]).map(row => {
+    const obj = {};
+    cols.forEach((col, i) => {
+      const cell = row.c ? row.c[i] : null;
+      if (!cell) { obj[col]=''; return; }
+      const isDate = cell.v && String(cell.v).startsWith('Date(');
+      obj[col] = isDate ? parseGvizDate(cell.v)
+        : (cell.f != null ? String(cell.f) : (cell.v != null ? String(cell.v) : ''));
+    });
+    return obj;
+  });
+}
+
+function parseRoster(rows) {
+  return rows.filter(r => {
+    const id = (r[R.CODE]||'').trim();
+    const nm = (r[R.NAME]||'').trim();
+    return id.length >= 3 && nm.length > 1 && !/^test/i.test(nm);
+  }).map(r => ({
+    code:    (r[R.CODE]  ||'').trim(),
+    name:    (r[R.NAME]  ||'').trim(),
+    prog:    ((r[R.PROG] ||'').trim().toUpperCase()==='YOUTH') ? 'YOUTH' : 'HS',
+    grade:   (r[R.GRADE] ||'').trim(),
+    age:     (r[R.AGE]   ||'').trim(),
+    ageGrp:  (r[R.AGEGRP]||'').trim(),
+    gender:  (r[R.GENDER]||'').trim(),
+    group:   (r[R.GROUP] ||'').trim(),
+    goal200: (r[R.G200]  ||'').trim(),
+    goal400: (r[R.G400]  ||'').trim(),
+    sport:   (r[R.SPORT] ||'').trim(),
+    dob:     (r[R.DOB]   ||'').trim(),
+  }));
+}
+
+function parseSprintsHS(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const date = (r[HS.DATE]||'').trim();
+    const name = (r[HS.NAME]||'').trim();
+    if (!date || !name || !/\d/.test(date)) return;
+    if (!map[name]) map[name] = [];
+    map[name].push({
+      date, kpi:r[HS.KPI]||'', supp:r[HS.SUPP]||'',
+      f10r1:r[HS.F10R1]||'', f10r2:r[HS.F10R2]||'', f10r3:r[HS.F10R3]||'',
+      f10best:r[HS.F10BEST]||'', f10mph:r[HS.F10MPH]||'', f10drop:r[HS.F10DROP]||'',
+      d40r1:r[HS.D40R1]||'', d40r2:r[HS.D40R2]||'', d40r3:r[HS.D40R3]||'',
+      d40best:r[HS.D40BEST]||'', d40drop:r[HS.D40DROP]||'', d40yd:r[HS.D40YD]||'',
+      supr1:r[HS.SUPR1]||'', supr2:r[HS.SUPR2]||'', supr3:r[HS.SUPR3]||'',
+      supbest:r[HS.SUPBEST]||'', supmph:r[HS.SUPMPH]||'', supdrop:r[HS.SUPDROP]||'',
+      tbjft:r[HS.TBJFT]||'', tbjin:r[HS.TBJIN]||'', tbjdec:r[HS.TBJDEC]||'',
+      notes:r[HS.NOTES]||''
+    });
+  });
+  return map;
+}
+
+function parseSprintsYA(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const date = (r[YA.DATE]||'').trim();
+    const name = (r[YA.NAME]||'').trim();
+    if (!date || !name || !/\d/.test(date)) return;
+    if (!map[name]) map[name] = [];
+    map[name].push({
+      date, kpi:r[YA.KPI]||'', supp:r[YA.SUPP]||'',
+      f10r1:r[YA.F10R1]||'', f10r2:r[YA.F10R2]||'',
+      f10best:r[YA.F10BEST]||'', f10mph:r[YA.F10MPH]||'', f10drop:r[YA.F10DROP]||'',
+      d40r1:r[YA.D40R1]||'', d40r2:r[YA.D40R2]||'',
+      d40best:r[YA.D40BEST]||'', d40drop:r[YA.D40DROP]||'',
+      tbjft:r[YA.TBJFT]||'', tbjin:r[YA.TBJIN]||'', tbjdec:r[YA.TBJDEC]||''
+    });
+  });
+  return map;
+}
+
+function parseLactate(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const date = (r[LAC.DATE]||'').trim();
+    const name = (r[LAC.NAME]||'').trim();
+    if (!date || !name || !/\d/.test(date)) return;
+    if (!map[name]) map[name] = [];
+    map[name].push({
+      date, type:r[LAC.TYPE]||'',
+      r1:r[LAC.R1]||'', r2:r[LAC.R2]||'', r3:r[LAC.R3]||'',
+      sum:r[LAC.SUM]||'', predicted:r[LAC.PRED]||'',
+      goal:r[LAC.GOAL]||'', vsgoal:r[LAC.VSGOAL]||'',
+      drop:r[LAC.DROP]||'', tier:r[LAC.TIER]||'',
+      notes:r[LAC.NOTES]||'', meet:r[LAC.MEET]||''
+    });
+  });
+  return map;
+}
+
+// ═══════════════════════════════════════
+// LOCAL STORAGE
+// ═══════════════════════════════════════
+const lk = (t,n) => `ds4_${t}_${n}`;
+function getLocal(t,n){ try{return JSON.parse(localStorage.getItem(lk(t,n))||'[]');}catch(e){return[];} }
+function addLocal(t,n,o){ const a=getLocal(t,n); a.unshift(o); localStorage.setItem(lk(t,n),JSON.stringify(a)); }
+function getGoals(code){ try{return JSON.parse(localStorage.getItem('ds4_goals_'+code)||'{}');}catch(e){return{};} }
+function saveGoals(code,obj){ localStorage.setItem('ds4_goals_'+code, JSON.stringify(obj)); }
+
+// ═══════════════════════════════════════
+// DATA GETTERS
+// ═══════════════════════════════════════
+function getSprintsHS(name){ return [...getLocal('shs',name), ...(S.sprintsHS[name]||[])]; }
+function getSprintsYA(name){ return [...getLocal('sya',name), ...(S.sprintsYA[name]||[])]; }
+function getSprints(name, prog){ return prog==='YOUTH' ? getSprintsYA(name) : getSprintsHS(name); }
+function getLactate(name){ return [...getLocal('lac',name), ...(S.lactate[name]||[])]; }
+function getRoster(prog){ return S.roster.filter(a => prog ? a.prog===prog : true); }
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+const fv = v => v && String(v).trim()!=='' ? String(v).trim() : null;
+function fmtDate(d) {
+  if (!d) return '—';
+  const m = String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return `${m[2]}/${m[3]}/${m[1]}`;
+  return String(d);
+}
+function getPRMph(ss)  { const v=ss.map(s=>parseFloat(s.f10mph)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.max(...v):null; }
+function getPR40(ss)   { const v=ss.map(s=>parseFloat(s.d40best)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.min(...v):null; }
+function getBestTBJ(ss){ const v=ss.map(s=>parseFloat(s.tbjdec||s.tbjft)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.max(...v):null; }
+function getFirstSession(ss){ return ss.length ? ss[ss.length-1].date : null; }
+function getLastSession(ss) { return ss.length ? ss[0].date : null; }
+function getMphImprovement(ss) {
+  const pts = ss.filter(s=>s.f10mph&&parseFloat(s.f10mph)>0).slice().reverse();
+  if (pts.length < 2) return null;
+  return (parseFloat(pts[pts.length-1].f10mph) - parseFloat(pts[0].f10mph)).toFixed(2);
+}
+function dropCls(v){ const n=parseFloat(v); if(isNaN(n))return ''; return n<=1?'de':n<=2?'dg':n<=3?'dw':'db'; }
+function tierCls(t=''){ if(t.includes('ELITE'))return 'de'; if(t.includes('GOOD'))return 'dg'; if(t.includes('CLOSE')||t.includes('WARN'))return 'dw'; return t.includes('RED')||t.includes('FLAG')?'db':''; }
+function wTag(type=''){
+  const t=type.toUpperCase();
+  if(t.includes('G1-FLY')||t.includes('G1 FLY')) return `<span class="tag tfly">G1-FLY</span>`;
+  if(t.includes('23'))  return `<span class="tag t23">23 DRILL</span>`;
+  if(t.includes('G2-200')||t.includes('200P')) return `<span class="tag t200">G2-200P</span>`;
+  if(t.includes('G2-150')||t.includes('150P')) return `<span class="tag t150">G2-150P</span>`;
+  if(t.includes('CZ'))  return `<span class="tag tczb">${type}</span>`;
+  return `<span class="tag tfly">${type||'—'}</span>`;
+}
+function inits(n){ return n.split(' ').map(w=>w[0]).join('').toUpperCase(); }
+function destroyChart(id){ if(S.charts[id]){try{S.charts[id].destroy();}catch(e){} delete S.charts[id];} }
+function mkChart(id,labels,data,color,suffix=''){
+  destroyChart(id);
+  const el=document.getElementById(id);
+  if(!el||!data.length) return;
+  S.charts[id]=new Chart(el.getContext('2d'),{
+    type:'line',
+    data:{labels,datasets:[{data,borderColor:color,backgroundColor:color+'15',
+      borderWidth:2.5,pointBackgroundColor:color,pointRadius:4,tension:.35,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#555',font:{size:10},callback:v=>v.toFixed(1)+suffix}},
+        x:{grid:{display:false},ticks:{color:'#555',font:{size:10}}}
+      }}
+  });
+}
+
+// ═══════════════════════════════════════
+// LOGIN FLOW
+// ═══════════════════════════════════════
+function selectProg(prog) {
+  document.getElementById('progSel').style.display='none';
+  document.getElementById('hsCard').classList.toggle('on', prog==='hs');
+  document.getElementById('yaCard').classList.toggle('on', prog==='ya');
+}
+function backToSel(){
+  document.getElementById('progSel').style.display='flex';
+  document.getElementById('hsCard').classList.remove('on');
+  document.getElementById('yaCard').classList.remove('on');
+  ['hsErr','yaErr'].forEach(id=>document.getElementById(id).textContent='');
+}
+document.getElementById('hsInp').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin('hs'); });
+document.getElementById('yaInp').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin('ya'); });
+
+async function doLogin(prog) {
+  const code  = document.getElementById(prog+'Inp').value.trim().toUpperCase();
+  const errEl = document.getElementById(prog+'Err');
+  const bar   = document.getElementById(prog+'Bar');
+  const fill  = document.getElementById(prog+'Fill');
+  const msg   = document.getElementById(prog+'Msg');
+  errEl.textContent='';
+
+  const isCoach = (prog==='hs' && code===COACH_HS) || (prog==='ya' && code===COACH_YA);
+  bar.classList.add('on'); fill.style.width='10%'; msg.textContent='Connecting…';
+
+  // Fetch all data
+  try {
+    msg.textContent='Loading roster…';
+    const rd = await gvizFetch(GIDS.roster);
+    fill.style.width='30%';
+    if (rd) S.roster = parseRoster(gvizRows(rd));
+
+    msg.textContent='Loading sprint data…';
+    const sd = await gvizFetch(GIDS.sprintHS);
+    fill.style.width='55%';
+    if (sd) S.sprintsHS = parseSprintsHS(gvizRows(sd));
+
+    if (prog==='ya' || isCoach) {
+      const yd = await gvizFetch(GIDS.sprintYouth);
+      fill.style.width='70%';
+      if (yd) S.sprintsYA = parseSprintsYA(gvizRows(yd));
+    }
+
+    msg.textContent='Loading lactate…';
+    const ld = await gvizFetch(GIDS.lactate);
+    fill.style.width='90%';
+    if (ld) S.lactate = parseLactate(gvizRows(ld));
+
+    S.live = S.roster.length > 0;
+    S.loadedAt = new Date();
+  } catch(e) { console.warn(e); }
+
+  fill.style.width='100%';
+
+  if (!S.live) {
+    bar.classList.remove('on'); msg.textContent='';
+    errEl.textContent='Could not load from Google Sheets. Check sheet is published.';
+    return;
+  }
+
+  // Validate code
+  const athlete = S.roster.find(a => a.code === code);
+  if (!isCoach && !athlete) {
+    bar.classList.remove('on'); msg.textContent='';
+    errEl.textContent='Code not found. Check your Roster ID.';
+    return;
+  }
+
+  // Check program match
+  if (!isCoach && athlete) {
+    const athleteProg = athlete.prog === 'YOUTH' ? 'ya' : 'hs';
+    if (athleteProg !== prog) {
+      bar.classList.remove('on'); msg.textContent='';
+      errEl.textContent=`This code belongs to the ${athlete.prog==='YOUTH'?'Youth Academy':'HS Program'}. Please select that program.`;
+      return;
+    }
+  }
+
+  msg.textContent=`✓ ${S.roster.length} athletes loaded`;
+  await new Promise(r=>setTimeout(r,300));
+  bar.classList.remove('on');
+
+  S.prog=prog; S.user=isCoach?null:athlete; S.isCoach=isCoach;
+  showApp();
+}
+
+function showApp() {
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('app').classList.add('on');
+  document.getElementById('btnOut').classList.add('on');
+
+  const pill=document.getElementById('upill');
+  pill.classList.add('on');
+  pill.textContent = S.isCoach ? `🐆 Coach — ${S.roster.length} athletes` : S.user.name;
+
+  const pp=document.getElementById('ppill');
+  pp.classList.add('on');
+  pp.className = `ppill ${S.prog} on`;
+  pp.textContent = S.prog==='ya' ? 'YOUTH ACADEMY' : 'HS PROGRAM';
+
+  if (S.prog==='ya') {
+    document.getElementById('hdr').classList.add('ya');
+    document.getElementById('hdrLogo').classList.add('ya');
+  }
+
+  const sb=document.getElementById('sbar');
+  sb.classList.add('on');
+  document.getElementById('smsg').innerHTML =
+    S.live ? `<span class="slive">● LIVE</span> — ${getRoster('HS').length} HS · ${getRoster('YOUTH').length} Youth athletes`
+           : `<span class="soff">⚠ OFFLINE</span>`;
+  document.getElementById('stime').textContent = S.loadedAt ? 'Updated '+S.loadedAt.toLocaleTimeString() : '';
+
+  buildTabs();
+}
+
+function signOut(){
+  S={prog:null,user:null,isCoach:false,roster:[],sprintsHS:{},sprintsYA:{},lactate:{},live:false,loadedAt:null,charts:{},override:null,lbMode:'hs'};
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('btnOut').classList.remove('on');
+  document.getElementById('upill').classList.remove('on');
+  document.getElementById('ppill').classList.remove('on');
+  document.getElementById('sbar').classList.remove('on');
+  document.getElementById('hdr').classList.remove('ya');
+  document.getElementById('hdrLogo').classList.remove('ya');
+  document.getElementById('tabBar').innerHTML='';
+  document.getElementById('pages').innerHTML='';
+  document.getElementById('hsInp').value='';
+  document.getElementById('yaInp').value='';
+  backToSel();
+}
+
+// ═══════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════
+function buildTabs(){
+  const prog = S.prog;
+  let tabs;
+  if (S.isCoach) {
+    tabs = [{id:'roster',l:'Roster'},{id:'leaderboard',l:'Leaderboard'},{id:'log',l:'Log Session'}];
+  } else if (S.user.prog==='YOUTH') {
+    tabs = [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'}];
+  } else {
+    tabs = [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
+  }
+
+  document.getElementById('tabBar').innerHTML = tabs.map((t,i)=>
+    `<button class="tab ${i===0?'on '+prog:''}" data-id="${t.id}" onclick="switchTab(this,'${t.id}')">${t.l}</button>`
+  ).join('');
+  document.getElementById('pages').innerHTML = tabs.map((t,i)=>
+    `<div class="pg ${i===0?'on':''}" id="pg-${t.id}"></div>`
+  ).join('');
+
+  renderPage(tabs[0].id);
+}
+
+function switchTab(btn,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on','hs','ya'));
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on',S.prog);
+  const pg=document.getElementById('pg-'+id);
+  if(pg){pg.classList.add('on'); renderPage(id);}
+}
+
+function renderPage(id){
+  const pg=document.getElementById('pg-'+id);
+  if(!pg) return;
+  const a = S.override||S.user;
+  if      (id==='overview')    renderOverview(pg,a);
+  else if (id==='speed')       renderSpeed(pg,a);
+  else if (id==='lactate')     renderLactate(pg,a);
+  else if (id==='roster')      renderRoster(pg);
+  else if (id==='leaderboard') renderLeaderboard(pg);
+  else if (id==='log')         renderLog(pg);
+}
+
+// ═══════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════
+function renderOverview(pg, athlete){
+  if(!athlete){pg.innerHTML='<div class="empty">No athlete selected.</div>';return;}
+  const prog  = athlete.prog;
+  const cls   = prog==='YOUTH'?'ya':'hs';
+  const ss    = getSprints(athlete.name, prog);
+  const prMph = getPRMph(ss);
+  const pr40  = getPR40(ss);
+  const prTBJ = getBestTBJ(ss);
+  const last  = ss.find(s=>s.f10mph);
+  const imp   = getMphImprovement(ss);
+  const goals = getGoals(athlete.code);
+
+  // Stat cards — replaces fixed goals panel
+  const statCards = [
+    {lbl:'Sessions',    val:ss.length,    def:'Total logged'},
+    {lbl:'First Session',val:fmtDate(getFirstSession(ss))||'—', def:'Season start'},
+    {lbl:'Last Session', val:fmtDate(getLastSession(ss))||'—',  def:'Most recent'},
+    {lbl:'MPH Change',   val:imp?(imp>0?'+':'')+imp+' mph':'—', def:'First to latest'},
+  ];
+
+  pg.innerHTML = `
+    ${S.override?`<button class="bbtn" id="bbtn">← Back to Roster</button>`:''}
+    <div class="hero">
+      <div class="av ${cls}">${inits(athlete.name)}</div>
+      <div>
+        <div class="aname">${athlete.name}</div>
+        <div class="chips">
+          ${prog==='YOUTH'
+            ? `${athlete.ageGrp?`<span class="chip chip-y">${athlete.ageGrp}</span>`:''}
+               ${athlete.age?`<span class="chip">Age ${athlete.age}</span>`:''}
+               ${athlete.sport?`<span class="chip">${athlete.sport}</span>`:''}`
+            : `${athlete.group?`<span class="chip chip-g">Group ${athlete.group}</span>`:''}
+               ${athlete.grade?`<span class="chip">Grade ${athlete.grade}</span>`:''}
+               ${athlete.sport?`<span class="chip">${athlete.sport}</span>`:''}`}
+          <span class="chip" style="font-family:monospace;font-size:10px">${athlete.code}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      ${statCards.map(c=>`
+        <div class="stat-card ${cls}">
+          <div class="slbl">${c.lbl}</div>
+          <div class="sval">${c.val}</div>
+          <div class="sdef">${c.def}</div>
+        </div>`).join('')}
+    </div>
+
+    ${prog!=='YOUTH' ? `
+    <div class="goals-section">
+      <div class="goals-title">
+        <span>Season Goals</span>
+        <div>
+          <button class="btn-save-goals" onclick="persistGoals('${athlete.code}')">Save Goals</button>
+          <span class="goals-saved" id="goalsSaved"></span>
+        </div>
+      </div>
+      <div class="goals-grid">
+        <div class="goal-card gc">
+          <div class="glbl">C Goal — Floor</div>
+          <input class="goal-inp" id="gc" placeholder="Last PR" value="${goals.c||athlete.goal200||''}">
+          <div class="gdef">Non-negotiable minimum</div>
+        </div>
+        <div class="goal-card gb">
+          <div class="glbl">B Goal — Realistic</div>
+          <input class="goal-inp" id="gb" placeholder="Target" value="${goals.b||(athlete.group==='G2'&&athlete.goal400?athlete.goal400:athlete.goal200)||''}">
+          <div class="gdef">Current trajectory</div>
+        </div>
+        <div class="goal-card ga">
+          <div class="glbl">A Goal — Dream</div>
+          <input class="goal-inp" id="ga" placeholder="Dream" value="${goals.a||''}">
+          <div class="gdef">Perfect season</div>
+        </div>
+      </div>
+    </div>` : ''}
+
+    <div class="kpis">
+      <div class="kpi ${cls}">
+        <div class="klbl">Best MPH</div>
+        <div class="kval ${cls}">${prMph?prMph.toFixed(2):'—'}<span class="kunit">mph</span></div>
+        <div class="ksub">10m fly top speed</div>
+        ${prMph?`<div class="kpr ${cls}">⭐ Season PR</div>`:''}
+      </div>
+      <div class="kpi ${cls}">
+        <div class="klbl">${prog==='YOUTH'?'Best 40Y':'Best 40M'}</div>
+        <div class="kval ${cls}">${pr40?pr40.toFixed(2):'—'}<span class="kunit">s</span></div>
+        <div class="ksub">${prog==='YOUTH'?'40 yard dash':'40 meter dash'}</div>
+      </div>
+      <div class="kpi ${cls}">
+        <div class="klbl">Best TBJ</div>
+        <div class="kval ${cls}" style="font-size:22px">${prTBJ?prTBJ.toFixed(2):'—'}<span class="kunit">ft</span></div>
+        <div class="ksub">Triple broad jump</div>
+        ${prTBJ?`<div class="kpr ${cls}">⭐ Season PR</div>`:''}
+      </div>
+      <div class="kpi ${cls}">
+        <div class="klbl">Last Drop%</div>
+        <div class="kval ${dropCls(last&&last.f10drop)}" style="font-size:22px">${last&&last.f10drop?last.f10drop:'—'}</div>
+        <div class="ksub">10FLY consistency</div>
+      </div>
+      <div class="kpi ${cls}">
+        <div class="klbl">Sessions</div>
+        <div class="kval ${cls}">${ss.length}</div>
+        <div class="ksub">Total logged</div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="ccard">
+        <div class="ctitle">10m Fly MPH — Season Trend</div>
+        <div class="cwrap"><canvas id="cMph"></canvas></div>
+      </div>
+      <div class="ccard">
+        <div class="ctitle">Triple Broad Jump — Season Trend</div>
+        <div class="cwrap"><canvas id="cTBJ"></canvas></div>
+      </div>
+    </div>`;
+
+  if(S.override) document.getElementById('bbtn').onclick=()=>{S.override=null;buildTabs();};
+
+  setTimeout(()=>{
+    const mphPts=ss.filter(s=>s.f10mph&&parseFloat(s.f10mph)>0).slice().reverse();
+    mkChart('cMph',mphPts.map(s=>fmtDate(s.date)),mphPts.map(s=>parseFloat(s.f10mph)),
+      prog==='YOUTH'?'#38bdf8':'#F5C518',' mph');
+    const tbjPts=ss.filter(s=>parseFloat(s.tbjdec||s.tbjft)>0).slice().reverse();
+    mkChart('cTBJ',tbjPts.map(s=>fmtDate(s.date)),tbjPts.map(s=>parseFloat(s.tbjdec||s.tbjft)),
+      prog==='YOUTH'?'#38bdf8':'#4caf72',' ft');
+  },50);
+}
+
+function persistGoals(code){
+  const g = {c:document.getElementById('gc')?.value||'', b:document.getElementById('gb')?.value||'', a:document.getElementById('ga')?.value||''};
+  saveGoals(code,g);
+  const el=document.getElementById('goalsSaved');
+  if(el){el.textContent='✓ Saved';setTimeout(()=>el.textContent='',2500);}
+}
+
+// ═══════════════════════════════════════
+// SPEED TAB
+// ═══════════════════════════════════════
+function renderSpeed(pg, athlete){
+  if(!athlete){pg.innerHTML='<div class="empty">No athlete.</div>';return;}
+  const prog=athlete.prog;
+  const ss=getSprints(athlete.name,prog);
+  const cls=prog==='YOUTH'?'ya':'hs';
+  if(!ss.length){pg.innerHTML=`<div class="tcard"><div class="thdr">Sprint Sessions</div><div class="empty"><div class="ei">⚡</div>No sprint sessions logged yet.</div></div>`;return;}
+
+  const isYA = prog==='YOUTH';
+  const rows = ss.map(s=>{
+    const b=s.f10best;
+    return `<tr>
+      <td style="color:var(--dim);white-space:nowrap">${fmtDate(s.date)}</td>
+      <td>
+        <span class="tag ts">${s.kpi||'—'}</span>
+        ${s.supp&&s.supp!=='—'&&s.supp?`<span class="supp-tag">${s.supp}</span>`:''}
+      </td>
+      <td><span class="rep ${b&&s.f10r1===b?'repb':''}">${fv(s.f10r1)||'—'}</span></td>
+      <td><span class="rep ${b&&s.f10r2===b?'repb':''}">${fv(s.f10r2)||'—'}</span></td>
+      ${!isYA?`<td><span class="rep ${b&&s.f10r3===b?'repb':''}">${fv(s.f10r3)||'—'}</span></td>`:''}
+      <td style="font-weight:600;color:${prog==='YOUTH'?'var(--youth)':'var(--gold)'}">${fv(b)||'—'}</td>
+      <td style="font-family:var(--fd);font-size:15px;font-weight:700;color:${prog==='YOUTH'?'var(--youth)':'var(--gold)'}">${fv(s.f10mph)||'—'}</td>
+      <td class="${dropCls(s.f10drop)}">${fv(s.f10drop)||'—'}</td>
+      <td>${fv(s.d40best)||'—'}</td>
+      ${!isYA?`<td style="color:var(--dim)">${fv(s.d40yd)||'—'}</td>`:''}
+      ${!isYA&&s.supbest?`<td style="font-size:12px;color:var(--blue)">${fv(s.supbest)||'—'} ${s.supmph?'('+s.supmph+')':''}</td>`:''}
+      ${!isYA&&!s.supbest?`<td style="color:var(--muted)">—</td>`:''}
+      <td>${fv(s.tbjdec)?parseFloat(s.tbjdec).toFixed(2):(fv(s.tbjft)?s.tbjft+(s.tbjin?' ft '+s.tbjin+' in':''):'—')}</td>
+      ${!isYA?`<td style="font-size:12px;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.notes||''}</td>`:''}
+    </tr>`;
+  }).join('');
+
+  const th = isYA
+    ? `<th>Date</th><th>KPI</th><th>R1</th><th>R2</th><th>Best</th><th>MPH</th><th>Drop%</th><th>40Y</th><th>TBJ (ft)</th>`
+    : `<th>Date</th><th>KPI/Supp</th><th>R1</th><th>R2</th><th>R3</th><th>Best</th><th>MPH</th><th>Drop%</th><th>40M</th><th>40Yd</th><th>Supp Best</th><th>TBJ (ft)</th><th>Notes</th>`;
+
+  pg.innerHTML=`<div class="tcard">
+    <div class="thdr">Sprint Sessions — ${athlete.name}</div>
+    <div class="tscroll"><table class="dt">
+      <thead><tr>${th}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div></div>`;
+}
+
+// ═══════════════════════════════════════
+// LACTATE TAB (HS only)
+// ═══════════════════════════════════════
+function renderLactate(pg, athlete){
+  if(!athlete){pg.innerHTML='<div class="empty">No athlete.</div>';return;}
+  const ls=getLactate(athlete.name);
+  if(!ls.length){pg.innerHTML=`<div class="tcard"><div class="thdr">Lactate Sessions</div><div class="empty"><div class="ei">🔥</div>No lactate sessions logged yet.</div></div>`;return;}
+  const rows=ls.map(s=>{
+    const vs=parseFloat(s.vsgoal);
+    const vsS=!isNaN(vs)?`color:${vs<=0?'var(--green)':'var(--red)'};font-weight:600`:'';
+    return `<tr>
+      <td style="color:var(--dim);white-space:nowrap">${fmtDate(s.date)}</td>
+      <td>${wTag(s.type)}</td>
+      <td><span class="rep">${fv(s.r1)||'—'}</span></td>
+      <td><span class="rep">${fv(s.r2)||'—'}</span></td>
+      <td><span class="rep">${fv(s.r3)||'—'}</span></td>
+      <td style="font-weight:600">${fv(s.sum)||'—'}</td>
+      <td style="font-family:var(--fd);font-size:15px;font-weight:700;color:var(--gold)">${fv(s.predicted)||'—'}</td>
+      <td>${fv(s.goal)||'—'}</td>
+      <td style="${vsS}">${fv(s.vsgoal)||'—'}</td>
+      <td class="${dropCls(s.drop)}">${fv(s.drop)||'—'}</td>
+      <td class="${tierCls(s.tier)}" style="font-size:12px;font-weight:600">${fv(s.tier)||'—'}</td>
+      <td style="font-size:12px;color:${s.meet?'var(--gold)':'var(--muted)'}">${fv(s.meet)||'—'}</td>
+    </tr>`;
+  }).join('');
+  pg.innerHTML=`<div class="tcard">
+    <div class="thdr">Lactate Sessions — ${athlete.name}</div>
+    <div class="tscroll"><table class="dt">
+      <thead><tr>
+        <th>Date</th><th>Workout</th><th>Rep 1</th><th>Rep 2</th><th>Rep 3</th>
+        <th>Sum</th><th>Predicted</th><th>Goal</th><th>vs Goal</th>
+        <th>Drop%</th><th>Tier</th><th>Meet Result</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div></div>`;
+}
+
+// ═══════════════════════════════════════
+// ROSTER (coach)
+// ═══════════════════════════════════════
+function renderRoster(pg){
+  const roster=getRoster();
+  if(!roster.length){pg.innerHTML='<div class="empty"><div class="ei">🐆</div>No athletes found.</div>';return;}
+  const cards=roster.map(a=>{
+    const isYA=a.prog==='YOUTH';
+    const ss=getSprints(a.name,a.prog);
+    const mph=getPRMph(ss);
+    const tbj=getBestTBJ(ss);
+    const cls=isYA?'ya':'hs';
+    return `<div class="rcard ${cls}" onclick="coachView('${a.code}')">
+      <span class="rcbadge ${isYA?'bgya':a.group==='G1'?'bg1':'bg2'}">${isYA?(a.ageGrp||'Youth'):a.group||'—'}</span>
+      <div class="rcname">${a.name}</div>
+      <div class="rcmeta">${isYA?`Age ${a.age||'—'} · ${a.sport||'—'}`:`Grade ${a.grade||'—'} · ${a.sport||'—'}`}</div>
+      <div class="rcmph ${cls}">${mph?mph.toFixed(2)+' mph':'No data'}</div>
+      <div class="rccode">${a.code} · ${ss.length} sessions${tbj?' · TBJ '+tbj.toFixed(1)+' ft':''}</div>
+    </div>`;
+  }).join('');
+  pg.innerHTML=`<div class="rgrid">${cards}</div>`;
+}
+
+function coachView(code){
+  const a=getRoster().find(r=>r.code===code);
+  if(!a) return;
+  S.override=a;
+  const isYA=a.prog==='YOUTH';
+  const prog=isYA?'ya':'hs';
+  const tabs=isYA
+    ? [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'}]
+    : [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
+  document.getElementById('tabBar').innerHTML=
+    tabs.map((t,i)=>`<button class="tab ${i===0?'on '+prog:''}" data-id="${t.id}" onclick="switchTab(this,'${t.id}')">${t.l}</button>`).join('')
+    +`<button class="tab" onclick="backToCoach()">← Roster</button>`;
+  document.getElementById('pages').innerHTML=
+    tabs.map((t,i)=>`<div class="pg ${i===0?'on':''}" id="pg-${t.id}"></div>`).join('');
+  renderPage('overview');
+}
+function backToCoach(){ S.override=null; buildTabs(); }
+
+// ═══════════════════════════════════════
+// LEADERBOARD (coach) — separate HS / Youth
+// ═══════════════════════════════════════
+function renderLeaderboard(pg){
+  pg.innerHTML=`
+    <div class="lb-tabs">
+      <button class="lb-tab on hs" id="lbt-hs" onclick="switchLB('hs')">HS Program</button>
+      <button class="lb-tab" id="lbt-ya" onclick="switchLB('ya')">Youth Academy</button>
+    </div>
+    <div id="lb-content"></div>`;
+  renderLBContent(S.lbMode||'hs');
+}
+
+function switchLB(mode){
+  S.lbMode=mode;
+  document.getElementById('lbt-hs').className=`lb-tab ${mode==='hs'?'on hs':''}`;
+  document.getElementById('lbt-ya').className=`lb-tab ${mode==='ya'?'on ya':''}`;
+  renderLBContent(mode);
+}
+
+function renderLBContent(mode){
+  const roster=getRoster(mode==='ya'?'YOUTH':'HS');
+  const isYA=mode==='ya';
+  const cls=isYA?'ya':'hs';
+  const rows=roster.map(a=>{
+    const ss=getSprints(a.name,a.prog);
+    return {a, mph:getPRMph(ss), d40:getPR40(ss), tbj:getBestTBJ(ss), n:ss.length};
+  }).sort((x,y)=>(y.mph||0)-(x.mph||0));
+
+  const medals=['🥇','🥈','🥉'];
+  const trows=rows.map((r,i)=>`<tr>
+    <td class="lbr ${i===0?'lb1':i===1?'lb2':i===2?'lb3':''}">${medals[i]||i+1}</td>
+    <td class="lbn">${r.a.name}</td>
+    <td>${isYA
+      ? `<span class="tag" style="background:var(--youth-bg);color:var(--youth)">${r.a.ageGrp||'—'}</span>`
+      : `<span class="tag ${r.a.group==='G1'?'ts':'tfly'}">${r.a.group||'—'}</span>`}</td>
+    <td class="lbv ${cls}">${r.mph?r.mph.toFixed(2)+' mph':'—'}</td>
+    <td>${r.d40?r.d40.toFixed(2)+'s':'—'}</td>
+    <td>${r.tbj?r.tbj.toFixed(2)+' ft':'—'}</td>
+    <td style="color:var(--muted)">${r.n}</td>
+  </tr>`).join('');
+
+  document.getElementById('lb-content').innerHTML=`<div class="tcard">
+    <div class="thdr">🏆 ${isYA?'Youth Academy':'HS Program'} — Best 10m Fly MPH</div>
+    <div class="tscroll"><table class="dt">
+      <thead><tr>
+        <th>#</th><th>Athlete</th><th>${isYA?'Age Group':'Group'}</th>
+        <th>Best MPH</th><th>Best ${isYA?'40Y':'40M'}</th><th>Best TBJ</th><th>Sessions</th>
+      </tr></thead>
+      <tbody>${trows||'<tr><td colspan="7"><div class="empty">No data yet.</div></td></tr>'}</tbody>
+    </table></div></div>`;
+}
+
+// ═══════════════════════════════════════
+// LOG SESSION (coach)
+// ═══════════════════════════════════════
+function renderLog(pg){
+  const today=new Date().toISOString().split('T')[0];
+  const hsOpts=getRoster('HS').map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
+  const yaOpts=getRoster('YOUTH').map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
+
+  pg.innerHTML=`
+  <div class="fcard">
+    <div class="ftitle">Log HS Sprint Session</div>
+    <div class="fgrid">
+      <div class="fg"><label>Athlete</label><select class="fs" id="lA">${hsOpts}</select></div>
+      <div class="fg"><label>Date</label><input class="fi" id="lD" type="date" value="${today}"></div>
+      <div class="fg"><label>KPI</label><select class="fs" id="lK"><option>10FLY</option><option>40M</option></select></div>
+      <div class="fg"><label>Supp</label><select class="fs" id="lSu"><option>—</option><option>20FLY</option><option>40FLY</option><option>30M</option><option>60M</option><option>30BLK</option></select></div>
+    </div>
+    <div class="fgrid">
+      <div class="fg"><label>10FLY R1</label><input class="fi" id="lr1" type="number" step="0.001" placeholder="1.082"></div>
+      <div class="fg"><label>10FLY R2</label><input class="fi" id="lr2" type="number" step="0.001" placeholder="1.079"></div>
+      <div class="fg"><label>10FLY R3</label><input class="fi" id="lr3" type="number" step="0.001" placeholder="1.085"></div>
+      <div class="fg"><label>40M Best</label><input class="fi" id="ld40" type="number" step="0.01" placeholder="4.62"></div>
+      <div class="fg"><label>TBJ ft</label><input class="fi" id="ltf" type="number" step="1" placeholder="19"></div>
+      <div class="fg"><label>TBJ in</label><input class="fi" id="lti" type="number" step="1" placeholder="6"></div>
+      <div class="fg"><label>Notes</label><input class="fi" id="lnotes" type="text" placeholder="Optional"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+      <button class="btn-save" onclick="saveHSSprint()">Save HS Sprint</button>
+      <span class="smsg" id="sHSMsg"></span>
+    </div>
+  </div>
+
+  <div class="fcard">
+    <div class="ftitle">Log Youth Sprint Session</div>
+    <div class="fgrid">
+      <div class="fg"><label>Athlete</label><select class="fs" id="lyA">${yaOpts}</select></div>
+      <div class="fg"><label>Date</label><input class="fi" id="lyD" type="date" value="${today}"></div>
+      <div class="fg"><label>KPI</label><select class="fs" id="lyK"><option>10FLY</option><option>40Y</option></select></div>
+    </div>
+    <div class="fgrid">
+      <div class="fg"><label>10FLY R1</label><input class="fi" id="lyr1" type="number" step="0.001" placeholder="1.140"></div>
+      <div class="fg"><label>10FLY R2</label><input class="fi" id="lyr2" type="number" step="0.001" placeholder="1.145"></div>
+      <div class="fg"><label>40Y R1</label><input class="fi" id="lyd1" type="number" step="0.01" placeholder="5.80"></div>
+      <div class="fg"><label>40Y R2</label><input class="fi" id="lyd2" type="number" step="0.01" placeholder="5.84"></div>
+      <div class="fg"><label>TBJ ft</label><input class="fi" id="lytf" type="number" step="1" placeholder="14"></div>
+      <div class="fg"><label>TBJ in</label><input class="fi" id="lyti" type="number" step="1" placeholder="5"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+      <button class="btn-save" onclick="saveYASprint()">Save Youth Sprint</button>
+      <span class="smsg" id="sYAMsg"></span>
+    </div>
+  </div>
+
+  <div class="fcard">
+    <div class="ftitle">Log Lactate Session (HS)</div>
+    <div class="fgrid">
+      <div class="fg"><label>Athlete</label><select class="fs" id="lLA">${hsOpts}</select></div>
+      <div class="fg"><label>Date</label><input class="fi" id="lLD" type="date" value="${today}"></div>
+      <div class="fg"><label>Workout Type</label>
+        <select class="fs" id="lLT"><option>G1-FLY</option><option>23 DRILL</option><option>G2-200P</option><option>G2-150P</option><option>CZB</option><option>CZA</option></select></div>
+    </div>
+    <div class="fgrid">
+      <div class="fg"><label>Rep 1</label><input class="fi" id="ll1" type="number" step="0.01" placeholder="10.24"></div>
+      <div class="fg"><label>Rep 2</label><input class="fi" id="ll2" type="number" step="0.01" placeholder="10.26"></div>
+      <div class="fg"><label>Rep 3 (opt)</label><input class="fi" id="ll3" type="number" step="0.01"></div>
+      <div class="fg"><label>Goal Time</label><input class="fi" id="llg" type="number" step="0.01" placeholder="21.00"></div>
+      <div class="fg"><label>Meet Result</label><input class="fi" id="llm" type="text" placeholder="e.g. 10.82"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+      <button class="btn-save" onclick="saveLactate()">Save Lactate</button>
+      <span class="smsg" id="sLMsg"></span>
+    </div>
+  </div>`;
+}
+
+function saveHSSprint(){
+  const name=document.getElementById('lA').value;
+  const date=document.getElementById('lD').value;
+  const kpi =document.getElementById('lK').value;
+  const supp=document.getElementById('lSu').value;
+  const r1  =document.getElementById('lr1').value;
+  const r2  =document.getElementById('lr2').value;
+  const r3  =document.getElementById('lr3').value;
+  const d40 =document.getElementById('ld40').value;
+  const tf  =document.getElementById('ltf').value;
+  const ti  =document.getElementById('lti').value;
+  const notes=document.getElementById('lnotes').value;
+  if(!name||!date) return;
+  const reps=[r1,r2,r3].map(parseFloat).filter(n=>!isNaN(n));
+  const best=reps.length?Math.min(...reps).toFixed(3):'';
+  const mph =best?(22.369/parseFloat(best)).toFixed(2):'';
+  const drop=reps.length>1?(((Math.max(...reps)-Math.min(...reps))/Math.min(...reps))*100).toFixed(1)+'%':'';
+  const tbjdec=(tf&&ti)?(parseFloat(tf)+parseFloat(ti)/12).toFixed(2):(tf||'');
+  addLocal('shs',name,{date,kpi,supp,f10r1:r1,f10r2:r2,f10r3:r3,f10best:best,f10mph:mph,f10drop:drop,
+    d40best:d40,d40yd:'',supbest:'',supmph:'',supdrop:'',tbjft:tf,tbjin:ti,tbjdec,notes});
+  const m=document.getElementById('sHSMsg');
+  m.textContent=`✓ Saved${mph?' — '+mph+' mph':''}`;
+  setTimeout(()=>m.textContent='',4000);
+}
+
+function saveYASprint(){
+  const name=document.getElementById('lyA').value;
+  const date=document.getElementById('lyD').value;
+  const kpi =document.getElementById('lyK').value;
+  const r1  =document.getElementById('lyr1').value;
+  const r2  =document.getElementById('lyr2').value;
+  const d1  =document.getElementById('lyd1').value;
+  const d2  =document.getElementById('lyd2').value;
+  const tf  =document.getElementById('lytf').value;
+  const ti  =document.getElementById('lyti').value;
+  if(!name||!date) return;
+  const reps=[r1,r2].map(parseFloat).filter(n=>!isNaN(n));
+  const best=reps.length?Math.min(...reps).toFixed(3):'';
+  const mph =best?(22.369/parseFloat(best)).toFixed(2):'';
+  const drop=reps.length>1?(((Math.max(...reps)-Math.min(...reps))/Math.min(...reps))*100).toFixed(1)+'%':'';
+  const d40reps=[d1,d2].map(parseFloat).filter(n=>!isNaN(n));
+  const d40best=d40reps.length?Math.min(...d40reps).toFixed(2):'';
+  const d40drop=d40reps.length>1?(((Math.max(...d40reps)-Math.min(...d40reps))/Math.min(...d40reps))*100).toFixed(1)+'%':'';
+  const tbjdec=(tf&&ti)?(parseFloat(tf)+parseFloat(ti)/12).toFixed(2):(tf||'');
+  addLocal('sya',name,{date,kpi,supp:'',f10r1:r1,f10r2:r2,f10best:best,f10mph:mph,f10drop:drop,
+    d40r1:d1,d40r2:d2,d40best,d40drop,tbjft:tf,tbjin:ti,tbjdec});
+  const m=document.getElementById('sYAMsg');
+  m.textContent=`✓ Saved${mph?' — '+mph+' mph':''}`;
+  setTimeout(()=>m.textContent='',4000);
+}
+
+function saveLactate(){
+  const name=document.getElementById('lLA').value;
+  const date=document.getElementById('lLD').value;
+  const type=document.getElementById('lLT').value;
+  const r1  =document.getElementById('ll1').value;
+  const r2  =document.getElementById('ll2').value;
+  const r3  =document.getElementById('ll3').value;
+  const goal=document.getElementById('llg').value;
+  const meet=document.getElementById('llm').value;
+  if(!name||!date||!r1) return;
+  const reps=[r1,r2,r3].map(parseFloat).filter(n=>!isNaN(n));
+  const sum=reps.reduce((a,b)=>a+b,0).toFixed(2);
+  const drop=reps.length>1?(((Math.max(...reps)-Math.min(...reps))/Math.min(...reps))*100).toFixed(1)+'%':'';
+  const s=parseFloat(sum); let predicted='';
+  const t=type.toUpperCase();
+  if(t.includes('G1-FLY')) predicted=(s*0.667+0.19).toFixed(2);
+  else if(t.includes('200P')) predicted=(s*0.67+2).toFixed(2);
+  else if(t.includes('150P')) predicted=s.toFixed(2);
+  else if(t.includes('CZ')) predicted=(s*0.667).toFixed(2);
+  const vsgoal=(predicted&&goal)?(parseFloat(predicted)-parseFloat(goal)).toFixed(2):'';
+  const dn=parseFloat(drop);
+  const tier=isNaN(dn)?'':dn<=1?'ELITE 🔥':dn<=3?'GOOD ✓':dn<=8?'CLOSE':'WARNING ⚠';
+  addLocal('lac',name,{date,type,r1,r2,r3:r3||'',sum,predicted,goal,vsgoal,drop,tier,notes:'',meet});
+  const m=document.getElementById('sLMsg');
+  m.textContent=`✓ Saved — Predicted: ${predicted||'—'}`;
+  setTimeout(()=>m.textContent='',4000);
+}
+</script>
+</body>
+</html>
