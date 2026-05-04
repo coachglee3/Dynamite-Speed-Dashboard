@@ -279,7 +279,7 @@ body{background:var(--black);color:var(--text);font-family:var(--fb);min-height:
     <button class="btn-go hs" onclick="doLogin('hs')">GO →</button>
     <button class="btn-back" onclick="backToSel()">← Back</button>
     <div class="lerr" id="hsErr"></div>
-    <div class="lhint">Athletes &amp; parents — use your assigned Roster ID.</div>
+    <div class="lhint">Athletes & parents — use your Roster ID.<br><strong>Coach code:</strong> COACH2025</div>
     <div class="lbar" id="hsBar"><div class="lfill hs" id="hsFill"></div></div>
     <div class="lmsg" id="hsMsg"></div>
   </div>
@@ -293,7 +293,7 @@ body{background:var(--black);color:var(--text);font-family:var(--fb);min-height:
     <button class="btn-go ya" onclick="doLogin('ya')">GO →</button>
     <button class="btn-back" onclick="backToSel()">← Back</button>
     <div class="lerr" id="yaErr"></div>
-    <div class="lhint">Athletes &amp; parents — use your assigned Roster ID.</div>
+    <div class="lhint">Athletes & parents — use your Roster ID.<br><strong>Youth coach code:</strong> YACOACH25</div>
     <div class="lbar" id="yaBar"><div class="lfill ya" id="yaFill"></div></div>
     <div class="lmsg" id="yaMsg"></div>
   </div>
@@ -310,9 +310,8 @@ body{background:var(--black);color:var(--text);font-family:var(--fb);min-height:
 // CONFIG
 // ═══════════════════════════════════════
 const SHEET_ID   = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
-const COACH_MASTER = 'GL1238';
-const COACH_HS   = 'GL1238';
-const COACH_YA   = 'GL1238';
+const COACH_HS   = 'COACH2025';
+const COACH_YA   = 'YACOACH25';
 const GIDS = {
   roster:       '570350565',
   sprintHS:     '1758897138',
@@ -327,8 +326,7 @@ const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?
 const R = {
   CODE:'ROSTER ID', NAME:'FULL NAME', PROG:'PROGRAM', GRADE:'GRADE',
   AGE:'AGE\n(auto)', AGEGRP:'AGE GROUP', GENDER:'Gender', GROUP:'GROUP\n(HS)',
-  G200:'Goal\n200m', G400:'Goal\n400m', DOB:'DOB', SPORT:'MULTI-SPORT',
-  FAMCODE:'FAMILY CODE', TEAMCODE:'TEAM CODE'
+  G200:'Goal\n200m', G400:'Goal\n400m', DOB:'DOB', SPORT:'MULTI-SPORT'
 };
 const HS = {
   DATE:'DATE', NAME:'ATHLETE\nNAME', KPI:'KPI\nCODE', SUPP:'SUPP\nCODE',
@@ -362,8 +360,6 @@ const LAC = {
 // ═══════════════════════════════════════
 let S = {
   prog:null, user:null, isCoach:false,
-  isTeamCoach:false, teamCode:null,
-  isFamily:false, familyAthletes:[], familyIdx:0,
   roster:[], sprintsHS:{}, sprintsYA:{}, lactate:{},
   live:false, loadedAt:null, charts:{}, override:null,
   lbMode:'hs'
@@ -428,13 +424,8 @@ function parseRoster(rows) {
     group:   (r[R.GROUP] ||'').trim(),
     goal200: (r[R.G200]  ||'').trim(),
     goal400: (r[R.G400]  ||'').trim(),
-    sport:      (r[R.SPORT]   ||'').trim(),
-    dob:        (r[R.DOB]     ||'').trim(),
-    familyCode: (r[R.FAMCODE] ||'').trim().toUpperCase(),
-    teamCode:   (r[R.TEAMCODE]||'').trim().toUpperCase(),
-  },
-    familyCode: (r[R.FAMCODE] ||'').trim().toUpperCase(),
-    teamCode:   (r[R.TEAMCODE]||'').trim().toUpperCase(),
+    sport:   (r[R.SPORT] ||'').trim(),
+    dob:     (r[R.DOB]   ||'').trim(),
   }));
 }
 
@@ -514,12 +505,7 @@ function getSprintsHS(name){ return [...getLocal('shs',name), ...(S.sprintsHS[na
 function getSprintsYA(name){ return [...getLocal('sya',name), ...(S.sprintsYA[name]||[])]; }
 function getSprints(name, prog){ return prog==='YOUTH' ? getSprintsYA(name) : getSprintsHS(name); }
 function getLactate(name){ return [...getLocal('lac',name), ...(S.lactate[name]||[])]; }
-function getRoster(prog){
-  let r = S.roster;
-  if (S.isTeamCoach && S.teamCode) r = r.filter(a => a.teamCode === S.teamCode);
-  if (prog) r = r.filter(a => a.prog===prog);
-  return r;
-}
+function getRoster(prog){ return S.roster.filter(a => prog ? a.prog===prog : true); }
 
 // ═══════════════════════════════════════
 // HELPERS
@@ -545,16 +531,8 @@ function fmtDate(d) {
 function getPRMph(ss)  { const v=ss.map(s=>parseFloat(s.f10mph)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.max(...v):null; }
 function getPR40(ss)   { const v=ss.map(s=>parseFloat(s.d40best)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.min(...v):null; }
 function getBestTBJ(ss){ const v=ss.map(s=>parseFloat(s.tbjdec||s.tbjft)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.max(...v):null; }
-function getFirstSession(ss){
-  // Oldest session — sort ascending and take first
-  if(!ss.length) return null;
-  return ss.slice().sort((a,b)=>new Date(normDate(a.date))-new Date(normDate(b.date)))[0].date;
-}
-function getLastSession(ss){
-  // Most recent session — sort descending and take first
-  if(!ss.length) return null;
-  return ss.slice().sort((a,b)=>new Date(normDate(b.date))-new Date(normDate(a.date)))[0].date;
-}
+function getFirstSession(ss){ return ss.length ? ss[ss.length-1].date : null; }
+function getLastSession(ss) { return ss.length ? ss[0].date : null; }
 function getMphImprovement(ss) {
   const pts = ss.filter(s=>s.f10mph&&parseFloat(s.f10mph)>0).slice().reverse();
   if (pts.length < 2) return null;
@@ -614,8 +592,11 @@ async function doLogin(prog) {
   const fill  = document.getElementById(prog+'Fill');
   const msg   = document.getElementById(prog+'Msg');
   errEl.textContent='';
+
+  const isCoach = (prog==='hs' && code===COACH_HS) || (prog==='ya' && code===COACH_YA);
   bar.classList.add('on'); fill.style.width='10%'; msg.textContent='Connecting…';
 
+  // Fetch all data
   try {
     msg.textContent='Loading roster…';
     const rd = await gvizFetch(GIDS.roster);
@@ -624,12 +605,14 @@ async function doLogin(prog) {
 
     msg.textContent='Loading sprint data…';
     const sd = await gvizFetch(GIDS.sprintHS);
-    fill.style.width='50%';
+    fill.style.width='55%';
     if (sd) S.sprintsHS = parseSprintsHS(gvizRows(sd));
 
-    const yd = await gvizFetch(GIDS.sprintYouth);
-    fill.style.width='70%';
-    if (yd) S.sprintsYA = parseSprintsYA(gvizRows(yd));
+    if (prog==='ya' || isCoach) {
+      const yd = await gvizFetch(GIDS.sprintYouth);
+      fill.style.width='70%';
+      if (yd) S.sprintsYA = parseSprintsYA(gvizRows(yd));
+    }
 
     msg.textContent='Loading lactate…';
     const ld = await gvizFetch(GIDS.lactate);
@@ -648,59 +631,29 @@ async function doLogin(prog) {
     return;
   }
 
-  // TIER 1 — Master coach
-  if (code === COACH_MASTER) {
-    await new Promise(r=>setTimeout(r,250));
-    bar.classList.remove('on');
-    S.prog=prog; S.isCoach=true; S.isTeamCoach=false; S.isFamily=false;
-    S.user=null; S.teamCode=null; S.familyAthletes=[]; S.familyIdx=0;
-    showApp(); return;
-  }
-
-  // TIER 2 — Team coach
-  const teamAthletes = S.roster.filter(a => a.teamCode && a.teamCode === code);
-  if (teamAthletes.length > 0) {
-    msg.textContent='✓ Team loaded — '+teamAthletes.length+' athletes';
-    await new Promise(r=>setTimeout(r,250));
-    bar.classList.remove('on');
-    S.prog=prog; S.isCoach=false; S.isTeamCoach=true; S.isFamily=false;
-    S.user=null; S.teamCode=code; S.familyAthletes=[]; S.familyIdx=0;
-    showApp(); return;
-  }
-
-  // TIER 3 — Family code
-  const familyMembers = S.roster.filter(a => a.familyCode && a.familyCode === code);
-  if (familyMembers.length > 0) {
-    msg.textContent='✓ Family loaded — '+familyMembers.length+' athletes';
-    await new Promise(r=>setTimeout(r,250));
-    bar.classList.remove('on');
-    const famProg = familyMembers[0].prog==='YOUTH'?'ya':'hs';
-    S.prog=famProg; S.isCoach=false; S.isTeamCoach=false; S.isFamily=true;
-    S.user=familyMembers[0]; S.familyAthletes=familyMembers; S.familyIdx=0;
-    S.teamCode=null;
-    showApp(); return;
-  }
-
-  // TIER 4 — Individual athlete
+  // Validate code
   const athlete = S.roster.find(a => a.code === code);
-  if (!athlete) {
+  if (!isCoach && !athlete) {
     bar.classList.remove('on'); msg.textContent='';
-    errEl.textContent='Code not found. Check your Roster ID and try again.';
+    errEl.textContent='Code not found. Check your Roster ID.';
     return;
   }
 
-  const athleteProg = athlete.prog==='YOUTH'?'ya':'hs';
-  if (athleteProg !== prog) {
-    bar.classList.remove('on'); msg.textContent='';
-    errEl.textContent='This code belongs to the '+(athlete.prog==='YOUTH'?'Youth Academy':'HS Program')+'. Please select that program.';
-    return;
+  // Check program match
+  if (!isCoach && athlete) {
+    const athleteProg = athlete.prog === 'YOUTH' ? 'ya' : 'hs';
+    if (athleteProg !== prog) {
+      bar.classList.remove('on'); msg.textContent='';
+      errEl.textContent=`This code belongs to the ${athlete.prog==='YOUTH'?'Youth Academy':'HS Program'}. Please select that program.`;
+      return;
+    }
   }
 
-  msg.textContent='✓ Welcome, '+athlete.name;
-  await new Promise(r=>setTimeout(r,250));
+  msg.textContent=`✓ ${S.roster.length} athletes loaded`;
+  await new Promise(r=>setTimeout(r,300));
   bar.classList.remove('on');
-  S.prog=prog; S.user=athlete; S.isCoach=false; S.isTeamCoach=false; S.isFamily=false;
-  S.teamCode=null; S.familyAthletes=[]; S.familyIdx=0;
+
+  S.prog=prog; S.user=isCoach?null:athlete; S.isCoach=isCoach;
   showApp();
 }
 
@@ -711,17 +664,12 @@ function showApp() {
 
   const pill=document.getElementById('upill');
   pill.classList.add('on');
-  if (S.isCoach)          pill.textContent = '🐆 Coach — '+S.roster.length+' athletes';
-  else if (S.isTeamCoach) pill.textContent = '🐆 Team: '+S.teamCode;
-  else if (S.isFamily)    pill.textContent = 'Family: '+S.familyAthletes.map(a=>a.name.split(' ')[0]).join(' · ');
-  else                    pill.textContent = S.user.name;
+  pill.textContent = S.isCoach ? `🐆 Coach — ${S.roster.length} athletes` : S.user.name;
 
   const pp=document.getElementById('ppill');
   pp.classList.add('on');
-  pp.className = 'ppill '+S.prog+' on';
-  if (S.isCoach||S.isTeamCoach) pp.textContent = 'COACH VIEW';
-  else if (S.isFamily)          pp.textContent = 'FAMILY VIEW';
-  else pp.textContent = S.prog==='ya' ? 'YOUTH ACADEMY' : 'HS PROGRAM';
+  pp.className = `ppill ${S.prog} on`;
+  pp.textContent = S.prog==='ya' ? 'YOUTH ACADEMY' : 'HS PROGRAM';
 
   if (S.prog==='ya') {
     document.getElementById('hdr').classList.add('ya');
@@ -739,7 +687,7 @@ function showApp() {
 }
 
 function signOut(){
-  S={prog:null,user:null,isCoach:false,isTeamCoach:false,teamCode:null,isFamily:false,familyAthletes:[],familyIdx:0,roster:[],sprintsHS:{},sprintsYA:{},lactate:{},live:false,loadedAt:null,charts:{},override:null,lbMode:'hs'};
+  S={prog:null,user:null,isCoach:false,roster:[],sprintsHS:{},sprintsYA:{},lactate:{},live:false,loadedAt:null,charts:{},override:null,lbMode:'hs'};
   document.getElementById('loginPage').style.display='flex';
   document.getElementById('app').classList.remove('on');
   document.getElementById('btnOut').classList.remove('on');
@@ -763,13 +711,6 @@ function buildTabs(){
   let tabs;
   if (S.isCoach) {
     tabs = [{id:'roster',l:'Roster'},{id:'leaderboard',l:'Leaderboard'},{id:'log',l:'Log Session'}];
-  } else if (S.isTeamCoach) {
-    tabs = [{id:'roster',l:'Roster'},{id:'leaderboard',l:'Leaderboard'}];
-  } else if (S.isFamily) {
-    const child = S.familyAthletes[S.familyIdx];
-    tabs = child.prog==='YOUTH'
-      ? [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'}]
-      : [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
   } else if (S.user.prog==='YOUTH') {
     tabs = [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'}];
   } else {
@@ -797,7 +738,7 @@ function switchTab(btn,id){
 function renderPage(id){
   const pg=document.getElementById('pg-'+id);
   if(!pg) return;
-  const a = S.override || (S.isFamily ? S.familyAthletes[S.familyIdx] : S.user);
+  const a = S.override||S.user;
   if      (id==='overview')    renderOverview(pg,a);
   else if (id==='speed')       renderSpeed(pg,a);
   else if (id==='lactate')     renderLactate(pg,a);
@@ -830,8 +771,7 @@ function renderOverview(pg, athlete){
   ];
 
   pg.innerHTML = `
-    ${S.override ? '<button class="bbtn" id="bbtn">← Back to Roster</button>' : ''}
-    ${S.isFamily && S.familyAthletes.length>1 ? '<div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap"><span style="font-size:11px;color:var(--dim);font-family:var(--fd);font-weight:600;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">Viewing:</span><div id="familySwitcherBar" style="display:flex;gap:6px;flex-wrap:wrap"></div></div>' : ''}
+    ${S.override?`<button class="bbtn" id="bbtn">← Back to Roster</button>`:''}
     <div class="hero">
       <div class="av ${cls}">${inits(athlete.name)}</div>
       <div>
@@ -932,18 +872,6 @@ function renderOverview(pg, athlete){
     </div>`;
 
   if(S.override) document.getElementById('bbtn').onclick=()=>{S.override=null;buildTabs();};
-  // Render family switcher buttons
-  const fswEl=document.getElementById('familySwitcherBar');
-  if(fswEl && S.isFamily && S.familyAthletes.length>1){
-    fswEl.innerHTML=S.familyAthletes.map((a,i)=>`
-      <button onclick="switchFamilyMember(${i})" style="
-        background:${i===S.familyIdx?'var(--gold)':'var(--surf2)'};
-        color:${i===S.familyIdx?'var(--black)':'var(--dim)'};
-        border:1px solid ${i===S.familyIdx?'var(--gold)':'var(--bdr)'};
-        border-radius:6px;padding:5px 16px;font-family:var(--fd);
-        font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;
-      ">${a.name.split(' ')[0]}</button>`).join('');
-  }
 
   setTimeout(()=>{
     // Sort oldest→newest for correct left-to-right trend direction
@@ -959,20 +887,6 @@ function renderOverview(pg, athlete){
     const t40=document.getElementById('c40title');
     if(t40) t40.textContent=(prog==='YOUTH'?'40Y':'40M')+' — Season Trend';
   },50);
-}
-
-function switchFamilyMember(idx){
-  S.familyIdx=idx;
-  S.user=S.familyAthletes[idx];
-  const child=S.familyAthletes[idx];
-  S.prog=child.prog==='YOUTH'?'ya':'hs';
-  const pp=document.getElementById('ppill');
-  if(pp){pp.className='ppill '+S.prog+' on';pp.textContent='FAMILY VIEW';}
-  const hdr=document.getElementById('hdr');
-  if(hdr){hdr.className='hdr'+(S.prog==='ya'?' ya':'');}
-  const hl=document.getElementById('hdrLogo');
-  if(hl){hl.className='logo'+(S.prog==='ya'?' ya':'');}
-  buildTabs();
 }
 
 function persistGoals(code){
