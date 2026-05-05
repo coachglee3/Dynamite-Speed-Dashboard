@@ -316,7 +316,7 @@ body{background:var(--black);color:var(--text);font-family:var(--fb);min-height:
 // CONFIG
 // ═══════════════════════════════════════
 const SHEET_ID   = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
-const COACH_MASTER = 'GL003', 'DL784';
+const COACH_MASTER = ['GL003', 'DL784'];
 const COACH_HS   = 'GL003';
 const COACH_YA   = 'GL003';
 const GIDS = {
@@ -654,7 +654,7 @@ async function doLogin(prog) {
   }
 
   // TIER 1 — Master coach
-  if (COACH_MASTER.includes(DL784)) {
+  if (COACH_MASTER.includes(code)) {
     await new Promise(r=>setTimeout(r,250));
     bar.classList.remove('on');
     S.prog=prog; S.isCoach=true; S.isTeamCoach=false; S.isFamily=false;
