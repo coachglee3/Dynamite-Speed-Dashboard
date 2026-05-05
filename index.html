@@ -654,7 +654,7 @@ async function doLogin(prog) {
   }
 
   // TIER 1 — Master coach
-  if (COACH_MASTER.includes(code)) {
+  if (COACH_MASTER.includes(DL784)) {
     await new Promise(r=>setTimeout(r,250));
     bar.classList.remove('on');
     S.prog=prog; S.isCoach=true; S.isTeamCoach=false; S.isFamily=false;
