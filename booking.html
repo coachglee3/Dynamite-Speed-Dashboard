@@ -427,8 +427,8 @@ function parseSlots(rows) {
     .map(r => ({
       date:      (r['DATE']      ||'').trim(),
       program:   (r['PROGRAM']   ||'').trim().toLowerCase(),
-      startTime: (r['START_TIME']||'').trim(),
-      endTime:   (r['END_TIME']  ||'').trim(),
+      startTime: String(r['START_TIME'] || '').replace(':00 AM',' AM').replace(':00 PM',' PM').trim(),
+      endTime:   String(r['END_TIME'] || '').replace(':00 AM',' AM').replace(':00 PM',' PM').trim(),
       notes:     (r['NOTES']     ||'').trim()
     }));
 }
