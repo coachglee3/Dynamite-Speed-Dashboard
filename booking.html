@@ -261,7 +261,7 @@ body::before{content:'';position:fixed;inset:0;background:
   <div class="hero">
     <div class="hero-eyebrow">Dynamite Academy — San Diego, CA</div>
     <h1 class="hero-title">Book Your<br><span>Session</span></h1>
-    <p class="hero-sub">Select a date, choose your program, and lock in your spot. One booking covers your entire family.</p>
+    <p class="hero-sub">Select a date, choose your program, and lock in your spot.</p>
     <div class="time-pills">
       <div class="tpill sp"><div class="tpill-dot"></div>Speed Academy</div>
       <div class="tpill fb"><div class="tpill-dot"></div>Football</div>
@@ -318,13 +318,13 @@ body::before{content:'';position:fixed;inset:0;background:
       <div class="frow full">
         <div class="fg">
           <label>Athlete Name(s)</label>
-          <input class="fi" id="fAthletes" type="text" placeholder="e.g. Josh Smith  —  or multiple: Josh & Jordan smith" oninput="validateForm()">
+          <input class="fi" id="fAthletes" type="text" placeholder="e.g. Josh Smith—or multiple:Josh & Jordan smith" oninput="validateForm()">
         </div>
       </div>
       <div class="frow full">
         <div class="fg">
           <label>Notes (optional)</label>
-          <input class="fi" id="fNotes" type="text" placeholder="Anything we should know — late arrival, injury, etc.">
+          <input class="fi" id="fNotes" type="text" placeholder="Anything we should know—late arrival, injury, etc.">
         </div>
       </div>
     </div>
@@ -626,7 +626,7 @@ function renderSlotGrid() {
       ${metaItems ? `<div class="pc-meta">${metaItems}</div>` : ''}
       <div class="pc-bottom">
         <div>
-          <div class="pc-price">${price}<small>/ session · pay on site</small></div>
+          <div class="pc-price">${price}<small>/ session · per athlete · pay on site</small></div>
         </div>
         <div class="pc-badge ${bookable?'avail':'taken'}">${bookable?'Book →':'Closed'}</div>
       </div>
