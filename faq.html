@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — Dynamite Speed Academy</title>
+<meta name="description" content="Frequently asked questions about Dynamite Speed Academy — programs, pricing, gear, timing, and more. San Diego, CA.">
+<link rel="icon" type="image/png" href="https://i.imgur.com/Kxww0Xn.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+:root{
+  --gold:#F5C518;--gold-dim:#c9a012;--gold-glow:rgba(245,197,24,.10);
+  --black:#09090b;--s1:#111113;--s2:#18181b;--s3:#242428;
+  --bdr:#2c2c30;--bdr2:#38383e;--text:#f4f4f5;--dim:#888;--muted:#555;
+  --speed:#F5C518;--football:#e05555;--combined:#4caf72;--youth:#38bdf8;
+  --fd:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
+}
+body{background:var(--black);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.6;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--s1);}::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px;}
+a{color:inherit;text-decoration:none;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 70% 50% at 50% -5%,rgba(245,197,24,.05) 0%,transparent 60%);}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,11,.92);border-bottom:1px solid var(--bdr);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);height:58px;display:flex;align-items:center;padding:0 24px;gap:20px;}
+.nav-logo a{display:flex;align-items:center;gap:10px;}
+.nav-logo img{height:30px;width:auto;}
+.nav-logo-text{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--dim);letter-spacing:.5px;text-transform:uppercase;}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:auto;}
+.nav-link{font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);padding:6px 13px;border-radius:6px;transition:color .15s,background .15s;white-space:nowrap;}
+.nav-link:hover,.nav-link.active{color:var(--text);background:var(--s2);}
+.nav-cta{background:var(--gold);color:var(--black)!important;border-radius:7px;padding:7px 16px!important;font-weight:800!important;transition:background .15s,transform .1s;}
+.nav-cta:hover{background:#e6b800!important;transform:translateY(-1px);}
+.nav-mobile-btn{display:none;background:none;border:1px solid var(--bdr);border-radius:6px;padding:5px 10px;color:var(--dim);cursor:pointer;font-size:18px;margin-left:auto;}
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .nav-links.open{display:flex;flex-direction:column;align-items:flex-start;position:absolute;top:58px;left:0;right:0;background:var(--s1);border-bottom:1px solid var(--bdr);padding:12px 20px;gap:4px;z-index:200;}
+  .nav-mobile-btn{display:block;}
+}
+
+/* LAYOUT */
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:60px 24px 100px;}
+
+/* PAGE HERO */
+.page-hero{margin-bottom:56px;}
+.eyebrow{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);opacity:.8;margin-bottom:12px;display:inline-flex;align-items:center;gap:8px;}
+.eyebrow::before,.eyebrow::after{content:'';display:inline-block;width:24px;height:1px;background:var(--gold);opacity:.5;}
+.page-title{font-family:var(--fd);font-size:clamp(48px,8vw,80px);font-weight:900;letter-spacing:-2px;line-height:.95;color:var(--text);margin-bottom:14px;}
+.page-title span{color:var(--gold);}
+.page-sub{font-size:16px;color:var(--dim);max-width:520px;line-height:1.7;}
+
+/* CATEGORY TABS */
+.cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px;}
+.cat-tab{background:var(--s2);border:1px solid var(--bdr);border-radius:20px;padding:6px 16px;font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:.5px;color:var(--dim);cursor:pointer;transition:all .15s;text-transform:uppercase;}
+.cat-tab:hover{border-color:var(--bdr2);color:var(--text);}
+.cat-tab.active{background:var(--gold-glow);border-color:var(--gold-dim);color:var(--gold);}
+
+/* FAQ SECTIONS */
+.faq-section{margin-bottom:52px;}
+.faq-section-title{
+  font-family:var(--fd);font-size:22px;font-weight:800;letter-spacing:.5px;
+  color:var(--text);margin-bottom:16px;padding-bottom:12px;
+  border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;gap:10px;
+}
+.faq-section-icon{font-size:20px;}
+
+/* FAQ ACCORDION */
+.faq-item{
+  background:var(--s2);border:1px solid var(--bdr);border-radius:10px;
+  margin-bottom:8px;overflow:hidden;transition:border-color .15s;
+}
+.faq-item:hover{border-color:var(--bdr2);}
+.faq-item.open{border-color:var(--gold-dim);}
+.faq-q{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 20px;cursor:pointer;user-select:none;
+}
+.faq-q-text{
+  font-family:var(--fd);font-size:17px;font-weight:700;color:var(--text);
+  display:flex;align-items:flex-start;gap:10px;
+}
+.faq-q-text::before{
+  content:'Q';font-family:var(--fd);font-size:12px;font-weight:900;
+  color:var(--gold);flex-shrink:0;margin-top:3px;
+  background:var(--s3);padding:1px 6px;border-radius:3px;
+}
+.faq-chevron{
+  color:var(--muted);font-size:16px;flex-shrink:0;
+  transition:transform .2s;
+}
+.faq-item.open .faq-chevron{transform:rotate(180deg);color:var(--gold);}
+.faq-a{
+  padding:0 20px 18px 20px;font-size:14px;color:var(--dim);
+  line-height:1.75;display:none;
+  padding-left:52px;/* aligns under Q text past the badge */
+}
+.faq-item.open .faq-a{display:block;}
+.faq-a strong{color:var(--text);}
+.faq-a a{color:var(--gold);border-bottom:1px solid transparent;transition:border-color .15s;}
+.faq-a a:hover{border-bottom-color:var(--gold);}
+.faq-a ul{margin:10px 0 0 16px;display:flex;flex-direction:column;gap:4px;}
+.faq-a ul li{list-style:disc;}
+
+/* CTA STRIP */
+.cta-strip{
+  background:var(--s2);border:1px solid var(--bdr);border-radius:14px;
+  padding:32px 28px;margin-top:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;
+}
+.cta-strip-text{}
+.cta-strip-title{font-family:var(--fd);font-size:26px;font-weight:900;color:var(--text);margin-bottom:4px;}
+.cta-strip-sub{font-size:14px;color:var(--dim);}
+.cta-strip-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-primary{background:var(--gold);color:var(--black);border:none;border-radius:9px;padding:12px 26px;font-family:var(--fd);font-size:16px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;display:inline-block;transition:background .15s,transform .1s;}
+.btn-primary:hover{background:#e6b800;transform:translateY(-1px);}
+.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--bdr2);border-radius:9px;padding:11px 22px;font-family:var(--fd);font-size:15px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;display:inline-block;transition:border-color .15s,color .15s;}
+.btn-secondary:hover{border-color:var(--gold-dim);color:var(--gold);}
+
+/* FOOTER */
+.footer{background:var(--s1);border-top:1px solid var(--bdr);padding:40px 24px 32px;position:relative;z-index:1;}
+.footer-inner{max-width:1040px;margin:0 auto;display:flex;flex-wrap:wrap;gap:32px;justify-content:space-between;align-items:flex-start;}
+.footer-brand{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.footer-brand img{height:28px;width:auto;}
+.footer-brand-text{font-family:var(--fd);font-size:16px;font-weight:800;color:var(--text);letter-spacing:.5px;}
+.footer-tagline{font-size:13px;color:var(--muted);max-width:240px;line-height:1.6;margin-bottom:16px;}
+.footer-contact a{color:var(--gold);font-size:13px;}
+.footer-links{display:flex;flex-direction:column;gap:6px;}
+.footer-links h4{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.footer-links a{font-size:13px;color:var(--dim);transition:color .15s;}
+.footer-links a:hover{color:var(--text);}
+.footer-bottom{max-width:1040px;margin:28px auto 0;padding-top:20px;border-top:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);}
+
+/* FADE */
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <a href="home.html">
+      <img src="https://i.imgur.com/Kxww0Xn.png" alt="Dynamite Speed" onerror="this.style.display='none'">
+      <span class="nav-logo-text">Dynamite Speed</span>
+    </a>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a class="nav-link" href="home.html">Home</a>
+    <a class="nav-link" href="home.html#programs">Programs</a>
+    <a class="nav-link" href="home.html#sessions">Sessions</a>
+    <a class="nav-link" href="coaches.html">Coaches</a>
+    <a class="nav-link active" href="faq.html">FAQ</a>
+    <a class="nav-link" href="index.html">Dashboard</a>
+    <a class="nav-link" href="registration.html">Register</a>
+    <a class="nav-link nav-cta" href="booking.html">Book Now</a>
+  </div>
+  <button class="nav-mobile-btn" onclick="toggleNav()" aria-label="Menu">☰</button>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="page-hero fade-up">
+    <div class="eyebrow">Lee Brothers Academy</div>
+    <h1 class="page-title">Frequently Asked<br><span>Questions</span></h1>
+    <p class="page-sub">Everything you need to know before your first session — programs, pricing, gear, timing, and how it all works.</p>
+  </div>
+
+  <!-- CATEGORY TABS -->
+  <div class="cat-tabs fade-up">
+    <div class="cat-tab active" onclick="filterCat('all', this)">All</div>
+    <div class="cat-tab" onclick="filterCat('general', this)">General</div>
+    <div class="cat-tab" onclick="filterCat('programs', this)">Programs &amp; Pricing</div>
+    <div class="cat-tab" onclick="filterCat('training', this)">Training</div>
+    <div class="cat-tab" onclick="filterCat('gear', this)">Gear</div>
+    <div class="cat-tab" onclick="filterCat('data', this)">Timing &amp; Data</div>
+    <div class="cat-tab" onclick="filterCat('booking', this)">Booking</div>
+  </div>
+
+  <!-- ─── GENERAL ───────────────────────────────────────────── -->
+  <div class="faq-section fade-up" data-cat="general">
+    <div class="faq-section-title"><span class="faq-section-icon">🐆</span> General</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What is Dynamite Speed Academy?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Dynamite Speed Academy is the Lee Brothers Academy — a session-based dual-performance academy in San Diego, CA. We train athletes ages 6–18 in <strong>sprint speed development</strong> and <strong>position-specific football skills</strong>. Every sprint rep is timed with the AG510 fully automatic timing system. Data is recorded, ranked, and published every session.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What ages do you work with?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">We work with athletes <strong>ages 6 through 18</strong>. Youth athletes (ages 6–12) train in the Youth Academy with age-appropriate progressions on every drill. High school athletes follow a more advanced program structure. All skill levels are welcome — we start every new athlete with a baseline assessment on Day 1.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">Do athletes need prior track or football experience?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">No experience required. We clock every new athlete on Day 1 — timed sprints and a Triple Broad Jump establish your baseline. That first number is your starting point. Everything goes up from there. We've worked with complete beginners and varsity athletes side by side in the same session.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">Where do sessions take place?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Sessions are held at <strong>Thrive Park — SDSU Mission Valley River Park</strong> in San Diego, CA. All training is on grass or turf. The exact field location is confirmed each week — any updates are communicated before the session. <a href="https://maps.google.com?q=Thrive+Park+San+Diego+CA" target="_blank" rel="noopener">Open in Google Maps ↗</a></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">Is this a conditioning camp?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Absolutely not. We do not train fatigue — we train <strong>speed, movement, and performance</strong>. Every sprint rep is short and explosive with full recovery between reps. Tired athletes go home. Our philosophy is built on the principle that tired is the enemy of speed development. If you're expecting long runs, 400m repeats, or conditioning drills — this is not that program.</div>
+    </div>
+  </div>
+
+  <!-- ─── PROGRAMS & PRICING ─────────────────────────────────── -->
+  <div class="faq-section fade-up" data-cat="programs">
+    <div class="faq-section-title"><span class="faq-section-icon">⚡</span> Programs &amp; Pricing</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What programs do you offer?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">We currently offer three programs:
+        <ul>
+          <li><strong>Speed Academy ($15/session)</strong> — Pure sprint development. AG510 timed 10m Fly and 40 Yard Dash every rep. X-Factor explosive training block, wickets, drill work, sprint mechanics.</li>
+          <li><strong>Football Skills ($15/session)</strong> — Position-specific development for skill positions (WR, RB, DB, QB). Route running, release mechanics, change of direction, and game-speed footwork.</li>
+          <li><strong>Dual Academy ($20/session)</strong> — Both programs back to back in a single 2-hour session. Best value — saves $10 vs booking separately.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">When and where is payment collected?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Payment is collected <strong>on site at the session</strong>. No pre-payment is required to register or book your spot. Rates are $15 for Speed Academy, $15 for Football Skills, and $20 for Dual Academy — per athlete, per session.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">Is there a minimum commitment or contract?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">No contracts, no minimum sessions. We operate on <strong>rolling enrollment</strong> — you can join for a single session, take weeks off, and come back whenever it fits your schedule. That said, athletes who train consistently see the most improvement. Speed grows like a tree — showing up regularly is what makes the data move.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">Can multiple athletes from the same family attend?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Yes. You can register multiple athletes under one <strong>Family Code</strong>. When booking, you can add multiple athletes to the same session. Pricing is applied per athlete — each athlete attending counts as one session at the standard rate.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">When do Sunday sessions run?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Speed Academy runs <strong>8:30 AM Sundays</strong> at Thrive Park. Dual Academy runs <strong>8:30–10:30 AM</strong>. Football Skills follows immediately after the Speed block. The schedule is updated weekly — check the <a href="booking.html">booking page</a> or <a href="home.html#sessions">sessions section</a> for current dates and any changes.</div>
+    </div>
+  </div>
+
+  <!-- ─── TRAINING ───────────────────────────────────────────── -->
+  <div class="faq-section fade-up" data-cat="training">
+    <div class="faq-section-title"><span class="faq-section-icon">🏁</span> Training &amp; Methodology</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What does a typical Speed Academy session look like?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Every session follows the same four-phase structure:
+        <ul>
+          <li><strong>Warmup (~15 min)</strong> — Captain-led sequence: activation jog, arm swings, A-Skip, B-Skip, Primetimes, Booms, and a Split and Rip to open. Same sequence every session — repetition builds elite habits.</li>
+          <li><strong>KPI Sprint Work (~15 min)</strong> — AG510-timed 10m Fly and 40 Yard Dash. Max effort, full rest between reps. No rushing the clock.</li>
+          <li><strong>X-Factor Block (~10 min)</strong> — Explosive power work: Triple Broad Jump, Cat Jumps, Wickets, Quick Steps, Russian Lunges. Max intensity for 10 seconds, full recovery between every rep.</li>
+          <li><strong>Competition + Data (~15 min)</strong> — Results published, PRs celebrated, rankings posted before athletes leave.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What is the phosphate system and why does it matter?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">The phosphate (alactic) system is the energy system used for maximum-effort activities lasting <strong>5–10 seconds</strong> — which is exactly what sprinting requires. It doesn't need oxygen and doesn't produce lactic acid. Training this system means short, explosive, fully-recovered reps. Youth athletes train <strong>100% alactically</strong> — no lactate work, no conditioning work, no grinding. This is how you build real speed without burning out your athletes.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">How much total sprint volume do athletes run per session?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Youth athletes have a hard cap of <strong>200 meters maximum</strong> per session — non-negotiable, never exceeded. High school athletes have a cap of 600 meters. These limits are what keep quality high. Less volume with full recovery produces faster athletes than high-volume work at sub-max effort. You don't get fast by running slow.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What are wickets and why are they used?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Wickets are 6-inch low hurdles set in a line on grass. They're a <strong>rhythm tool, not a jumping obstacle</strong> — athletes sprint through them rather than over them. They train front-side sprint mechanics, ground contact speed, and stride rhythm. The rule of wickets: every drill starts as a walk, earns its speed through repetition.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">Do you do stretching before sessions?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">No static stretching. Sprint muscles function best as strong rubber bands — pre-session static stretching reduces power output. We use a <strong>dynamic activation warmup</strong> instead: movement-based drills that activate the muscles needed for sprinting without reducing their elastic properties.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">How long does it take to see improvement?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Speed development follows what we call the <strong>6-6-6 principle</strong> — improvements show up in 6 weeks, 6 months, or 6 years. What you do today won't change you tomorrow, but consistency compounds. Most athletes see measurable MPH improvement within their first 4–6 sessions. The athletes who improve the most are the ones who show up consistently and sprint with max intent every rep.</div>
+    </div>
+  </div>
+
+  <!-- ─── GEAR ───────────────────────────────────────────────── -->
+  <div class="faq-section fade-up" data-cat="gear">
+    <div class="faq-section-title"><span class="faq-section-icon">👟</span> Gear &amp; Preparation</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What gear is required?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">
+        <ul>
+          <li><strong>Cleats — Required.</strong> Football cleats, soccer cleats, or track spikes for sprint work. The cleats you already own are perfect.</li>
+          <li><strong>Water bottle — Required.</strong> Bring enough for the full session, or both sessions if doing Dual Academy.</li>
+          <li><strong>Flat shoes — Required if using spikes.</strong> Track spikes are great for sprint work but not appropriate for warmup and X-Factor. Bring a flat shoe to change into.</li>
+        </ul>
+        No other gear is required. No branded gear is currently available.
+      </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">Are track spikes allowed?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Yes — track spikes are allowed and encouraged for sprint work. <strong>You must bring flat shoes as well</strong> since spikes should not be worn for warmup or X-Factor drills on grass. Athletes who train in spikes consistently develop better sprint habits than those who don't.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">Do you sell Dynamite Speed branded gear?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Not at this time. Wear whatever you train in — there's no uniform or branded gear requirement. When branded gear becomes available it will be announced on the booking page and at sessions.</div>
+    </div>
+  </div>
+
+  <!-- ─── TIMING & DATA ──────────────────────────────────────── -->
+  <div class="faq-section fade-up" data-cat="data">
+    <div class="faq-section-title"><span class="faq-section-icon">📊</span> Timing &amp; Data</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What is the AG510 timing system?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">The AG510 is the <strong>ArenaGear fully automatic timing (FAT) system</strong> — the same category of technology used at elite track meets. It uses electronic gates to measure time to the hundredth of a second with no human reaction time involved. Hand timing introduces 0.1–0.3 second errors per rep. FAT eliminates that entirely. Every sprint in every session is measured this way.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">Can parents watch times in real time?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Yes. Download the <strong>ArenaGear Teams</strong> app — available on iOS and Google Play. No account required. Connect directly to the session and watch your athlete's times appear live as they sprint. <a href="https://play.google.com/store/apps/details?id=com.arenagear" target="_blank" rel="noopener">Download ArenaGear Teams ↗</a></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What is the Athlete Dashboard?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">The <a href="index.html">Athlete Dashboard</a> is a full season data tracking tool for every athlete in the program. It shows:
+        <ul>
+          <li>10m Fly MPH — top-end speed trend over the full season</li>
+          <li>40 Yard Dash times — acceleration + top speed history</li>
+          <li>Triple Broad Jump — explosive power development</li>
+          <li>Drop-off % — rep consistency and freshness indicator</li>
+          <li>Lactate workout predictions (high school athletes)</li>
+          <li>Season goals, personal records, and leaderboard rankings</li>
+        </ul>
+        Access requires your Roster ID, which you receive after registration.
+      </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What is the 10m Fly and why is it the main KPI?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">The 10m Fly is a <strong>pure top-end speed measurement</strong>. Athletes accelerate from a standing or rolling start and are timed only over the middle 10-meter window — eliminating acceleration variables and measuring true max velocity. It converts directly to MPH, giving every athlete a clear number that represents their real top speed. Usain Bolt's fastest 10m fly segment was 0.81 seconds — 27.8 mph. This is the most direct measurement of sprint ability available.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What is the Triple Broad Jump?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">The Triple Broad Jump (TBJ) is three consecutive standing broad jumps — measured in feet and inches from start to landing. It's our <strong>explosive power KPI</strong>. It measures the ability to generate horizontal force through three connected phases, which directly correlates to sprint drive phase mechanics. It's performed first in every X-Factor block when athletes are freshest, and recorded every session.</div>
+    </div>
+  </div>
+
+  <!-- ─── BOOKING & REGISTRATION ─────────────────────────────── -->
+  <div class="faq-section fade-up" data-cat="booking">
+    <div class="faq-section-title"><span class="faq-section-icon">📋</span> Booking &amp; Registration</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What is the difference between registration and booking?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a"><strong>Registration</strong> is a one-time step that builds your athlete's profile in our system. You provide athlete info, parent contact details, and program interest. After review, you receive a Family Code. <br><br><strong>Booking</strong> is what you do before each session — select a date, choose your program, and confirm your spot. Booking requires your Family Code. New families can book without a code but will be followed up for registration.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">What is a Family Code?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">A Family Code is your unique identifier in the program — assigned manually by the coach after reviewing your registration. It's used to book sessions, access the Athlete Dashboard, and link all athletes in your family under one account. Codes are typically sent within 24 hours of a completed registration by email or text.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">How do I get started?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Two options:
+        <ul>
+          <li><strong>Book first</strong> — Head to the <a href="booking.html">booking page</a>, pick a date, and secure your spot. New families without a code will be contacted for follow-up registration.</li>
+          <li><strong>Register first</strong> — Complete the <a href="registration.html">registration form</a>, receive your Family Code, then book your first session using the code.</li>
+        </ul>
+        Either path works. The fastest way to get on the clock is to book a session and show up.
+      </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        <div class="faq-q-text">How do I contact the coach?</div>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Email <a href="mailto:Lbasdc@gmail.com">Lbasdc@gmail.com</a> for any questions about scheduling, registration, or program details. For real-time session updates, check the <a href="booking.html">booking page</a> which reflects current session availability.</div>
+    </div>
+  </div>
+
+  <!-- CTA STRIP -->
+  <div class="cta-strip fade-up">
+    <div class="cta-strip-text">
+      <div class="cta-strip-title">Ready to get on the clock? 🐆</div>
+      <div class="cta-strip-sub">Every cat gets faster. Trust the process.</div>
+    </div>
+    <div class="cta-strip-btns">
+      <a class="btn-primary" href="booking.html">Book a Session — $15</a>
+      <a class="btn-secondary" href="registration.html">Register →</a>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">
+        <img src="https://i.imgur.com/Kxww0Xn.png" alt="Dynamite Speed" onerror="this.style.display='none'">
+        <span class="footer-brand-text">Lee Brother's Academy · Dynamite Speed</span>
+      </div>
+      <p class="footer-tagline">Session-based dual-performance training for athletes ages 6–18 in San Diego, CA.</p>
+      <div class="footer-contact"><a href="mailto:Lbasdc@gmail.com">Lbasdc@gmail.com</a></div>
+    </div>
+    <div class="footer-links">
+      <h4>Programs</h4>
+      <a href="home.html#programs">Speed Academy — $15</a>
+      <a href="home.html#programs">Football Skills — $15</a>
+      <a href="home.html#programs">Dual Academy — $20</a>
+    </div>
+    <div class="footer-links">
+      <h4>Navigate</h4>
+      <a href="home.html#sessions">Upcoming Sessions</a>
+      <a href="coaches.html">Coaches</a>
+      <a href="faq.html">FAQ</a>
+      <a href="booking.html">Book a Session</a>
+      <a href="registration.html">Register</a>
+      <a href="index.html">Athlete Dashboard</a>
+    </div>
+    <div class="footer-links">
+      <h4>Resources</h4>
+      <a href="https://play.google.com/store/apps/details?id=com.arenagear" target="_blank" rel="noopener">ArenaGear App ↗</a>
+      <a href="index.html">Athlete Dashboard</a>
+      <a href="registration.html">Registration</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Lee Brothers Academy · Dynamite Speed Academy · San Diego, CA</span>
+    <span>Every cat gets faster. Trust the process. 🐆</span>
+  </div>
+</footer>
+
+<script>
+function toggleNav(){
+  document.getElementById('navLinks').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const nl = document.getElementById('navLinks');
+  if(!nl.contains(e.target) && !e.target.closest('.nav-mobile-btn')) nl.classList.remove('open');
+});
+
+function toggleFaq(item){
+  const isOpen = item.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  // Open clicked if it was closed
+  if(!isOpen) item.classList.add('open');
+}
+
+function filterCat(cat, tab){
+  // Update tabs
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  // Show/hide sections
+  document.querySelectorAll('.faq-section').forEach(s => {
+    if(cat === 'all' || s.dataset.cat === cat){
+      s.style.display = 'block';
+    } else {
+      s.style.display = 'none';
+    }
+  });
+}
+
+// Fade in
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+}, {threshold:0.06});
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+// Open first item in each section by default
+document.querySelectorAll('.faq-section').forEach(s => {
+  const first = s.querySelector('.faq-item');
+  if(first) first.classList.add('open');
+});
+</script>
+</body>
+</html>
