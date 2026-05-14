@@ -1497,7 +1497,7 @@ function parseBookingRows(rows) {
     slotId:     (r['SLOT_ID']    ||'').trim(),
     date:       (r['DATE']       ||'').trim(),
     program:    (r['PROGRAM']    ||'').trim().toLowerCase(),
-    RosterID:   (r['ROSTER_ID']||'').trim().toUpperCase(),
+    RosterID:   (r['ROSTER_ID']  ||'').trim().toUpperCase(),
     parent:     (r['PARENT']     ||'').trim(),
     athletes:   (r['ATHLETES']   ||'').trim(),
     price:      (r['PRICE']      ||'').trim(),
