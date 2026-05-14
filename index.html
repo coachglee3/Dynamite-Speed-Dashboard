@@ -991,7 +991,7 @@ function persistGoals(code){
 function renderSessions(pg, athlete) {
   if(!athlete){pg.innerHTML='<div class="empty">No athlete selected.</div>';return;}
   const cls  = athlete.prog==='YOUTH'?'ya':'hs';
-  const fcode = (athlete.familyCode||'').trim().toUpperCase();
+  const fcode = (athlete.RosterID||'').trim().toUpperCase();
 
   // DEBUG — remove after fix confirmed
   console.log('=== SESSION DEBUG ===');
@@ -1006,11 +1006,11 @@ function renderSessions(pg, athlete) {
 
   const today = new Date(); today.setHours(0,0,0,0);
 
-  // Match bookings by family code
+  // Match bookings by roster ID
   let myBookings = [];
   if (fcode) {
     myBookings = S.bookings.filter(b => {
-      const bCode = (b.familyCode||'').trim().toUpperCase();
+      const bCode = (b.RosterID||'').trim().toUpperCase();
       const bDate = (function(d){ if(!d) return null; const s=String(d).trim(); if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s+"T12:00:00"); const p=new Date(s); return isNaN(p.getTime())?null:p; })(b.date);
       return bCode === fcode && bDate && bDate >= today;
     });
@@ -1590,8 +1590,8 @@ function renderSchedule(pg) {
           +'</div></div>'
           +(bkList.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap">'+bkList.map(b=>
             '<div style="background:var(--surf3);border:1px solid '+color+'33;border-radius:5px;padding:4px 10px;">'
-            +'<div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text)">'+(b.athletes||b.familyCode)+'</div>'
-            +'<div style="font-size:10px;color:var(--dim)">'+b.familyCode+(b.price?' · '+b.price:'')+(b.notes?' · '+b.notes:'')+'</div>'
+            +'<div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text)">'+(b.athletes||b.RosterID)+'</div>'
+            +'<div style="font-size:10px;color:var(--dim)">'+b.RosterID+(b.price?' · '+b.price:'')+(b.notes?' · '+b.notes:'')+'</div>'
             +'</div>'
           ).join('')+'</div>' : '')
           +'</div>';
@@ -1623,7 +1623,7 @@ function renderSchedule(pg) {
               <td style="color:var(--dim);white-space:nowrap">${fmtDate(b.date)}</td>
               <td><span style="font-family:var(--fd);font-size:13px;font-weight:700;color:${pc}">${pl}</span></td>
               <td style="font-weight:600">${b.athletes||'—'}</td>
-              <td style="font-family:monospace;font-size:12px;color:var(--blue)">${b.familyCode||'—'}</td>
+              <td style="font-family:monospace;font-size:12px;color:var(--blue)">${b.RosterID||'—'}</td>
               <td style="color:var(--dim)">${b.parent||'—'}</td>
               <td style="font-size:12px;color:var(--muted)">${b.notes||'—'}</td>
               <td style="font-size:11px;color:var(--muted)">${b.timestamp?b.timestamp.split('T')[0]:'—'}</td>
