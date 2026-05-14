@@ -991,14 +991,7 @@ function persistGoals(code){
 function renderSessions(pg, athlete) {
   if(!athlete){pg.innerHTML='<div class="empty">No athlete selected.</div>';return;}
   const cls  = athlete.prog==='YOUTH'?'ya':'hs';
-  const fcode = (athlete.RosterID||'').trim().toUpperCase();
-
-  // DEBUG — remove after fix confirmed
-  console.log('=== SESSION DEBUG ===');
-  console.log('Athlete family code:', fcode);
-  console.log('S.bookings count:', S.bookings.length);
-  console.log('S.bookings sample:', JSON.stringify(S.bookings.slice(0,3)));
-  console.log('S.schedule count:', S.schedule.length);
+  const fcode = (athlete.familyCode||'').trim().toUpperCase();
 
   const PROG_COLORS = { speed:'var(--gold)', football:'#e05555', combined:'#4caf72' };
   const PROG_LABELS = { speed:'Speed Academy', football:'Football Skills', combined:'Dual Academy' };
@@ -1006,17 +999,17 @@ function renderSessions(pg, athlete) {
 
   const today = new Date(); today.setHours(0,0,0,0);
 
-  // Match bookings by roster ID
+  // Match bookings by family code OR roster ID
+  const rosterCode = (athlete.code||'').trim().toUpperCase();
+  const matchCodes = [fcode, rosterCode].filter(Boolean);
   let myBookings = [];
-  if (fcode) {
+  if (matchCodes.length) {
     myBookings = S.bookings.filter(b => {
-      const bCode = (b.RosterID||'').trim().toUpperCase();
+      const bCode = (b.familyCode||'').trim().toUpperCase();
       const bDate = (function(d){ if(!d) return null; const s=String(d).trim(); if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s+"T12:00:00"); const p=new Date(s); return isNaN(p.getTime())?null:p; })(b.date);
-      return bCode === fcode && bDate && bDate >= today;
+      return matchCodes.includes(bCode) && bDate && bDate >= today;
     });
   }
-
-  // Enrich with schedule slot details
   const enriched = myBookings.map(b => {
     const slot = S.schedule.find(sl => sl.slotId === b.slotId) || {};
     return {
@@ -1497,7 +1490,7 @@ function parseBookingRows(rows) {
     slotId:     (r['SLOT_ID']    ||'').trim(),
     date:       (r['DATE']       ||'').trim(),
     program:    (r['PROGRAM']    ||'').trim().toLowerCase(),
-    RosterID:   (r['ROSTER_ID']  ||'').trim().toUpperCase(),
+    familyCode: (r['FAMILY_CODE']||'').trim().toUpperCase(),
     parent:     (r['PARENT']     ||'').trim(),
     athletes:   (r['ATHLETES']   ||'').trim(),
     price:      (r['PRICE']      ||'').trim(),
@@ -1590,8 +1583,8 @@ function renderSchedule(pg) {
           +'</div></div>'
           +(bkList.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap">'+bkList.map(b=>
             '<div style="background:var(--surf3);border:1px solid '+color+'33;border-radius:5px;padding:4px 10px;">'
-            +'<div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text)">'+(b.athletes||b.RosterID)+'</div>'
-            +'<div style="font-size:10px;color:var(--dim)">'+b.RosterID+(b.price?' · '+b.price:'')+(b.notes?' · '+b.notes:'')+'</div>'
+            +'<div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text)">'+(b.athletes||b.familyCode)+'</div>'
+            +'<div style="font-size:10px;color:var(--dim)">'+b.familyCode+(b.price?' · '+b.price:'')+(b.notes?' · '+b.notes:'')+'</div>'
             +'</div>'
           ).join('')+'</div>' : '')
           +'</div>';
@@ -1623,7 +1616,7 @@ function renderSchedule(pg) {
               <td style="color:var(--dim);white-space:nowrap">${fmtDate(b.date)}</td>
               <td><span style="font-family:var(--fd);font-size:13px;font-weight:700;color:${pc}">${pl}</span></td>
               <td style="font-weight:600">${b.athletes||'—'}</td>
-              <td style="font-family:monospace;font-size:12px;color:var(--blue)">${b.RosterID||'—'}</td>
+              <td style="font-family:monospace;font-size:12px;color:var(--blue)">${b.familyCode||'—'}</td>
               <td style="color:var(--dim)">${b.parent||'—'}</td>
               <td style="font-size:12px;color:var(--muted)">${b.notes||'—'}</td>
               <td style="font-size:11px;color:var(--muted)">${b.timestamp?b.timestamp.split('T')[0]:'—'}</td>
