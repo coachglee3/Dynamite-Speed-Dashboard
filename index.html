@@ -800,12 +800,12 @@ function buildTabs(){
   } else if (S.isFamily) {
     const child = S.familyAthletes[S.familyIdx];
     tabs = child.prog==='YOUTH'
-      ? [{id:'overview',l:'Overview'},{id:'sessions',l:'Sessions'},{id:'speed',l:'Speed'}]
-      : [{id:'overview',l:'Overview'},{id:'sessions',l:'Sessions'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
+      ? [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'}]
+      : [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
   } else if (S.user.prog==='YOUTH') {
-    tabs = [{id:'overview',l:'Overview'},{id:'sessions',l:'Sessions'},{id:'speed',l:'Speed'}];
+    tabs = [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'}];
   } else {
-    tabs = [{id:'overview',l:'Overview'},{id:'sessions',l:'Sessions'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
+    tabs = [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
   }
 
   document.getElementById('tabBar').innerHTML = tabs.map((t,i)=>
@@ -831,7 +831,6 @@ function renderPage(id){
   if(!pg) return;
   const a = S.override || (S.isFamily ? S.familyAthletes[S.familyIdx] : S.user);
   if      (id==='overview')    renderOverview(pg,a);
-  else if (id==='sessions')    renderSessions(pg,a);
   else if (id==='speed')       renderSpeed(pg,a);
   else if (id==='lactate')     renderLactate(pg,a);
   else if (id==='roster')      renderRoster(pg);
@@ -885,6 +884,59 @@ function renderOverview(pg, athlete){
     <div class="stats-row">
       ${statCards.map(c=>'<div class="stat-card '+cls+'"><div class="slbl">'+c.lbl+'</div><div class="sval">'+c.val+'</div><div class="sdef">'+c.def+'</div></div>').join('')}
     </div>
+
+    <div style="margin-bottom:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <a href="booking.html" target="_blank" style="
+        display:inline-flex;align-items:center;gap:8px;
+        background:var(--gold);color:var(--black);
+        border:none;border-radius:8px;padding:11px 22px;
+        font-family:var(--fd);font-size:16px;font-weight:800;
+        letter-spacing:.5px;text-decoration:none;text-transform:uppercase;
+        transition:background .15s;box-shadow:0 2px 12px #f5c51833;"
+        onmouseover="this.style.background='#e6b800'"
+        onmouseout="this.style.background='var(--gold)'">
+        📅 Book a Session
+      </a>
+    </div>
+
+    ${(()=>{
+      const today = new Date(); today.setHours(0,0,0,0);
+      const upcoming = S.schedule
+        .filter(sl => sl.status !== 'CANCELLED' && sl.status !== 'CLOSED' && new Date(sl.date+'T12:00:00') >= today)
+        .sort((a,b) => new Date(a.date) - new Date(b.date))
+        .slice(0,3);
+      if (!upcoming.length) return '';
+      const progColors = { speed:'var(--gold)', football:'#e05555', combined:'#4caf72' };
+      const progLabels = { speed:'Speed Academy', football:'Football', combined:'Dual Academy' };
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      return '<div style="background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:16px 18px;margin-bottom:18px;">'
+        +'<div style="font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);margin-bottom:12px;">Upcoming Sessions</div>'
+        +'<div style="display:flex;flex-direction:column;gap:8px;">'
+        +upcoming.map(sl => {
+          const d = new Date(sl.date+'T12:00:00');
+          const color = progColors[sl.program] || 'var(--dim)';
+          const label = progLabels[sl.program] || sl.program;
+          const dateStr = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+          return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;'
+            +'background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;padding:10px 14px;">'
+            +'<div style="display:flex;align-items:center;gap:8px;">'
+            +'<div style="width:8px;height:8px;border-radius:2px;background:'+color+';flex-shrink:0;"></div>'
+            +'<div>'
+            +'<div style="font-family:var(--fd);font-size:14px;font-weight:700;color:'+color+'">'+label+'</div>'
+            +'<div style="font-size:11px;color:var(--dim);">'+dateStr+(sl.startTime?' · '+sl.startTime:'')+(sl.location?' · '+sl.location:'')+'</div>'
+            +'</div></div>'
+            +'<button id="cal-btn-'+sl.slotId+'" onclick="addToCalendar(\''+sl.slotId+'\')" '
+            +'style="background:transparent;border:1px solid var(--bdr2);color:var(--dim);border-radius:5px;'
+            +'padding:5px 12px;font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;'
+            +'text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:4px;"'
+            +' onmouseover="this.style.borderColor=\'var(--gold-dim)\';this.style.color=\'var(--gold)\'"'
+            +' onmouseout="this.style.borderColor=\'var(--bdr2)\';this.style.color=\'var(--dim)\'">'
+            +'📅 Add to Calendar</button>'
+            +'</div>';
+        }).join('')
+        +'</div></div>';
+    })()}
 
     ${prog!=='YOUTH' ? '<div class="goals-section"><div class="goals-title"><span>Season Goals</span><div><button class="btn-save-goals" onclick="persistGoals(\'' + athlete.code + '\')">Save Goals</button><span class="goals-saved" id="goalsSaved"></span></div></div><div class="goals-grid"><div class="goal-card gc"><div class="glbl">C Goal — Floor</div><input class="goal-inp" id="gc" placeholder="Last PR" value="' + (goals.c||athlete.goal200||'') + '"><div class="gdef">Non-negotiable minimum</div></div><div class="goal-card gb"><div class="glbl">B Goal — Realistic</div><input class="goal-inp" id="gb" placeholder="Target" value="' + (goals.b||(athlete.group==='G2'&&athlete.goal400?athlete.goal400:athlete.goal200)||'') + '"><div class="gdef">Current trajectory</div></div><div class="goal-card ga"><div class="glbl">A Goal — Dream</div><input class="goal-inp" id="ga" placeholder="Dream" value="' + (goals.a||'') + '"><div class="gdef">Perfect season</div></div></div></div>' : ''}
 
@@ -986,150 +1038,8 @@ function persistGoals(code){
 }
 
 // ═══════════════════════════════════════
-// SESSIONS TAB
+// SPEED TAB
 // ═══════════════════════════════════════
-function renderSessions(pg, athlete) {
-  if(!athlete){pg.innerHTML='<div class="empty">No athlete selected.</div>';return;}
-  const cls  = athlete.prog==='YOUTH'?'ya':'hs';
-  const fcode = (athlete.familyCode||'').trim().toUpperCase();
-
-  const PROG_COLORS = { speed:'var(--gold)', football:'#e05555', combined:'#4caf72' };
-  const PROG_LABELS = { speed:'Speed Academy', football:'Football Skills', combined:'Dual Academy' };
-  const PROG_ICONS  = { speed:'⚡', football:'🏈', combined:'🐆' };
-
-  const today = new Date(); today.setHours(0,0,0,0);
-
-  // Match bookings by family code OR roster ID
-  const rosterCode = (athlete.code||'').trim().toUpperCase();
-  const matchCodes = [fcode, rosterCode].filter(Boolean);
-  let myBookings = [];
-  if (matchCodes.length) {
-    myBookings = S.bookings.filter(b => {
-      const bCode = (b.familyCode||'').trim().toUpperCase();
-      const bDate = (function(d){ if(!d) return null; const s=String(d).trim(); if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s+"T12:00:00"); const p=new Date(s); return isNaN(p.getTime())?null:p; })(b.date);
-      return matchCodes.includes(bCode) && bDate && bDate >= today;
-    });
-  }
-  const enriched = myBookings.map(b => {
-    const slot = S.schedule.find(sl => sl.slotId === b.slotId) || {};
-    return {
-      ...b,
-      startTime: slot.startTime || '',
-      endTime:   slot.endTime   || '',
-      location:  slot.location  || 'Thrive Park — SDSU Mission Valley River Park, San Diego, CA',
-      coach:     slot.coach     || '',
-      status:    slot.status    || 'OPEN',
-    };
-  }).sort((a,b) => { function pd(d){ if(!d) return 0; const s=String(d).trim(); if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s+"T12:00:00"); return new Date(s); } return pd(a.date)-pd(b.date); });
-
-  // Format date
-  function fmtFull(d) {
-    if(!d) return '—';
-    const dt = (function(d){ const s=String(d).trim(); if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s+"T12:00:00"); return new Date(s); })(d);
-    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return days[dt.getDay()]+', '+months[dt.getMonth()]+' '+dt.getDate()+', '+dt.getFullYear();
-  }
-
-  // Build session cards
-  const cards = enriched.map(b => {
-    const prog    = (b.program||'').toLowerCase();
-    const color   = PROG_COLORS[prog] || 'var(--dim)';
-    const label   = PROG_LABELS[prog] || b.program || '—';
-    const icon    = PROG_ICONS[prog]  || '📅';
-    const price   = b.price ? '$'+String(b.price).replace(/[$]/g,'') : '—';
-    const timeStr = b.startTime+(b.endTime?' – '+b.endTime:'');
-    const isSoon  = ((function(d){ const s=String(d).trim(); if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s+"T12:00:00"); return new Date(s); })(b.date) - today) < 7*24*60*60*1000;
-
-    return `<div style="background:var(--surf);border:1px solid ${color}44;border-left:4px solid ${color};
-      border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:20px;">${icon}</span>
-          <div>
-            <div style="font-family:var(--fd);font-size:18px;font-weight:800;color:${color};">${label}</div>
-            <div style="font-size:12px;color:var(--dim);margin-top:1px;">${fmtFull(b.date)}</div>
-          </div>
-        </div>
-        ${isSoon ? `<span style="font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;
-          padding:3px 10px;border-radius:4px;text-transform:uppercase;
-          background:#1a1400;border:1px solid var(--gold-dim);color:var(--gold);">This Week</span>` : ''}
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
-        <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;padding:8px 12px;">
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:3px;">Time</div>
-          <div style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text);">${timeStr||'—'}</div>
-        </div>
-        <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;padding:8px 12px;">
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:3px;">Location</div>
-          <div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text);">${b.location}</div>
-        </div>
-        <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;padding:8px 12px;">
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:3px;">Athletes</div>
-          <div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text);">${b.athletes||'—'}</div>
-        </div>
-        <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;padding:8px 12px;">
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:3px;">💰 Due On Site</div>
-          <div style="font-family:var(--fd);font-size:16px;font-weight:800;color:var(--gold);">${price}<span style="font-size:11px;font-weight:400;color:var(--dim);margin-left:3px;">/ athlete</span></div>
-        </div>
-      </div>
-      ${b.notes ? `<div style="font-size:12px;color:var(--muted);font-style:italic;padding-top:4px;">📝 ${b.notes}</div>` : ''}
-    </div>`;
-  }).join('');
-
-  // Empty state
-  const emptyState = `
-    <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:10px;
-      padding:48px 24px;text-align:center;">
-      <div style="font-size:36px;margin-bottom:12px;">📅</div>
-      <div style="font-family:var(--fd);font-size:20px;font-weight:800;color:var(--text);margin-bottom:6px;">No Upcoming Sessions</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;">
-        ${fcode ? 'No upcoming bookings found for your family.' : 'Log in with your Family Code to see bookings here.'}<br>
-        Sessions run Sundays at Thrive Park, San Diego.
-      </div>
-    </div>`;
-
-  // No family code state
-  const noCodeState = `
-    <div style="background:#1a1000;border:1px solid #5a3800;border-radius:10px;
-      padding:24px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;">
-      <div style="font-size:20px;">⚠️</div>
-      <div>
-        <div style="font-family:var(--fd);font-size:14px;font-weight:700;color:#e08844;margin-bottom:4px;">No Family Code on File</div>
-        <div style="font-size:13px;color:var(--dim);line-height:1.6;">
-          Your roster profile doesn't have a Family Code yet. Contact your coach to get one assigned —
-          then your bookings will appear here automatically.
-        </div>
-      </div>
-    </div>`;
-
-  pg.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-      <div>
-        <div style="font-family:var(--fd);font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.5px;">Upcoming Sessions</div>
-        <div style="font-size:12px;color:var(--dim);margin-top:3px;">
-          ${enriched.length ? enriched.length+' session'+(enriched.length!==1?'s':'')+' booked' : 'No upcoming bookings'}
-        </div>
-      </div>
-      <a href="booking.html" target="_blank" style="
-        display:inline-flex;align-items:center;gap:8px;
-        background:var(--gold);color:var(--black);
-        border:none;border-radius:8px;padding:11px 22px;
-        font-family:var(--fd);font-size:15px;font-weight:800;
-        letter-spacing:.5px;text-decoration:none;text-transform:uppercase;
-        transition:background .15s;box-shadow:0 2px 12px #f5c51833;"
-        onmouseover="this.style.background='#e6b800'"
-        onmouseout="this.style.background='var(--gold)'">
-        + Book a Session
-      </a>
-    </div>
-
-    ${!fcode ? noCodeState : ''}
-
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      ${enriched.length ? cards : emptyState}
-    </div>`;
-}
 function renderSpeed(pg, athlete){
   if(!athlete){pg.innerHTML='<div class="empty">No athlete.</div>';return;}
   const prog=athlete.prog;
@@ -1580,6 +1490,15 @@ function renderSchedule(pg) {
           +(price?'<span style="font-family:var(--fd);font-size:16px;font-weight:800;color:var(--gold)">'+price+'</span>':'')
           +'<div style="font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:4px;text-transform:uppercase;background:var(--surf3);border:1px solid '+statusCl+'44;color:'+statusCl+'">'+statusLb+'</div>'
           +'<div style="font-size:11px;color:var(--muted);font-family:monospace">'+slot.slotId+'</div>'
+          +(slot.status!=='CANCELLED'&&slot.status!=='CLOSED'
+            ? '<button id="cal-btn-'+slot.slotId+'" onclick="addToCalendar(\''+slot.slotId+'\')" '
+              + 'style="background:transparent;border:1px solid var(--bdr2);color:var(--dim);border-radius:5px;'
+              + 'padding:3px 10px;font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;'
+              + 'text-transform:uppercase;cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:4px;"'
+              + ' onmouseover="this.style.borderColor=\'var(--gold-dim)\';this.style.color=\'var(--gold)\'"'
+              + ' onmouseout="this.style.borderColor=\'var(--bdr2)\';this.style.color=\'var(--dim)\'">'
+              + '📅 Add to Calendar</button>'
+            : '')
           +'</div></div>'
           +(bkList.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap">'+bkList.map(b=>
             '<div style="background:var(--surf3);border:1px solid '+color+'33;border-radius:5px;padding:4px 10px;">'
@@ -1625,6 +1544,124 @@ function renderSchedule(pg) {
         </tbody>
       </table></div>`}
     </div>`;
+}
+
+// ═══════════════════════════════════════
+// ADD TO CALENDAR — generates .ics download
+// Works with Google Calendar, Apple Calendar, Outlook
+// ═══════════════════════════════════════
+function addToCalendar(slotId) {
+  const slot = S.schedule.find(sl => sl.slotId === slotId);
+  if (!slot) return;
+
+  const progLabels = { speed:'Dynamite Speed Academy', football:'Football Skills Academy', combined:'Dual Academy — Speed + Football' };
+  const title = 'Dynamite Speed — ' + (progLabels[slot.program] || slot.program);
+
+  // Parse date and times — slot.date is YYYY-MM-DD
+  // startTime / endTime are strings like "8:30 AM" or "8:30"
+  function parseTimeToHHMM(timeStr, dateParts) {
+    if (!timeStr) return null;
+    // Handle "8:30 AM", "8:30", "08:30 AM", "08:30"
+    const clean = timeStr.trim().toUpperCase();
+    const match = clean.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/);
+    if (!match) return null;
+    let h = parseInt(match[1]);
+    const m = parseInt(match[2]);
+    const ampm = match[3];
+    if (ampm === 'PM' && h < 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    return { h, m };
+  }
+
+  const [yr, mo, dy] = slot.date.split('-').map(Number);
+  const startParsed = parseTimeToHHMM(slot.startTime);
+  const endParsed   = parseTimeToHHMM(slot.endTime);
+
+  // Build ICS datetime strings in local time (no UTC conversion — sessions are local)
+  function pad(n) { return String(n).padStart(2,'0'); }
+  function icsLocal(y,mo,d,h,m) {
+    return `${y}${pad(mo)}${pad(d)}T${pad(h)}${pad(m)}00`;
+  }
+
+  const dtStart = startParsed
+    ? icsLocal(yr, mo, dy, startParsed.h, startParsed.m)
+    : icsLocal(yr, mo, dy, 8, 30); // fallback 8:30 AM
+
+  // Default end = start + 75 min if no endTime
+  let endH, endM;
+  if (endParsed) {
+    endH = endParsed.h; endM = endParsed.m;
+  } else {
+    const startTotalMin = (startParsed ? startParsed.h : 8) * 60 + (startParsed ? startParsed.m : 30) + 75;
+    endH = Math.floor(startTotalMin / 60) % 24;
+    endM = startTotalMin % 60;
+  }
+  const dtEnd = icsLocal(yr, mo, dy, endH, endM);
+
+  const uid = slotId + '-dynamitespeed-' + Date.now() + '@lba';
+
+  const location = slot.location || 'Thrive Park, SDSU Mission Valley River Park, San Diego, CA';
+
+  const descLines = [
+    title,
+    slot.coach ? 'Coach: ' + slot.coach : '',
+    slot.price ? 'Price: $' + slot.price.replace(/[$]/g,'') + ' per athlete — pay on site' : '',
+    'Bring cleats and water.',
+    'Questions: Lbasdc@gmail.com',
+    '',
+    'Dynamite Speed Academy — dynamitespeed.com'
+  ].filter(Boolean).join('\\n');
+
+  // Build .ics content
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Dynamite Speed Academy//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    'UID:' + uid,
+    'DTSTAMP:' + icsLocal(new Date().getFullYear(), new Date().getMonth()+1, new Date().getDate(), 0, 0),
+    'DTSTART;TZID=America/Los_Angeles:' + dtStart,
+    'DTEND;TZID=America/Los_Angeles:' + dtEnd,
+    'SUMMARY:' + title,
+    'LOCATION:' + location,
+    'DESCRIPTION:' + descLines,
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT60M',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Dynamite Speed session in 1 hour — bring cleats and water!',
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT1440M',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Dynamite Speed session tomorrow — don\'t forget cleats and water!',
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  // Trigger download
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'dynamite-speed-' + slot.date + '-' + slot.program + '.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  // Brief visual feedback on the button
+  const btn = document.getElementById('cal-btn-' + slotId);
+  if (btn) {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Added';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 2500);
+  }
 }
 
 function saveLactate(){
