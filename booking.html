@@ -425,6 +425,7 @@ let S = {
 window.addEventListener('DOMContentLoaded', loadSchedule);
 
 async function loadSchedule() {
+  let fetchError = false;
   try {
     const [schData, bkData] = await Promise.all([
       gvizFetch(SCHEDULE_GID),
@@ -432,11 +433,12 @@ async function loadSchedule() {
     ]);
     if (schData) S.slots       = parseSlots(gvizRows(schData));
     if (bkData)  S.bookingRows = parseBookings(gvizRows(bkData));
-    renderDateGrid();
+    if (!schData) fetchError = true;
   } catch(e) {
     console.warn('Load error:', e);
-    renderDateGrid();
+    fetchError = true;
   }
+  renderDateGrid(fetchError);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -444,12 +446,17 @@ async function loadSchedule() {
 // ═══════════════════════════════════════════════════════════════
 async function gvizFetch(gid) {
   if (!gid || gid.includes('YOUR_')) return null;
-  const res = await fetch(GVIZ(gid));
-  if (!res.ok) return null;
-  const txt = await res.text();
-  const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
-  if (s < 0 || e < 0) return null;
-  return JSON.parse(txt.slice(s, e+1));
+  try {
+    const res = await fetch(GVIZ(gid));
+    if (!res.ok) return null;
+    const txt = await res.text();
+    const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+    if (s < 0 || e < 0) return null;
+    return JSON.parse(txt.slice(s, e+1));
+  } catch(e) {
+    console.warn('gvizFetch failed for GID ' + gid + ':', e);
+    return null;
+  }
 }
 
 function gvizRows(data) {
@@ -532,7 +539,6 @@ function getSpotsBadge(slot) {
 }
 
 function isBookable(slot) {
-  // APPT slots remain visible and active on the date grid but use contact flow
   return slot.status !== 'CANCELLED' && slot.status !== 'CLOSED';
 }
 
@@ -545,7 +551,7 @@ const PROG_LABELS  = { speed:'Dynamite Speed Academy', football:'Football Skills
 // ═══════════════════════════════════════════════════════════════
 // DATE GRID — Step 1
 // ═══════════════════════════════════════════════════════════════
-function renderDateGrid() {
+function renderDateGrid(fetchError) {
   const grid = document.getElementById('dateGrid');
   const today = new Date(); today.setHours(0,0,0,0);
 
@@ -556,7 +562,14 @@ function renderDateGrid() {
   )].sort();
 
   if (!futureDates.length) {
-    grid.innerHTML = '<div class="loading-dates" style="color:var(--dim)">No sessions currently scheduled.<br>Check back soon or contact your coach.</div>';
+    const msg = fetchError
+      ? `<div class="loading-dates" style="color:var(--dim)">
+           <div style="font-size:22px;margin-bottom:8px">⚠️</div>
+           Unable to load sessions right now.<br>
+           <span style="font-size:12px">Please refresh the page or <a href="mailto:Lbasdc@gmail.com" style="color:var(--gold)">contact your coach</a>.</span>
+         </div>`
+      : `<div class="loading-dates" style="color:var(--dim)">No sessions currently scheduled.<br>Check back soon or <a href="mailto:Lbasdc@gmail.com" style="color:var(--gold)">contact your coach</a>.</div>`;
+    grid.innerHTML = msg;
     return;
   }
 
