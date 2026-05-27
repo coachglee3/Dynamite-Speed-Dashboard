@@ -249,6 +249,7 @@ body::before{content:'';position:fixed;inset:0;background:
 .pc-spots.low{background:#1a1000;border:1px solid #5a3800;color:var(--orange);}
 .pc-spots.full{background:#1f0d0d;border:1px solid #5a1a1a;color:var(--red);}
 .pc-spots.closed{background:var(--surf2);border:1px solid var(--bdr);color:var(--muted);}
+.pc-spots.appt{background:#051825;border:1px solid #0369a1;color:#38bdf8;}
 .pc-cancelled{background:#1f0d0d;border:1px solid #5a1a1a;border-radius:var(--radius);
   padding:14px 18px;opacity:.5;cursor:not-allowed;}
 .pay-note{font-size:11px;color:var(--muted);margin-top:6px;font-style:italic;}
@@ -443,12 +444,17 @@ async function loadSchedule() {
 // ═══════════════════════════════════════════════════════════════
 async function gvizFetch(gid) {
   if (!gid || gid.includes('YOUR_')) return null;
-  const res = await fetch(GVIZ(gid));
-  if (!res.ok) return null;
-  const txt = await res.text();
-  const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
-  if (s < 0 || e < 0) return null;
-  return JSON.parse(txt.slice(s, e+1));
+  try {
+    const res = await fetch(GVIZ(gid));
+    if (!res.ok) return null;
+    const txt = await res.text();
+    const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+    if (s < 0 || e < 0) return null;
+    return JSON.parse(txt.slice(s, e+1));
+  } catch(e) {
+    console.warn('gvizFetch failed for GID ' + gid + ':', e);
+    return null;
+  }
 }
 
 function gvizRows(data) {
@@ -523,6 +529,7 @@ function getSpotsBadge(slot) {
   const left = getSpotsLeft(slot);
   if (slot.status === 'CANCELLED') return { cls:'closed', label:'Cancelled' };
   if (slot.status === 'CLOSED')    return { cls:'closed', label:'Closed' };
+  if (slot.status === 'APPT')      return { cls:'appt',   label:'By Appointment' };
   if (left === null)               return { cls:'open',   label:'Open' };
   if (left === 0)                  return { cls:'full',   label:'Full — Waitlist' };
   if (left <= 3)                   return { cls:'low',    label:`${left} spot${left===1?'':'s'} left` };
@@ -530,6 +537,7 @@ function getSpotsBadge(slot) {
 }
 
 function isBookable(slot) {
+  // APPT stays visible and active on the date grid — uses contact flow not form flow
   return slot.status !== 'CANCELLED' && slot.status !== 'CLOSED';
 }
 
@@ -567,9 +575,17 @@ function renderDateGrid() {
     const isSelected     = S.selectedDate && S.selectedDate.raw === dateStr;
 
     const dots = slotsForDate.map(sl => {
-      const color = isBookable(sl) ? (PROG_COLORS[sl.program]||'var(--dim)') : 'var(--muted)';
-      return `<div class="dc-slot" style="background:${color};opacity:${isBookable(sl)?1:.3}"></div>`;
+      const active  = isBookable(sl);
+      const color   = active ? (PROG_COLORS[sl.program]||'var(--dim)') : 'var(--muted)';
+      const opacity = active ? (sl.status === 'APPT' ? 0.55 : 1) : 0.3;
+      return `<div class="dc-slot" style="background:${color};opacity:${opacity}"></div>`;
     }).join('');
+
+    const openCount = bookableSlots.filter(sl => sl.status !== 'APPT').length;
+    const apptCount = bookableSlots.filter(sl => sl.status === 'APPT').length;
+    const slotLabel = openCount && apptCount ? openCount + ' open · ' + apptCount + ' appt'
+                    : apptCount && !openCount ? apptCount + ' by appt'
+                    : openCount + ' open';
 
     return `<div class="date-card ${!bookableSlots.length?'unavailable':''} ${isSelected?'selected':''}"
       onclick="selectDate('${dateStr}','${days[d.getDay()]}','${d.getDate()} ${months[d.getMonth()]}')">
@@ -578,7 +594,7 @@ function renderDateGrid() {
       <div class="dc-month">${months[d.getMonth()]}</div>
       <div class="dc-slots">${dots}</div>
       <div style="font-size:10px;color:${bookableSlots.length?'var(--dim)':'var(--muted)'};margin-top:4px">
-        ${bookableSlots.length} open
+        ${slotLabel}
       </div>
     </div>`;
   }).join('');
@@ -633,6 +649,35 @@ function renderSlotGrid() {
             </div>
           </div>
           <div class="pc-spots closed">Cancelled</div>
+        </div>
+      </div>`;
+    }
+
+    if (slot.status === 'APPT') {
+      const emailSubject = encodeURIComponent('Appointment Request — ' + (PROG_LABELS[slot.program]||slot.program) + ' ' + slot.date);
+      return `<div class="prog-card" style="border-color:#0369a1;background:#051825;cursor:default;">
+        <div class="pc-top">
+          <div class="pc-left">
+            <div class="pc-dot" style="background:${color}"></div>
+            <div>
+              <div class="pc-name" style="color:${color}">${label}</div>
+              <div class="pc-time">${slot.startTime}${slot.endTime?' – '+slot.endTime:''}</div>
+            </div>
+          </div>
+          <div class="pc-spots appt">By Appointment</div>
+        </div>
+        ${metaItems ? `<div class="pc-meta">${metaItems}</div>` : ''}
+        <div style="background:#0a1e2e;border:1px solid #0369a1;border-radius:7px;padding:12px 14px;font-size:13px;color:#7dd3fc;line-height:1.6;">
+          📅 This session is available by appointment only. Contact your coach to confirm your spot.
+        </div>
+        <div class="pc-bottom">
+          <div class="pc-price">${price}<small>/ session · per athlete · pay on site</small></div>
+          <a href="mailto:Lbasdc@gmail.com?subject=${emailSubject}"
+            style="background:#38bdf8;color:#000;border-radius:6px;padding:9px 16px;
+            font-family:var(--fd);font-size:13px;font-weight:800;letter-spacing:.5px;
+            text-decoration:none;text-transform:uppercase;white-space:nowrap;">
+            Contact to Book →
+          </a>
         </div>
       </div>`;
     }
