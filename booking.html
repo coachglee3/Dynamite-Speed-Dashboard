@@ -537,7 +537,6 @@ function getSpotsBadge(slot) {
 }
 
 function isBookable(slot) {
-  // APPT stays visible and active on the date grid — uses contact flow not form flow
   return slot.status !== 'CANCELLED' && slot.status !== 'CLOSED';
 }
 
@@ -654,8 +653,43 @@ function renderSlotGrid() {
     }
 
     if (slot.status === 'APPT') {
-      const emailSubject = encodeURIComponent('Appointment Request — ' + (PROG_LABELS[slot.program]||slot.program) + ' ' + slot.date);
-      return `<div class="prog-card" style="border-color:#0369a1;background:#051825;cursor:default;">
+      // Contact button — program-specific coach routing
+      // ── APPT CONTACT CONFIG ── edit phone numbers or messages here ──
+      const prog = slot.program;
+      const dateLabel = S.selectedDate ? S.selectedDate.display : slot.date;
+      let contactBtn = '';
+      if (prog === 'speed') {
+        const msg = encodeURIComponent('Hi Coach G., I\'m interested in booking a Speed session by appointment on ' + dateLabel + '. What times and locations are available?');
+        contactBtn = `<a href="sms:+16195590659&body=${msg}"
+          style="background:transparent;border:1px solid #0369a1;color:#38bdf8;border-radius:6px;
+          padding:8px 14px;font-family:var(--fd);font-size:12px;font-weight:800;letter-spacing:.5px;
+          text-decoration:none;text-transform:uppercase;white-space:nowrap;">
+          💬 Text Coach G.
+        </a>`;
+      } else if (prog === 'football') {
+        const msg = encodeURIComponent('Hi Coach D., I\'m interested in booking a Football Skills session by appointment on ' + dateLabel + '. What times and locations are available?');
+        contactBtn = `<a href="sms:+16197659148&body=${msg}"
+          style="background:transparent;border:1px solid #0369a1;color:#38bdf8;border-radius:6px;
+          padding:8px 14px;font-family:var(--fd);font-size:12px;font-weight:800;letter-spacing:.5px;
+          text-decoration:none;text-transform:uppercase;white-space:nowrap;">
+          💬 Text Coach D.
+        </a>`;
+      } else {
+        // Combined — email both coaches
+        const subj = encodeURIComponent('Appointment Request — Combined Session ' + dateLabel);
+        const body = encodeURIComponent('Hi Coaches, I\'m interested in booking a Combined (Speed + Football) session by appointment on ' + dateLabel + '. What times and locations are available?');
+        contactBtn = `<a href="mailto:Lbasdc@gmail.com?subject=${subj}&body=${body}"
+          style="background:transparent;border:1px solid #0369a1;color:#38bdf8;border-radius:6px;
+          padding:8px 14px;font-family:var(--fd);font-size:12px;font-weight:800;letter-spacing:.5px;
+          text-decoration:none;text-transform:uppercase;white-space:nowrap;">
+          ✉️ Email Coaches
+        </a>`;
+      }
+      // ── END APPT CONTACT CONFIG ──
+
+      return `<div class="prog-card ${isSel?'selected':''}"
+        style="border-color:${isSel?color:'#0369a1'};background:${isSel?color+'11':'#051825'}"
+        onclick="selectSlotById('${slot.slotId}')">
         <div class="pc-top">
           <div class="pc-left">
             <div class="pc-dot" style="background:${color}"></div>
@@ -666,25 +700,21 @@ function renderSlotGrid() {
           </div>
           <div class="pc-spots appt">By Appointment</div>
         </div>
-        ${metaItems ? `<div class="pc-meta">${metaItems}</div>` : ''}
-        <div style="background:#0a1e2e;border:1px solid #0369a1;border-radius:7px;padding:12px 14px;font-size:13px;color:#7dd3fc;line-height:1.6;">
-          📅 This session is available by appointment only. Contact your coach to confirm your spot.
+        ${metaItems ? '<div class="pc-meta">' + metaItems + '</div>' : ''}
+        <div style="background:#0a1e2e;border:1px solid #0369a1;border-radius:7px;padding:11px 14px;font-size:13px;color:#7dd3fc;line-height:1.6;">
+          📅 This is a flexible session — time and location confirmed with your coach. Book your spot or text first to coordinate details.
         </div>
         <div class="pc-bottom">
           <div class="pc-price">${price}<small>/ session · per athlete · pay on site</small></div>
-          <a href="mailto:Lbasdc@gmail.com?subject=${emailSubject}"
-            style="background:#38bdf8;color:#000;border-radius:6px;padding:9px 16px;
-            font-family:var(--fd);font-size:13px;font-weight:800;letter-spacing:.5px;
-            text-decoration:none;text-transform:uppercase;white-space:nowrap;">
-            Contact to Book →
-          </a>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            ${contactBtn}
+            <div class="pc-badge avail">Book →</div>
+          </div>
         </div>
       </div>`;
     }
-
-    return `<div class="prog-card ${!bookable?'unavailable':''} ${isSel?'selected':''}"
       style="border-color:${isSel?color:'var(--bdr)'};background:${isSel?color+'11':'var(--surf)'}"
-      onclick="${bookable?`selectSlotById('${slot.slotId}')`:''}" >
+      onclick="${bookable?'selectSlotById(\'' + slot.slotId + '\')':''}" >
       <div class="pc-top">
         <div class="pc-left">
           <div class="pc-dot" style="background:${color}"></div>
@@ -695,7 +725,7 @@ function renderSlotGrid() {
         </div>
         <div class="pc-spots ${badge.cls}">${badge.label}</div>
       </div>
-      ${metaItems ? `<div class="pc-meta">${metaItems}</div>` : ''}
+      ${metaItems ? '<div class="pc-meta">' + metaItems + '</div>' : ''}
       <div class="pc-bottom">
         <div>
           <div class="pc-price">${price}<small>/ session · per athlete · pay on site</small></div>
@@ -745,8 +775,8 @@ function renderSummary() {
       <span class="sum-key">Time</span>
       <span class="sum-val">${slot.startTime}${slot.endTime?' – '+slot.endTime:''}</span>
     </div>
-    ${slot.coach    ? `<div class="sum-row"><span class="sum-key">Coach</span><span class="sum-val">${slot.coach}</span></div>` : ''}
-    ${slot.location ? `<div class="sum-row"><span class="sum-key">Location</span><span class="sum-val">${slot.location}</span></div>` : ''}
+    ${slot.coach    ? '<div class="sum-row"><span class="sum-key">Coach</span><span class="sum-val">' + slot.coach + '</span></div>' : ''}
+    ${slot.location ? '<div class="sum-row"><span class="sum-key">Location</span><span class="sum-val">' + slot.location + '</span></div>' : ''}
     <div class="sum-row">
       <span class="sum-key">Athletes</span>
       <span class="sum-val">${getBookingAthleteNames()}</span>
@@ -759,12 +789,8 @@ function renderSummary() {
       <span class="sum-key" style="color:var(--gold)">💰 Payment Due On Site</span>
       <span class="sum-val" style="color:var(--gold);font-size:22px">${price}</span>
     </div>
-    ${badge.cls==='full'?`<div style="background:#1f0d0d;border:1px solid #5a1a1a;border-radius:7px;padding:10px 14px;margin-top:10px;font-size:13px;color:var(--red)">
-      ⚠ This slot is full. Your booking will be reviewed by the coach.
-    </div>`:''}
-    ${noCode?`<div style="background:#1a1000;border:1px solid var(--orange);border-radius:7px;padding:10px 14px;margin-top:10px;font-size:13px;color:var(--orange)">
-      No family code — your booking will be flagged for follow-up. You will be redirected to our registration form.
-    </div>`:''}
+    ${badge.cls==='full' ? '<div style="background:#1f0d0d;border:1px solid #5a1a1a;border-radius:7px;padding:10px 14px;margin-top:10px;font-size:13px;color:var(--red)">⚠ This slot is full. Your booking will be reviewed by the coach.</div>' : ''}
+    ${noCode ? '<div style="background:#1a1000;border:1px solid var(--orange);border-radius:7px;padding:10px 14px;margin-top:10px;font-size:13px;color:var(--orange)">No family code — your booking will be flagged for follow-up. You will be redirected to our registration form.</div>' : ''}
   `;
 }
 
@@ -860,11 +886,11 @@ function showSuccess(payload, noCode, atCapacity) {
       <span class="sd-v" style="color:${PROG_COLORS[slot.program]||'var(--text)'}">${PROG_LABELS[slot.program]||slot.program}</span></div>
     <div class="sd-row"><span class="sd-k">Date</span><span class="sd-v">${S.selectedDate.display}</span></div>
     <div class="sd-row"><span class="sd-k">Time</span><span class="sd-v">${slot.startTime}${slot.endTime?' – '+slot.endTime:''}</span></div>
-    ${slot.coach    ? `<div class="sd-row"><span class="sd-k">Coach</span><span class="sd-v">${slot.coach}</span></div>` : ''}
-    ${slot.location ? `<div class="sd-row"><span class="sd-k">Location</span><span class="sd-v">${slot.location}</span></div>` : ''}
+    ${slot.coach    ? '<div class="sd-row"><span class="sd-k">Coach</span><span class="sd-v">' + slot.coach + '</span></div>' : ''}
+    ${slot.location ? '<div class="sd-row"><span class="sd-k">Location</span><span class="sd-v">' + slot.location + '</span></div>' : ''}
     <div class="sd-row"><span class="sd-k">Athletes</span><span class="sd-v">${payload.athletes}</span></div>
-    ${price ? `<div class="sd-row"><span class="sd-k" style="color:var(--gold)">💰 Due on site</span><span class="sd-v" style="color:var(--gold)">${price}</span></div>` : ''}
-    ${atCapacity ? `<div class="sd-row"><span class="sd-k" style="color:var(--orange)">⚠ Note</span><span class="sd-v" style="color:var(--orange);font-size:13px">Slot full — coach will confirm</span></div>` : ''}
+    ${price ? '<div class="sd-row"><span class="sd-k" style="color:var(--gold)">💰 Due on site</span><span class="sd-v" style="color:var(--gold)">' + price + '</span></div>' : ''}
+    ${atCapacity ? '<div class="sd-row"><span class="sd-k" style="color:var(--orange)">⚠ Note</span><span class="sd-v" style="color:var(--orange);font-size:13px">Slot full — coach will confirm</span></div>' : ''}
   `;
 
   if (noCode) {
