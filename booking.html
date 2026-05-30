@@ -713,6 +713,7 @@ function renderSlotGrid() {
         </div>
       </div>`;
     }
+    return `<div class="prog-card ${!bookable?'unavailable':''} ${isSel?'selected':''}"
       style="border-color:${isSel?color:'var(--bdr)'};background:${isSel?color+'11':'var(--surf)'}"
       onclick="${bookable?'selectSlotById(\'' + slot.slotId + '\')':''}" >
       <div class="pc-top">
