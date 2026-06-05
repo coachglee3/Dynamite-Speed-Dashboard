@@ -208,6 +208,92 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .footer-bottom{max-width:1040px;margin:28px auto 0;padding-top:20px;border-top:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);}
 
 @media(max-width:500px){.hero-stats{gap:24px;}.location-card{padding:24px 20px;}.why-strip{grid-template-columns:1fr;}}
+
+/* ─── ANNOUNCEMENT BANNER ─────────────────────────────────────── */
+.ann-banner{
+  position:sticky;top:58px;z-index:90;
+  background:#1a0a00;border-bottom:2px solid var(--football);
+  padding:0;overflow:hidden;
+  transition:max-height .35s ease,opacity .3s ease;
+  max-height:200px;
+}
+.ann-banner.hidden{max-height:0;opacity:0;pointer-events:none;}
+.ann-banner-inner{
+  max-width:1040px;margin:0 auto;padding:10px 20px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.ann-banner-icon{font-size:18px;flex-shrink:0;}
+.ann-banner-text{flex:1;min-width:0;}
+.ann-banner-title{font-family:var(--fd);font-size:15px;font-weight:800;color:var(--football);letter-spacing:.3px;}
+.ann-banner-body{font-size:13px;color:var(--dim);line-height:1.4;margin-top:1px;}
+.ann-banner-dismiss{
+  background:none;border:1px solid #5a1a1a;color:var(--muted);
+  border-radius:5px;padding:3px 10px;font-family:var(--fd);font-size:12px;
+  font-weight:700;letter-spacing:.5px;cursor:pointer;flex-shrink:0;
+  transition:all .15s;text-transform:uppercase;
+}
+.ann-banner-dismiss:hover{border-color:var(--football);color:var(--football);}
+
+/* ─── ANNOUNCEMENTS SECTION ───────────────────────────────────── */
+.ann-section{position:relative;z-index:1;padding:40px 24px 0;}
+.ann-section-inner{max-width:1040px;margin:0 auto;}
+.ann-stack{display:flex;flex-direction:column;gap:10px;}
+
+/* base card */
+.ann-card{
+  border-radius:10px;padding:16px 20px;
+  display:flex;align-items:flex-start;gap:14px;
+  border:1px solid var(--bdr);
+  transition:border-color .15s;
+}
+.ann-card:hover{border-color:var(--bdr2);}
+
+/* alert */
+.ann-card.alert{background:#1a0800;border-left:4px solid var(--football);}
+.ann-card.alert .ann-card-title{color:var(--football);}
+.ann-card.alert .ann-card-badge{background:#1f0d0d;border:1px solid #5a1a1a;color:var(--football);}
+
+/* info */
+.ann-card.info{background:#1a1400;border-left:4px solid var(--gold);}
+.ann-card.info .ann-card-title{color:var(--gold);}
+.ann-card.info .ann-card-badge{background:#221a00;border:1px solid var(--gold-dim);color:var(--gold);}
+
+/* good-news — card grid layout, celebratory */
+.ann-goodnews-wrap{
+  background:linear-gradient(135deg,#081a10 0%,#0d1f14 60%,#0a1a0d 100%);
+  border:1px solid #1a5530;border-radius:12px;padding:24px 22px;
+  position:relative;overflow:hidden;
+}
+.ann-goodnews-wrap::before{
+  content:'🐆';position:absolute;right:18px;top:50%;transform:translateY(-50%);
+  font-size:64px;opacity:.08;pointer-events:none;
+}
+.ann-goodnews-header{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+}
+.ann-goodnews-label{
+  font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--combined);opacity:.8;
+}
+.ann-goodnews-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.ann-goodnews-item{
+  background:rgba(76,175,114,.08);border:1px solid #1a5530;border-radius:8px;
+  padding:12px 14px;
+}
+.ann-goodnews-item-icon{font-size:20px;margin-bottom:6px;}
+.ann-goodnews-item-title{font-family:var(--fd);font-size:15px;font-weight:800;color:var(--combined);margin-bottom:2px;}
+.ann-goodnews-item-body{font-size:12px;color:var(--dim);line-height:1.5;}
+
+.ann-card-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.ann-card-content{flex:1;min-width:0;}
+.ann-card-badge{
+  font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.5px;
+  padding:2px 8px;border-radius:3px;text-transform:uppercase;
+  display:inline-block;margin-bottom:4px;
+}
+.ann-card-title{font-family:var(--fd);font-size:17px;font-weight:800;letter-spacing:.3px;margin-bottom:3px;}
+.ann-card-body{font-size:13px;color:var(--dim);line-height:1.6;}
+.ann-card-date{font-size:11px;color:var(--muted);margin-top:5px;font-style:italic;}
 </style>
 </head>
 <body>
@@ -234,6 +320,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   <button class="nav-mobile-btn" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
 
+<!-- ─── ANNOUNCEMENT BANNER (top — dismissible for session) ─── -->
+<!-- BANNER CONTROL: set bannerActive=false to hide, or clear bannerTitle/bannerBody -->
+<div class="ann-banner" id="annBanner">
+  <div class="ann-banner-inner">
+    <span class="ann-banner-icon" id="annBannerIcon">⚠️</span>
+    <div class="ann-banner-text">
+      <div class="ann-banner-title" id="annBannerTitle"></div>
+      <div class="ann-banner-body" id="annBannerBody"></div>
+    </div>
+    <button class="ann-banner-dismiss" onclick="dismissBanner()">Dismiss ✕</button>
+  </div>
+</div>
+
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg-lines"></div>
@@ -257,6 +356,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 </section>
 
 <hr class="divider">
+
+<!-- ─── ANNOUNCEMENTS ─────────────────────────────────────────── -->
+<!-- Edit ANNOUNCEMENTS array in the <script> block below to manage all posts -->
+<div class="ann-section" id="annSection">
+  <div class="ann-section-inner">
+    <div class="ann-stack" id="annStack"></div>
+  </div>
+</div>
 
 <!-- PROGRAMS -->
 <section class="section" id="programs">
@@ -426,19 +533,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     </div>
     <div class="reg-right fade-up">
       <div class="reg-card-title">Ready to <span>Register?</span></div>
-      <p class="reg-card-sub">Spots are limited per session to keep group sizes small and coaching quality high. Summer hours are currently in effect!</p>
+      <p class="reg-card-sub">Spots are limited per session to keep group sizes small and coaching quality high.</p>
       <div class="reg-avail-label">Current Availability <span>Updated weekly</span></div>
       <div class="reg-avail-grid">
         <div class="rav-card">
           <div class="rav-head"><div class="rav-dot" style="background:var(--speed)"></div><div class="rav-name" style="color:var(--speed)">Speed</div></div>
           <div class="rav-rows">
-            <div class="rav-row"><span class="rav-day">Sunday</span><span class="rav-time open">9:30AM–11:00AM</span></div>
-            <div class="rav-row"><span class="rav-day">Sunday</span><span class="rav-time limited">By Request after 11AM</span></div>
+            <div class="rav-row"><span class="rav-day">Sunday</span><span class="rav-time open">8:30AM–9:45AM</span></div>
+            <div class="rav-row"><span class="rav-day">Sunday</span><span class="rav-time limited">By Request after 10AM</span></div>
             <div class="rav-row"><span class="rav-day">Mon</span><span class="rav-time limited">By Request • 5PM-7PM</span></div>
             <div class="rav-row"><span class="rav-day">Tue</span><span class="rav-time limited">By Request • 5PM-7PM</span></div>
             <div class="rav-row"><span class="rav-day">Wed</span><span class="rav-time limited">By Request • 5PM-7PM</span></div>
-            <div class="rav-row"><span class="rav-day">Thu</span><span class="rav-time limited">By Request • 8:30 AM</span></div>
-            <div class="rav-row"><span class="rav-day">Fri</span><span class="rav-time limited">By Request • 8:30 AM</span></div>
+            <div class="rav-row"><span class="rav-day">Thu</span><span class="rav-time closed">Unavailable</span></div>
+            <div class="rav-row"><span class="rav-day">Fri</span><span class="rav-time closed">Unavailable</span></div>
             <div class="rav-row"><span class="rav-day">Sat</span><span class="rav-time limited">8:30AM By Request</span></div>
           </div>
         </div>
@@ -722,8 +829,140 @@ const navLinks=document.querySelectorAll('.nav-link:not(.nav-cta)');
 const sections=document.querySelectorAll('section[id]');
 window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)current=s.id;});navLinks.forEach(l=>{const href=l.getAttribute('href');l.style.color=href==='#'+current?'var(--text)':'';});},{passive:true});
 
+// ═══════════════════════════════════════════════════════════════
+// ─── ANNOUNCEMENTS — EDIT HERE ────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+//
+// BANNER (top sticky bar — best for urgent single alerts)
+// Set bannerActive: false to hide the banner entirely
+// icon options: ⚠️  📢  🚫  ⛔  📍  ❗
+//
+const BANNER = {
+  active: true,
+  icon: '⚠️',
+  title: 'No Sunday Session — June 8',
+  body: 'Football Sessions cancelled this weekend due to tournament weekend. See you June 15 at Thrive Park.'
+};
+
+//
+// ANNOUNCEMENTS SECTION (mid-page stack — up to 5)
+// type: 'alert'     → red/orange  — cancellations, urgent changes
+// type: 'info'      → gold        — schedule notes, location changes, reminders
+// type: 'good-news' → green grid  — PRs, milestones, shoutouts (see special format below)
+//
+// For alert + info:
+//   { type, icon, badge, title, body, date }
+//
+// For good-news — uses a grid of items:
+//   { type: 'good-news', items: [ { icon, title, body }, ... ] }
+//
+// Set SHOW_GOOD_NEWS: false to hide the good-news card entirely when empty
+//
+const SHOW_GOOD_NEWS = false;
+
+const ANNOUNCEMENTS = 
+  // ── EXAMPLE ALERT (uncomment to use) ──
+   {
+     type: 'alert',
+     icon: '🚫',
+     badge: 'Cancelled',
+     title: 'No Sunday Session — June 8',
+     body: 'Practice cancelled due to tournament weekend. Next session: June 15 at Thrive Park.',
+     date: 'Posted Jun 1'
+   },
+
+  // ── EXAMPLE INFO (uncomment to use) ──
+  // {
+  //   type: 'info',
+  //   icon: '📍',
+  //   badge: 'Location Update',
+  //   title: 'Field Change This Sunday',
+  //   body: 'We are moving to the north grass field this week — same park, look for the orange cones.',
+  //   date: 'Posted Jun 4'
+  // },
+
+  // ── EXAMPLE GOOD NEWS (only shows if SHOW_GOOD_NEWS = true) ──
+  // {
+  //   type: 'good-news',
+  //   items: [
+  //     { icon: '⚡', title: 'Kaiden Lee — New PR', body: '10m Fly: 1.08s · 20.7 mph · personal best' },
+  //     { icon: '🏆', title: 'Relay Win', body: 'Speed Academy relay team took first at Thrive Park invitational' },
+  //     { icon: '🐆', title: '10 Athletes Hit New MPH PRs', body: 'Best group session of the season — June 1' },
+  //   ]
+  // },
+;
+
+// ─── RENDER ANNOUNCEMENTS ──────────────────────────────────────
+function renderAnnouncements() {
+  // Banner
+  const banner = document.getElementById('annBanner');
+  if (BANNER.active && BANNER.title) {
+    document.getElementById('annBannerIcon').textContent  = BANNER.icon  || '📢';
+    document.getElementById('annBannerTitle').textContent = BANNER.title || '';
+    document.getElementById('annBannerBody').textContent  = BANNER.body  || '';
+    banner.classList.remove('hidden');
+  } else {
+    banner.classList.add('hidden');
+  }
+
+  // Mid-page stack
+  const stack   = document.getElementById('annStack');
+  const section = document.getElementById('annSection');
+
+  const active = ANNOUNCEMENTS.filter(function(a) {
+    if (a.type === 'good-news') return SHOW_GOOD_NEWS;
+    return true;
+  });
+
+  if (!active.length) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+
+  stack.innerHTML = active.slice(0, 5).map(function(a) {
+    if (a.type === 'good-news') {
+      var items = (a.items || []).map(function(it) {
+        return '<div class="ann-goodnews-item">'
+          + '<div class="ann-goodnews-item-icon">' + (it.icon || '🏆') + '</div>'
+          + '<div class="ann-goodnews-item-title">' + it.title + '</div>'
+          + '<div class="ann-goodnews-item-body">'  + it.body  + '</div>'
+          + '</div>';
+      }).join('');
+      return '<div class="ann-goodnews-wrap fade-up">'
+        + '<div class="ann-goodnews-header">'
+        + '<span style="font-size:20px">🏆</span>'
+        + '<span class="ann-goodnews-label">Program Highlights</span>'
+        + '</div>'
+        + '<div class="ann-goodnews-grid">' + items + '</div>'
+        + '</div>';
+    }
+
+    var iconMap  = { alert:'⚠️', info:'📢' };
+    var icon     = a.icon  || iconMap[a.type] || '📢';
+    var badge    = a.badge || (a.type === 'alert' ? 'Alert' : 'Update');
+    return '<div class="ann-card ' + a.type + ' fade-up">'
+      + '<div class="ann-card-icon">' + icon + '</div>'
+      + '<div class="ann-card-content">'
+      + '<span class="ann-card-badge">' + badge + '</span>'
+      + '<div class="ann-card-title">'  + a.title + '</div>'
+      + '<div class="ann-card-body">'   + a.body  + '</div>'
+      + (a.date ? '<div class="ann-card-date">' + a.date + '</div>' : '')
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  // Trigger fade-up on new cards
+  stack.querySelectorAll('.fade-up').forEach(function(el) { obs.observe(el); });
+}
+
+function dismissBanner() {
+  document.getElementById('annBanner').classList.add('hidden');
+}
+
 // Load sessions on page load
 loadSessions();
+renderAnnouncements();
 </script>
 </body>
 </html>
