@@ -838,10 +838,10 @@ window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(win
 // icon options: ⚠️  📢  🚫  ⛔  📍  ❗
 //
 const BANNER = {
-  active: true,
+  active: TRUE,
   icon: '⚠️',
   title: 'No Sunday Session — June 8',
-  body: 'Football Sessions cancelled this weekend due to tournament weekend. See you June 15 at Thrive Park.'
+  body: 'Practice cancelled this week due to tournament weekend. See you June 15 at Thrive Park.'
 };
 
 //
@@ -860,16 +860,16 @@ const BANNER = {
 //
 const SHOW_GOOD_NEWS = false;
 
-const ANNOUNCEMENTS = 
+const ANNOUNCEMENTS = [
   // ── EXAMPLE ALERT (uncomment to use) ──
-   {
-     type: 'alert',
-     icon: '🚫',
-     badge: 'Cancelled',
-     title: 'No Sunday Session — June 8',
-     body: 'Practice cancelled due to tournament weekend. Next session: June 15 at Thrive Park.',
-     date: 'Posted Jun 1'
-   },
+  // {
+  //   type: 'alert',
+  //   icon: '🚫',
+  //   badge: 'Cancelled',
+  //   title: 'No Sunday Session — June 8',
+  //   body: 'Practice cancelled due to tournament weekend. Next session: June 15 at Thrive Park.',
+  //   date: 'Posted Jun 1'
+  // },
 
   // ── EXAMPLE INFO (uncomment to use) ──
   // {
@@ -890,7 +890,7 @@ const ANNOUNCEMENTS =
   //     { icon: '🐆', title: '10 Athletes Hit New MPH PRs', body: 'Best group session of the season — June 1' },
   //   ]
   // },
-;
+];
 
 // ─── RENDER ANNOUNCEMENTS ──────────────────────────────────────
 function renderAnnouncements() {
