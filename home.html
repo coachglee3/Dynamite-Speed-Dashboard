@@ -744,20 +744,20 @@ function buildSessionCard(slot, bookings) {
       </div>
       <div class="sc-body">
         <div class="sc-row"><span class="sc-icon">📅</span><span><strong>Date:</strong> ${dateStr}</span></div>
-        ${timeStr ? `<div class="sc-row"><span class="sc-icon">🕗</span><span><strong>Time:</strong> ${timeStr}</span></div>` : ''}
+        ${timeStr ? '<div class="sc-row"><span class="sc-icon">🕗</span><span><strong>Time:</strong> ' + timeStr + '</span></div>' : ''}
         <div class="sc-row"><span class="sc-icon">📍</span><span><strong>Location:</strong> ${loc}</span></div>
-        ${slot.coach ? `<div class="sc-row"><span class="sc-icon">👤</span><span><strong>Coach:</strong> ${slot.coach}</span></div>` : ''}
+        ${slot.coach ? '<div class="sc-row"><span class="sc-icon">👤</span><span><strong>Coach:</strong> ' + slot.coach + '</span></div>' : ''}
         <div class="sc-row"><span class="sc-icon">👥</span><span><strong>Ages:</strong> 6–18</span></div>
         <span class="sc-spots ${spots.cls}">${spots.text}</span>
         <div class="sc-price">
           <div><div class="sc-price-num">${price}</div><div class="sc-price-lbl">per athlete · pay on site</div></div>
           ${isBookable
-            ? `<a class="btn-primary" href="booking.html" style="font-size:14px;padding:10px 18px;">Book →</a>`
-            : `<span style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--muted)">${spots.text}</span>`
+            ? '<a class="btn-primary" href="booking.html" style="font-size:14px;padding:10px 18px;">Book &rarr;</a>'
+            : '<span style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--muted)">' + spots.text + '</span>'
           }
         </div>
       </div>
-      ${note ? `<div class="sc-note">${note}</div>` : ''}
+      ${note ? '<div class="sc-note">' + note + '</div>' : ''}
     </div>`;
 }
 
@@ -838,7 +838,7 @@ window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(win
 // icon options: ⚠️  📢  🚫  ⛔  📍  ❗
 //
 const BANNER = {
-  active: TRUE,
+  active: true,          // ← true = show banner | false = hide banner
   icon: '⚠️',
   title: 'No Sunday Session — June 8',
   body: 'Practice cancelled this week due to tournament weekend. See you June 15 at Thrive Park.'
