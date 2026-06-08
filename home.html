@@ -838,7 +838,7 @@ window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(win
 // icon options: ⚠️  📢  🚫  ⛔  📍  ❗
 //
 const BANNER = {
-  active: true,          // ← true = show banner | false = hide banner
+  active: false,          // ← true = show banner | false = hide banner
   icon: '⚠️',
   title: 'No Sunday Session — June 8',
   body: 'Football Practice cancelled this week due to tournament weekend. See you June 15 at Thrive Park.'
@@ -858,17 +858,17 @@ const BANNER = {
 //
 // Set SHOW_GOOD_NEWS: false to hide the good-news card entirely when empty
 //
-const SHOW_GOOD_NEWS = false;
+const SHOW_GOOD_NEWS = true;
 
 const ANNOUNCEMENTS = [
   // ── EXAMPLE ALERT (uncomment to use) ──
    {
-     type: 'alert',
-     icon: '🚫',
-     badge: 'Cancelled',
-     title: 'No Sunday Session — June 8',
-     body: 'Football Practice cancelled due to tournament weekend. Next session: June 15 at Thrive Park. Contact Coach D for appointments!',
-     date: 'Posted Jun 1'
+    // type: 'alert',
+    // icon: '🚫',
+    // badge: 'Cancelled',
+    // title: 'No Sunday Session — June 8',
+    // body: 'Football Practice cancelled due to tournament weekend. Next session: June 15 at Thrive Park. Contact Coach D for appointments!',
+    // date: 'Posted Jun 1'
    },
 
   // ── EXAMPLE INFO (uncomment to use) ──
@@ -884,12 +884,12 @@ const ANNOUNCEMENTS = [
   // ── EXAMPLE GOOD NEWS (only shows if SHOW_GOOD_NEWS = true) ──
   // {
   //   type: 'good-news',
-  //   items: [
-  //     { icon: '⚡', title: 'Kaiden Lee — New PR', body: '10m Fly: 1.08s · 20.7 mph · personal best' },
+  /   items: [
+  /    { icon: '⚡', title: 'Alexandro — New PR', body: '40y Dash: 7.307 · personal best' },
   //     { icon: '🏆', title: 'Relay Win', body: 'Speed Academy relay team took first at Thrive Park invitational' },
   //     { icon: '🐆', title: '10 Athletes Hit New MPH PRs', body: 'Best group session of the season — June 1' },
-  //   ]
-  // },
+  /   ]
+  / },
 ];
 
 // ─── RENDER ANNOUNCEMENTS ──────────────────────────────────────
