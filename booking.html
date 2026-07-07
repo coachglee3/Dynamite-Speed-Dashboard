@@ -253,6 +253,60 @@ body::before{content:'';position:fixed;inset:0;background:
 .pc-cancelled{background:#1f0d0d;border:1px solid #5a1a1a;border-radius:var(--radius);
   padding:14px 18px;opacity:.5;cursor:not-allowed;}
 .pay-note{font-size:11px;color:var(--muted);margin-top:6px;font-style:italic;}
+/* ─── WEEKLY HIGHLIGHTS ──────────────────────────────────────── */
+.hl-wrap{
+  background:linear-gradient(135deg,#081a10 0%,#0d1f14 60%,#0a1a0d 100%);
+  border:1px solid #1a5530;border-radius:12px;
+  margin-bottom:28px;overflow:hidden;
+  position:relative;
+}
+.hl-wrap::before{
+  content:'🐆';position:absolute;right:18px;top:50%;transform:translateY(-50%);
+  font-size:60px;opacity:.07;pointer-events:none;
+}
+.hl-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;cursor:pointer;user-select:none;
+  border-bottom:1px solid #1a5530;
+  transition:background .15s;
+}
+.hl-header:hover{background:rgba(76,175,114,.05);}
+.hl-header-left{display:flex;align-items:center;gap:10px;}
+.hl-label{
+  font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--green);opacity:.8;
+}
+.hl-title{
+  font-family:var(--fd);font-size:17px;font-weight:800;
+  color:var(--green);letter-spacing:.3px;
+}
+.hl-chevron{
+  font-size:14px;color:var(--green);opacity:.6;
+  transition:transform .25s ease;
+}
+.hl-wrap.open .hl-chevron{transform:rotate(180deg);}
+.hl-body{
+  display:none;
+  padding:16px 20px 20px;
+}
+.hl-wrap.open .hl-body{display:block;}
+.hl-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:10px;
+}
+.hl-item{
+  background:rgba(76,175,114,.08);border:1px solid #1a5530;border-radius:8px;
+  padding:12px 14px;
+}
+.hl-item-icon{font-size:20px;margin-bottom:6px;}
+.hl-item-title{
+  font-family:var(--fd);font-size:14px;font-weight:800;
+  color:var(--green);margin-bottom:3px;letter-spacing:.3px;
+}
+.hl-item-body{font-size:12px;color:var(--dim);line-height:1.55;}
+.hl-item-body strong{color:var(--text);}
+
 </style>
 </head>
 <body>
@@ -279,6 +333,25 @@ body::before{content:'';position:fixed;inset:0;background:
     </div>
   </div>
   
+
+  <!-- ─── WEEKLY HIGHLIGHTS ─────────────────────────────────── -->
+  <!-- Controlled by HIGHLIGHTS config in <script> block below  -->
+  <div class="hl-wrap" id="hlWrap" style="display:none">
+    <div class="hl-header" onclick="toggleHighlights()">
+      <div class="hl-header-left">
+        <span style="font-size:18px">🏆</span>
+        <div>
+          <div class="hl-label">This Week</div>
+          <div class="hl-title">Program Highlights</div>
+        </div>
+      </div>
+      <span class="hl-chevron">▾</span>
+    </div>
+    <div class="hl-body">
+      <div class="hl-grid" id="hlGrid"></div>
+    </div>
+  </div>
+
   <!-- STEPS -->
   <div class="steps" id="stepsBar">
     <div class="step active" id="st1"><div class="step-num">1</div><span>Date</span></div>
@@ -398,6 +471,60 @@ body::before{content:'';position:fixed;inset:0;background:
 
 
 <script>
+// ═══════════════════════════════════════════════════════════════
+// ─── WEEKLY HIGHLIGHTS — EDIT HERE EACH WEEK ─────────────────
+// ═══════════════════════════════════════════════════════════════
+//
+// SHOW_HIGHLIGHTS — true = visible | false = hidden entirely
+// HIGHLIGHTS_EXPIRES — 'YYYY-MM-DD' auto-hides after this date
+//                      remove the field to keep it up indefinitely
+// HIGHLIGHTS — up to 4 items: { icon, title, body }
+//   body supports <strong> tags for bold text
+//
+const SHOW_HIGHLIGHTS  = false;
+const HIGHLIGHTS_EXPIRES = '2026-07-13';
+
+const HIGHLIGHTS = [
+  // Paste your 4 highlights here each week — examples:
+  // { icon: '⚡', title: 'Athlete Name — New PR',  body: 'Date | 10m Fly: <strong>X.XXs · XX.X mph</strong> · personal best' },
+  // { icon: '🏆', title: 'Top Speed This Week',    body: 'Athlete hit <strong>XX.X mph</strong> — fastest of the session' },
+  // { icon: '🐆', title: 'New Athlete — Welcome!', body: 'First session baseline: <strong>XX.X mph</strong>' },
+  // { icon: '📈', title: 'Most Improved',           body: 'Athlete name — up <strong>+X.X mph</strong> from first session' },
+];
+
+// ─── RENDER HIGHLIGHTS ────────────────────────────────────────
+(function renderHighlights() {
+  var wrap = document.getElementById('hlWrap');
+  if (!wrap) return;
+
+  // Expiry check
+  function notExpired() {
+    if (!HIGHLIGHTS_EXPIRES) return true;
+    var today = new Date(); today.setHours(0,0,0,0);
+    return new Date(HIGHLIGHTS_EXPIRES + 'T00:00:00') >= today;
+  }
+
+  if (!SHOW_HIGHLIGHTS || !HIGHLIGHTS.length || !notExpired()) {
+    wrap.style.display = 'none';
+    return;
+  }
+
+  wrap.style.display = 'block';
+  var grid = document.getElementById('hlGrid');
+  grid.innerHTML = HIGHLIGHTS.slice(0,4).map(function(h) {
+    return '<div class="hl-item">'
+      + '<div class="hl-item-icon">' + (h.icon || '⚡') + '</div>'
+      + '<div class="hl-item-title">' + h.title + '</div>'
+      + '<div class="hl-item-body">'  + h.body  + '</div>'
+      + '</div>';
+  }).join('');
+})();
+
+function toggleHighlights() {
+  var wrap = document.getElementById('hlWrap');
+  if (wrap) wrap.classList.toggle('open');
+}
+
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════════════
