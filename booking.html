@@ -481,15 +481,13 @@ body::before{content:'';position:fixed;inset:0;background:
 // HIGHLIGHTS — up to 4 items: { icon, title, body }
 //   body supports <strong> tags for bold text
 //
-const SHOW_HIGHLIGHTS  = false;
+const SHOW_HIGHLIGHTS  = true;
 const HIGHLIGHTS_EXPIRES = '2026-07-13';
 
 const HIGHLIGHTS = [
-  // Paste your 4 highlights here each week — examples:
-  // { icon: '⚡', title: 'Athlete Name — New PR',  body: 'Date | 10m Fly: <strong>X.XXs · XX.X mph</strong> · personal best' },
-  // { icon: '🏆', title: 'Top Speed This Week',    body: 'Athlete hit <strong>XX.X mph</strong> — fastest of the session' },
-  // { icon: '🐆', title: 'New Athlete — Welcome!', body: 'First session baseline: <strong>XX.X mph</strong>' },
-  // { icon: '📈', title: 'Most Improved',           body: 'Athlete name — up <strong>+X.X mph</strong> from first session' },
+  { icon: '⚡', title: 'William Barefield — Top Speed', body: '7/5 | 10m Fly: <strong>17.09 mph</strong> · fastest of the week' },
+  { icon: '📈', title: 'Gavin Gonzales — Most Consistent', body: '7/6 | 40Y Drop%: <strong>0.1%</strong> · elite freshness' },
+  // ...2 more
 ];
 
 // ─── RENDER HIGHLIGHTS ────────────────────────────────────────
