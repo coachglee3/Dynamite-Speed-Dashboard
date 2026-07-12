@@ -694,6 +694,14 @@ function isBookable(slot) {
   return true;
 }
 
+// A slot is "visible" if a parent should be able to click into the date and
+// see its card at all — this stays true even after the booking cutoff has
+// passed, so the "Booking Closed / contact coach" message is still reachable.
+// Only CANCELLED/CLOSED slots are fully hidden from the public.
+function isVisible(slot) {
+  return slot.status !== 'CANCELLED' && slot.status !== 'CLOSED';
+}
+
 // ═══════════════════════════════════════════════════════════════
 // PROG COLORS
 // ═══════════════════════════════════════════════════════════════
@@ -724,6 +732,7 @@ function renderDateGrid() {
   grid.innerHTML = futureDates.slice(0,28).map(dateStr => {
     const d = new Date(dateStr+'T12:00:00');
     const slotsForDate   = S.slots.filter(sl => sl.date === dateStr);
+    const visibleSlots   = slotsForDate.filter(sl => isVisible(sl));
     const bookableSlots  = slotsForDate.filter(sl => isBookable(sl));
     const isSelected     = S.selectedDate && S.selectedDate.raw === dateStr;
 
@@ -738,15 +747,17 @@ function renderDateGrid() {
     const apptCount = bookableSlots.filter(sl => sl.status === 'APPT').length;
     const slotLabel = openCount && apptCount ? openCount + ' open · ' + apptCount + ' appt'
                     : apptCount && !openCount ? apptCount + ' by appt'
-                    : openCount + ' open';
+                    : openCount ? openCount + ' open'
+                    : visibleSlots.length ? 'See details'
+                    : '0 open';
 
-    return `<div class="date-card ${!bookableSlots.length?'unavailable':''} ${isSelected?'selected':''}"
+    return `<div class="date-card ${!visibleSlots.length?'unavailable':''} ${isSelected?'selected':''}"
       onclick="selectDate('${dateStr}','${days[d.getDay()]}','${d.getDate()} ${months[d.getMonth()]}')">
       <div class="dc-day">${days[d.getDay()]}</div>
       <div class="dc-date">${d.getDate()}</div>
       <div class="dc-month">${months[d.getMonth()]}</div>
       <div class="dc-slots">${dots}</div>
-      <div style="font-size:10px;color:${bookableSlots.length?'var(--dim)':'var(--muted)'};margin-top:4px">
+      <div style="font-size:10px;color:${visibleSlots.length?'var(--dim)':'var(--muted)'};margin-top:4px">
         ${slotLabel}
       </div>
     </div>`;
