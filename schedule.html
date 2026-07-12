@@ -111,6 +111,58 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .btn-action.outline{background:transparent;border:1px solid var(--bdr2);color:var(--dim);}
 .btn-action.outline:hover{border-color:var(--bdr2);color:var(--text);}
 
+/* ─── MANUAL BOOKING MODAL ───────────────────────────────────── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.on{display:flex;}
+.modal-card{
+  position:relative;background:var(--s2);border:1px solid var(--bdr);border-top:3px solid var(--gold);
+  border-radius:14px;padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;
+}
+.modal-close{
+  position:absolute;top:14px;right:14px;background:none;border:none;
+  color:var(--muted);font-size:22px;line-height:1;cursor:pointer;transition:color .15s;
+}
+.modal-close:hover{color:var(--text);}
+.modal-title{font-family:var(--fd);font-size:24px;font-weight:900;color:var(--gold);letter-spacing:-.5px;margin-bottom:4px;}
+.modal-sub{font-size:12px;color:var(--dim);line-height:1.6;margin-bottom:22px;}
+.mfg{margin-bottom:14px;}
+.mfg label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-weight:600;}
+.mfi,.mfs{
+  width:100%;background:var(--s3);border:1px solid var(--bdr);border-radius:7px;
+  padding:10px 14px;color:var(--text);font-size:14px;font-family:var(--fb);transition:border-color .15s;
+}
+.mfi:focus,.mfs:focus{outline:none;border-color:var(--gold);}
+.mfi::placeholder{color:var(--muted);}
+.mfs option{background:var(--s3);}
+.modal-actions{display:flex;gap:10px;margin-top:20px;}
+.modal-err{color:var(--red);font-size:13px;margin-top:8px;min-height:16px;}
+.btn-modal-primary{
+  flex:1;background:var(--gold);color:var(--black);border:none;border-radius:8px;
+  padding:12px 20px;font-family:var(--fd);font-size:15px;font-weight:800;letter-spacing:.5px;
+  text-transform:uppercase;cursor:pointer;transition:all .15s;
+}
+.btn-modal-primary:hover{background:#e6b800;}
+.btn-modal-primary:disabled{background:var(--muted);color:var(--bdr);cursor:not-allowed;}
+.btn-modal-secondary{
+  background:transparent;border:1px solid var(--bdr2);color:var(--dim);border-radius:8px;
+  padding:12px 20px;font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;cursor:pointer;transition:all .15s;
+}
+.btn-modal-secondary:hover{border-color:var(--bdr2);color:var(--text);}
+
+/* ─── TOAST ──────────────────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--green-bg);border:1px solid var(--green-bdr);color:var(--green);
+  padding:12px 22px;border-radius:8px;font-family:var(--fd);font-weight:700;font-size:14px;
+  letter-spacing:.3px;z-index:400;opacity:0;transition:opacity .25s ease,transform .25s ease;
+  pointer-events:none;white-space:nowrap;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+
 /* ─── STAT STRIP ─────────────────────────────────────────────── */
 .stat-strip{
   display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
@@ -345,7 +397,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         <div class="page-meta" id="pageMeta">Loading session data…</div>
       </div>
       <div class="page-hdr-actions">
-        <a class="btn-action gold" href="booking.html" target="_blank">+ Add Session</a>
+        <button class="btn-action gold" onclick="openManualBooking()">+ Manual Booking</button>
+        <a class="btn-action outline" href="booking.html" target="_blank">+ Add Session</a>
         <button class="btn-action outline" onclick="refreshData()">↻ Refresh</button>
         <button class="btn-action outline" onclick="signOut()">Sign Out</button>
       </div>
@@ -406,6 +459,43 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       <div class="footer-copy">© 2026 Lee Brothers Academy · Dynamite Speed Academy · San Diego, CA</div>
     </div>
   </footer>
+
+  <!-- ─── MANUAL BOOKING MODAL ──────────────────────────────────── -->
+  <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeManualBooking()">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeManualBooking()" aria-label="Close">✕</button>
+      <div class="modal-title">Manual Booking</div>
+      <p class="modal-sub">Book a family directly into any upcoming slot — including CLOSED or cutoff-passed sessions. Bypasses public booking restrictions. Capacity still counts normally.</p>
+
+      <div class="mfg">
+        <label>Session Slot</label>
+        <select class="mfs" id="mbSlot"></select>
+      </div>
+      <div class="mfg">
+        <label>Family Code <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(optional — leave blank if new)</span></label>
+        <input class="mfi" id="mbCode" type="text" placeholder="e.g. YA001" maxlength="12" autocomplete="off">
+      </div>
+      <div class="mfg">
+        <label>Parent / Guardian Name</label>
+        <input class="mfi" id="mbParent" type="text" placeholder="Full name" autocomplete="off">
+      </div>
+      <div class="mfg">
+        <label>Athlete(s)</label>
+        <input class="mfi" id="mbAthletes" type="text" placeholder="e.g. Josh Smith — or multiple: Josh &amp; Jordan Smith" autocomplete="off">
+      </div>
+      <div class="mfg">
+        <label>Notes <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input class="mfi" id="mbNotes" type="text" placeholder="Anything worth noting" autocomplete="off">
+      </div>
+
+      <div class="modal-err" id="mbErr"></div>
+      <div class="modal-actions">
+        <button class="btn-modal-secondary" onclick="closeManualBooking()">Cancel</button>
+        <button class="btn-modal-primary" id="mbSubmitBtn" onclick="submitManualBooking()">Book Athlete →</button>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /app -->
 
 <script>
@@ -415,6 +505,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 const SHEET_ID     = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
 const SCHEDULE_GID = '673816025';
 const BOOKINGS_GID = '1223610839';
+const SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzg5uqTBKP9NGLBuVkcmzEEdrjMdGLWpvX4bOybHTGL0sGJ2oH2DoJrrfL7IGrOGjBY/exec';
 const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
 
 const COACH_CODES  = ['GL003', 'DL784'];
@@ -891,6 +982,123 @@ function toggleBookings(el){
   const slotId = el.dataset.slot;
   const list   = document.getElementById('bklist-'+slotId);
   if(list) list.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MANUAL BOOKING — coach override, bypasses public booking rules
+// ═══════════════════════════════════════════════════════════════
+// Deliberately does NOT check STATUS, cutoff, capacity, or any public
+// booking restriction — the coach is already authenticated at the
+// portal gate. Lists every upcoming non-cancelled slot so a CLOSED or
+// cutoff-passed session can still be booked directly. Posts to the
+// same Apps Script endpoint and payload shape as the public booking.html
+// flow — no backend or sheet changes required.
+
+function openManualBooking(){
+  document.getElementById('mbErr').textContent = '';
+  document.getElementById('mbCode').value = '';
+  document.getElementById('mbParent').value = '';
+  document.getElementById('mbAthletes').value = '';
+  document.getElementById('mbNotes').value = '';
+  populateManualBookingSlots();
+  document.getElementById('modalOverlay').classList.add('on');
+}
+
+function closeManualBooking(){
+  document.getElementById('modalOverlay').classList.remove('on');
+}
+
+function populateManualBookingSlots(){
+  const sel = document.getElementById('mbSlot');
+  const upcoming = S.slots
+    .filter(s => isFuture(s.date) && s.status !== 'CANCELLED')
+    .sort((a,b) => new Date(a.date+'T12:00:00') - new Date(b.date+'T12:00:00') || (a.startTime||'').localeCompare(b.startTime||''));
+
+  if(!upcoming.length){
+    sel.innerHTML = '<option value="">No upcoming slots found</option>';
+    return;
+  }
+
+  sel.innerHTML = upcoming.map(s => {
+    const label     = PROG_LABELS[s.program] || s.program;
+    const left      = getSpotsLeft(s);
+    const leftLabel = left === null ? '' : ` — ${left} left`;
+    const statusTag = s.status !== 'OPEN' ? ` [${s.status}]` : '';
+    const timeLabel = s.startTime ? ` · ${s.startTime}${s.endTime ? '–'+s.endTime : ''}` : '';
+    return `<option value="${s.slotId}">${fmtDateShort(s.date)} · ${label}${timeLabel}${leftLabel}${statusTag}</option>`;
+  }).join('');
+}
+
+async function submitManualBooking(){
+  const btn   = document.getElementById('mbSubmitBtn');
+  const errEl = document.getElementById('mbErr');
+  errEl.textContent = '';
+
+  const slotId = document.getElementById('mbSlot').value;
+  const slot   = S.slots.find(s => s.slotId === slotId);
+  if(!slot){ errEl.textContent = 'Please select a valid session slot.'; return; }
+
+  const code     = document.getElementById('mbCode').value.trim().toUpperCase();
+  const parent   = document.getElementById('mbParent').value.trim();
+  const athletes = document.getElementById('mbAthletes').value.trim();
+  const notesRaw = document.getElementById('mbNotes').value.trim();
+
+  if(parent.length < 2){ errEl.textContent = 'Please enter a parent/guardian name.'; return; }
+  if(!athletes.length){ errEl.textContent = 'Please enter at least one athlete name.'; return; }
+
+  const notes = notesRaw ? notesRaw + ' [Manual booking — coach]' : '[Manual booking — coach]';
+  const timestamp = new Date().toISOString();
+
+  btn.disabled = true;
+  btn.textContent = 'Booking…';
+
+  const payload = {
+    action: 'book',
+    slotId: slot.slotId,
+    familyCode: code,
+    parent: parent,
+    athletes: athletes,
+    notes: notes,
+    timestamp: timestamp
+  };
+
+  try{
+    const res = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
+    let data = { status:'ok' };
+    try{ data = await res.json(); }catch(e){}
+
+    if(data.status === 'ok' || data.status === undefined){
+      S.bookings.push({
+        timestamp, slotId: slot.slotId, date: slot.date, program: slot.program,
+        familyCode: code, parent, athletes, price: slot.price, notes
+      });
+      closeManualBooking();
+      renderStats();
+      renderSessions();
+      showToast('✓ Booked ' + athletes + ' — ' + fmtDateShort(slot.date));
+    } else {
+      throw new Error(data.message || 'Booking failed.');
+    }
+  } catch(e){
+    errEl.textContent = e.message || 'Something went wrong. Please try again.';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Book Athlete →';
+}
+
+function showToast(msg){
+  let t = document.getElementById('toastEl');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'toastEl';
+    t.className = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('on'), 3500);
 }
 </script>
 </body>
