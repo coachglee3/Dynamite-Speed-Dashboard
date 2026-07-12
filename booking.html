@@ -533,6 +533,13 @@ const BOOKINGS_GID = '1223610839';
 const REG_FORM_URL = 'https://coachglee3.github.io/Dynamite-Speed-Dashboard/registration.html';
 const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
 
+// ─── BOOKING CUTOFF — global, applies to every slot ──────────────
+// Closes public booking at BOOKING_CUTOFF.hour:minute (Pacific) on the
+// night before the session date. Coach manual booking (schedule.html)
+// is unaffected — this only gates the public flow below.
+const BOOKING_CUTOFF = { daysBefore: 1, hour: 19, minute: 0 }; // 7:00 PM Pacific, night before session
+const CUTOFF_CONTACT_MSG = 'Online booking has closed for this session — text or email your coach to check last-minute availability.';
+
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
@@ -650,11 +657,31 @@ function getSpotsLeft(slot) {
   return Math.max(0, slot.maxCapacity - getBookingCount(slot.slotId));
 }
 
+// ─── CUTOFF HELPERS ───────────────────────────────────────────────
+// Reads "now" as Pacific wall-clock time via Intl, so PST/PDT is
+// handled automatically without any date library.
+function nowInPacific() {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+}
+
+function getCutoffDate(slot) {
+  const parts = slot.date.split('-').map(Number); // [YYYY, MM, DD]
+  const cutoff = new Date(parts[0], parts[1]-1, parts[2]);
+  cutoff.setDate(cutoff.getDate() - BOOKING_CUTOFF.daysBefore);
+  cutoff.setHours(BOOKING_CUTOFF.hour, BOOKING_CUTOFF.minute, 0, 0);
+  return cutoff;
+}
+
+function isPastCutoff(slot) {
+  return nowInPacific().getTime() >= getCutoffDate(slot).getTime();
+}
+
 function getSpotsBadge(slot) {
   const left = getSpotsLeft(slot);
   if (slot.status === 'CANCELLED') return { cls:'closed', label:'Cancelled' };
   if (slot.status === 'CLOSED')    return { cls:'closed', label:'Closed' };
   if (slot.status === 'APPT')      return { cls:'appt',   label:'By Appointment' };
+  if (isPastCutoff(slot))          return { cls:'closed', label:'Booking Closed' };
   if (left === null)               return { cls:'open',   label:'Open' };
   if (left === 0)                  return { cls:'full',   label:'Full — Waitlist' };
   if (left <= 3)                   return { cls:'low',    label:`${left} spot${left===1?'':'s'} left` };
@@ -662,7 +689,9 @@ function getSpotsBadge(slot) {
 }
 
 function isBookable(slot) {
-  return slot.status !== 'CANCELLED' && slot.status !== 'CLOSED';
+  if (slot.status === 'CANCELLED' || slot.status === 'CLOSED') return false;
+  if (isPastCutoff(slot)) return false;
+  return true;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -838,6 +867,30 @@ function renderSlotGrid() {
         </div>
       </div>`;
     }
+
+    // ─── CUTOFF-CLOSED CARD ───────────────────────────────────────
+    // Slot is otherwise normal (not CANCELLED, not APPT) but the public
+    // booking window has passed. Show a distinct closed state with a
+    // parent-facing contact path instead of a plain dead "Closed" card.
+    if (!bookable && slot.status !== 'CANCELLED' && isPastCutoff(slot)) {
+      return `<div class="prog-card" style="opacity:.65;border-color:var(--bdr)">
+        <div class="pc-top">
+          <div class="pc-left">
+            <div class="pc-dot" style="background:${color}"></div>
+            <div>
+              <div class="pc-name" style="color:${color}">${label}</div>
+              <div class="pc-time">${slot.startTime}${slot.endTime?' – '+slot.endTime:''}</div>
+            </div>
+          </div>
+          <div class="pc-spots closed">Booking Closed</div>
+        </div>
+        ${metaItems ? '<div class="pc-meta">' + metaItems + '</div>' : ''}
+        <div style="background:#1a1000;border:1px solid var(--orange);border-radius:7px;padding:11px 14px;font-size:13px;color:var(--orange);line-height:1.6;">
+          ⏰ ${CUTOFF_CONTACT_MSG} <a href="mailto:Lbasdc@gmail.com" style="color:var(--gold)">Email coach →</a>
+        </div>
+      </div>`;
+    }
+
     return `<div class="prog-card ${!bookable?'unavailable':''} ${isSel?'selected':''}"
       style="border-color:${isSel?color:'var(--bdr)'};background:${isSel?color+'11':'var(--surf)'}"
       onclick="${bookable?'selectSlotById(\'' + slot.slotId + '\')':''}" >
