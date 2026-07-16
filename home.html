@@ -338,7 +338,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   <div class="hero-bg-lines"></div>
   <div class="hero-glow"></div>
   <div class="hero-eyebrow">San Diego, CA · Ages 6–18</div>
-  <h1 class="hero-title">San Diego Dynamite<em>Academies</em></h1>
+  <h1 class="hero-title">Lee Brothers<em>Academy</em></h1>
   <p class="hero-tagline">Speed. Movement. Performance.</p>
   <p class="hero-desc">A session-based dual-performance academy where athletes build <strong>real, measurable sprint speed</strong> and position-specific football skills — timed with elite Fully Automatic Timing technology every rep.</p>
   <div class="timing-badge"><span class="tb-dot"></span>ArenaGear Fully Automatic Timing — Every Sprint. Every Session.</div>
@@ -717,6 +717,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 const SHEET_ID    = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
 const SCHEDULE_GID = '673816025';
 const BOOKINGS_GID = '1223610839';
+const HIGHLIGHTS_GID = '381306568';
 const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
 
 const PROG_COLORS  = { speed:'var(--speed)', football:'var(--football)', combined:'var(--combined)' };
@@ -924,20 +925,16 @@ const BANNER = {
 
 //
 // ANNOUNCEMENTS SECTION (mid-page stack — up to 5)
-// type: 'alert'     → red/orange  — cancellations, urgent changes
-// type: 'info'      → gold        — schedule notes, location changes, reminders
-// type: 'good-news' → green grid  — PRs, milestones, shoutouts (see special format below)
+// type: 'alert' → red/orange — cancellations, urgent changes
+// type: 'info'  → gold       — schedule notes, location changes, reminders
 //
-// For alert + info:
+// Program Highlights (the green good-news grid) is no longer edited here —
+// it's pulled live from the "Highlights" tab in the Google Sheet (see
+// loadHighlights() below). Toggle a highlight on/off with the ACTIVE column
+// on that sheet instead of editing this file.
+//
 //   { type, icon, badge, title, body, date }
 //
-// For good-news — uses a grid of items:
-//   { type: 'good-news', items: [ { icon, title, body }, ... ] }
-//
-// Set SHOW_GOOD_NEWS: false to hide the good-news card entirely when empty
-//
-const SHOW_GOOD_NEWS = true;
-
 const ANNOUNCEMENTS = [
   // ── EXAMPLE ALERT (uncomment to use) ──
   // {
@@ -958,17 +955,37 @@ const ANNOUNCEMENTS = [
   //   body: 'We are moving to the north grass field this week — same park, look for the orange cones.',
   //   date: 'Posted Jun 4'
   // },
-
-  // ── EXAMPLE GOOD NEWS (only shows if SHOW_GOOD_NEWS = true) ──
-   {
-     type: 'good-news',
-     items: [
-     {  icon: '🐆', title: 'Sam Talavera | Age 13 — Program Record', body: '6/12/26 | 10m Fly: <strong>17.67 mph</strong> · fastest in program history. Welcome to the program, Cat.' },
-  //     { icon: '🏆', title: 'Relay Win', body: 'Speed Academy relay team took first at Thrive Park invitational' },
-  //     { icon: '🐆', title: '10 Athletes Hit New MPH PRs', body: 'Best group session of the season — June 1' },
-     ]
-   },
 ];
+
+// ─── HIGHLIGHTS — live from Google Sheet "Highlights" tab ─────
+let HIGHLIGHT_ITEMS = [];
+
+function parseHighlights(rows) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  return rows
+    .filter(r => (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE')
+    .filter(r => (r['TYPE']||'').toString().trim().toUpperCase() === 'HIGHLIGHT')
+    .filter(r => {
+      const exp = (r['EXPIRES']||'').toString().trim();
+      if (!exp) return true;
+      const expDate = new Date(exp + 'T00:00:00');
+      return expDate >= today;
+    })
+    .map(r => ({
+      icon:  (r['ICON']||'').toString().trim(),
+      title: (r['TITLE']||'').toString().trim(),
+      body:  (r['BODY']||'').toString().trim()
+    }))
+    .slice(0, 8); // soft cap so the grid stays readable — raise anytime
+}
+
+async function loadHighlights() {
+  try {
+    const data = await gvizFetch(HIGHLIGHTS_GID);
+    if (data) HIGHLIGHT_ITEMS = parseHighlights(gvizRows(data));
+  } catch(e) { /* highlights are non-critical — section just stays hidden on failure */ }
+  renderAnnouncements();
+}
 
 // ─── RENDER ANNOUNCEMENTS ──────────────────────────────────────
 function renderAnnouncements() {
@@ -987,18 +1004,18 @@ function renderAnnouncements() {
   const stack   = document.getElementById('annStack');
   const section = document.getElementById('annSection');
 
-  const active = ANNOUNCEMENTS.filter(function(a) {
-    if (a.type === 'good-news') return SHOW_GOOD_NEWS;
-    return true;
-  });
+  const items = ANNOUNCEMENTS.slice();
+  if (HIGHLIGHT_ITEMS.length) {
+    items.unshift({ type: 'good-news', items: HIGHLIGHT_ITEMS });
+  }
 
-  if (!active.length) {
+  if (!items.length) {
     section.style.display = 'none';
     return;
   }
   section.style.display = '';
 
-  stack.innerHTML = active.slice(0, 5).map(function(a) {
+  stack.innerHTML = items.slice(0, 5).map(function(a) {
     if (a.type === 'good-news') {
       var items = (a.items || []).map(function(it) {
         return '<div class="ann-goodnews-item">'
@@ -1041,6 +1058,7 @@ function dismissBanner() {
 // Load sessions on page load
 loadSessions();
 renderAnnouncements();
+loadHighlights();
 </script>
 </body>
 </html>
