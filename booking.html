@@ -481,13 +481,31 @@ body::before{content:'';position:fixed;inset:0;background:
 // HIGHLIGHTS — up to 4 items: { icon, title, body }
 //   body supports <strong> tags for bold text
 //
-const SHOW_HIGHLIGHTS    = true;
-const HIGHLIGHTS_EXPIRES = '2026-07-16';
+const SHOW_HIGHLIGHTS = true;
+
+const HIGHLIGHTS_EXPIRES = '2026-07-23';
+
 const HIGHLIGHTS = [
-  { icon: '⚡', title: 'Sam Talavera | U14', body: '7/8/26 | 10FLY: <strong>17.61 mph</strong> — best mark of the last two weeks' },
-  { icon: '🚀', title: 'Micah Stanley | U12', body: '6/25→7/9 | 10FLY: <strong>13.81 → 14.73 mph</strong> — biggest jump of the window, drop% cut nearly in half' },
-  { icon: '📈', title: 'Elijah Talavera | U10', body: '6/26→7/8 | 10FLY: <strong>12.71 → 13.31 mph</strong> across 4 straight sessions — plus a perfect 0.0% 40Y drop on 7/3' },
-  { icon: '🐆', title: 'Gavin Gonzalez | U10', body: '6/29→7/1 | 10FLY: <strong>12.78 → 13.24 mph</strong> — quick +0.46 mph riser in just 3 days' },
+  {
+    icon: '🚀',
+    title: 'New Speed PR',
+    body: '<strong>William Barefield</strong> set a new personal best of <strong>17.10 MPH</strong> while also recording a <strong>23\' 1"</strong> standing broad jump.'
+  },
+  {
+    icon: '⚡',
+    title: 'Explosive Improvement',
+    body: '<strong>Elijah Stanley</strong> improved his top speed to a new personal best of <strong>13.46 MPH</strong> while lowering his 40-yard dash to <strong>6.94 seconds</strong>.'
+  },
+  {
+    icon: '🏃',
+    title: 'Elite Consistency',
+    body: '<strong>Sam Talavera</strong> continued his outstanding training with another <strong>17.34 MPH</strong> sprint and a <strong>23\' 2"</strong> standing broad jump.'
+  },
+  {
+    icon: '💥',
+    title: 'First 10m Acceleration Test',
+    body: '<strong>Gavin Gonzales</strong> became the first athlete to complete our new <strong>10m Acceleration</strong> assessment, recording a best time of <strong>2.10 seconds</strong>.'
+  }
 ];
 
 // ─── RENDER HIGHLIGHTS ────────────────────────────────────────
