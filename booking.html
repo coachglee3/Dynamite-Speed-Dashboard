@@ -508,24 +508,10 @@ const SCHEDULE_NOTICE = {
   body: 'The upcoming training schedule will be updated every <strong>Thursday afternoon</strong>.'
 };
 
-// WEEKLY HIGHLIGHTS
-// SHOW_HIGHLIGHTS — true = visible | false = hidden entirely
-// HIGHLIGHTS_RANGE — date range shown in the header, e.g. '7.09.26 - 7.15.26'
-//                    leave '' to fall back to 'This Week'
-// HIGHLIGHTS_EXPIRES — 'YYYY-MM-DD' auto-hides after this date
-//                      remove the field to keep it up indefinitely
-// HIGHLIGHTS — up to 4 items: { icon, title, body }
-//   body supports <strong> tags for bold text
-//
-const SHOW_HIGHLIGHTS    = true;
-const HIGHLIGHTS_RANGE   = '7.09.26 - 7.15.26';
-const HIGHLIGHTS_EXPIRES = '2026-07-20';
-const HIGHLIGHTS = [
-  { icon: '🚀', title: 'New Speed PR', body: '<strong>William Barefield</strong> set a new personal best of <strong>17.10 MPH</strong> while also recording a <strong>23\' 1"</strong> standing broad jump.' },
-  { icon: '⚡', title: 'Explosive Improvement', body: '<strong>Elijah Stanley</strong> improved his top speed to a new personal best of <strong>13.46 MPH</strong> while lowering his 40-yard dash to <strong>6.94 seconds</strong>.' },
-  { icon: '🏃', title: 'Elite Consistency', body: '<strong>Sam Talavera</strong> continued his outstanding training with another <strong>17.34 MPH</strong> sprint and a <strong>23\' 2"</strong> standing broad jump.' },
-  { icon: '💥', title: 'New Testing Milestone', body: '<strong>Gavin Gonzales</strong> became the first athlete to complete our new <strong>10m Acceleration</strong> assessment, recording a best time of <strong>2.10 seconds</strong>.' },
-];
+// WEEKLY HIGHLIGHTS — now pulled live from the "Highlights" tab in the
+// Google Sheet (see loadHighlightsData() further down). Toggle individual
+// highlights on/off with the ACTIVE column on that sheet — no file edits
+// needed week to week.
 
 // ─── RENDER SCHEDULE NOTICE ───────────────────────────────────
 (function renderScheduleNotice() {
@@ -543,37 +529,6 @@ const HIGHLIGHTS = [
   el.style.display = 'flex';
 })();
 
-// ─── RENDER HIGHLIGHTS ────────────────────────────────────────
-(function renderHighlights() {
-  var wrap = document.getElementById('hlWrap');
-  if (!wrap) return;
-
-  // Expiry check
-  function notExpired() {
-    if (!HIGHLIGHTS_EXPIRES) return true;
-    var today = new Date(); today.setHours(0,0,0,0);
-    return new Date(HIGHLIGHTS_EXPIRES + 'T00:00:00') >= today;
-  }
-
-  if (!SHOW_HIGHLIGHTS || !HIGHLIGHTS.length || !notExpired()) {
-    wrap.style.display = 'none';
-    return;
-  }
-
-  var rangeLbl = document.getElementById('hlRangeLabel');
-  if (rangeLbl) rangeLbl.textContent = HIGHLIGHTS_RANGE || 'This Week';
-
-  wrap.style.display = 'block';
-  var grid = document.getElementById('hlGrid');
-  grid.innerHTML = HIGHLIGHTS.slice(0,4).map(function(h) {
-    return '<div class="hl-item">'
-      + '<div class="hl-item-icon">' + (h.icon || '⚡') + '</div>'
-      + '<div class="hl-item-title">' + h.title + '</div>'
-      + '<div class="hl-item-body">'  + h.body  + '</div>'
-      + '</div>';
-  }).join('');
-})();
-
 function toggleHighlights() {
   var wrap = document.getElementById('hlWrap');
   if (wrap) wrap.classList.toggle('open');
@@ -586,6 +541,7 @@ const SHEET_ID     = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
 const SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzg5uqTBKP9NGLBuVkcmzEEdrjMdGLWpvX4bOybHTGL0sGJ2oH2DoJrrfL7IGrOGjBY/exec';
 const SCHEDULE_GID = '673816025';
 const BOOKINGS_GID = '1223610839';
+const HIGHLIGHTS_GID = '381306568';
 const REG_FORM_URL = 'https://coachglee3.github.io/Dynamite-Speed-Dashboard/registration.html';
 const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
 
@@ -611,6 +567,7 @@ let S = {
 // INIT
 // ═══════════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', loadSchedule);
+window.addEventListener('DOMContentLoaded', loadHighlightsData);
 
 async function loadSchedule() {
   try {
@@ -625,6 +582,61 @@ async function loadSchedule() {
     console.warn('Load error:', e);
     renderDateGrid();
   }
+}
+
+// ─── HIGHLIGHTS — live from Google Sheet "Highlights" tab ─────
+function parseHighlights(rows) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  return rows
+    .filter(r => (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE')
+    .filter(r => (r['TYPE']||'').toString().trim().toUpperCase() === 'HIGHLIGHT')
+    .filter(r => {
+      const exp = (r['EXPIRES']||'').toString().trim();
+      if (!exp) return true;
+      const expDate = new Date(exp + 'T00:00:00');
+      return expDate >= today;
+    })
+    .map(r => ({
+      icon:  (r['ICON']||'').toString().trim(),
+      title: (r['TITLE']||'').toString().trim(),
+      body:  (r['BODY']||'').toString().trim(),
+      range: (r['RANGE_LABEL']||'').toString().trim()
+    }))
+    .slice(0, 8); // soft cap so the grid stays readable — raise anytime
+}
+
+async function loadHighlightsData() {
+  try {
+    const data = await gvizFetch(HIGHLIGHTS_GID);
+    const items = data ? parseHighlights(gvizRows(data)) : [];
+    renderHighlightsFromData(items);
+  } catch(e) {
+    console.warn('Highlights load error:', e);
+    renderHighlightsFromData([]);
+  }
+}
+
+function renderHighlightsFromData(items) {
+  const wrap = document.getElementById('hlWrap');
+  if (!wrap) return;
+
+  if (!items.length) {
+    wrap.style.display = 'none';
+    return;
+  }
+
+  const rangeLbl = document.getElementById('hlRangeLabel');
+  if (rangeLbl) rangeLbl.textContent = items[0].range || 'This Week';
+
+  wrap.style.display = 'block';
+  const grid = document.getElementById('hlGrid');
+  grid.innerHTML = items.map(h => {
+    return '<div class="hl-item">'
+      + '<div class="hl-item-icon">' + (h.icon || '⚡') + '</div>'
+      + '<div class="hl-item-title">' + h.title + '</div>'
+      + '<div class="hl-item-body">'  + h.body  + '</div>'
+      + '</div>';
+  }).join('');
 }
 
 // ═══════════════════════════════════════════════════════════════
