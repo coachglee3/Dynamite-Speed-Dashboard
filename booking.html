@@ -307,6 +307,18 @@ body::before{content:'';position:fixed;inset:0;background:
 .hl-item-body{font-size:12px;color:var(--dim);line-height:1.55;}
 .hl-item-body strong{color:var(--text);}
 
+/* ─── SCHEDULE NOTICE ────────────────────────────────────────── */
+.notice-card{
+  display:flex;align-items:flex-start;gap:14px;
+  background:#1a1400;border:1px solid var(--gold-dim);border-radius:12px;
+  padding:16px 20px;margin-bottom:20px;
+}
+.notice-icon{font-size:22px;flex-shrink:0;margin-top:1px;}
+.notice-content{flex:1;min-width:0;}
+.notice-title{font-family:var(--fd);font-size:15px;font-weight:800;color:var(--gold);letter-spacing:.3px;margin-bottom:3px;}
+.notice-body{font-size:13px;color:var(--dim);line-height:1.6;}
+.notice-body strong{color:var(--text);}
+
 </style>
 </head>
 <body>
@@ -334,6 +346,16 @@ body::before{content:'';position:fixed;inset:0;background:
   </div>
   
 
+  <!-- ─── SCHEDULE NOTICE ───────────────────────────────────── -->
+  <!-- Controlled by SCHEDULE_NOTICE config in <script> block below -->
+  <div class="notice-card" id="scheduleNotice" style="display:none">
+    <div class="notice-icon" id="noticeIcon">📅</div>
+    <div class="notice-content">
+      <div class="notice-title" id="noticeTitle"></div>
+      <div class="notice-body" id="noticeBody"></div>
+    </div>
+  </div>
+
   <!-- ─── WEEKLY HIGHLIGHTS ─────────────────────────────────── -->
   <!-- Controlled by HIGHLIGHTS config in <script> block below  -->
   <div class="hl-wrap" id="hlWrap" style="display:none">
@@ -341,7 +363,7 @@ body::before{content:'';position:fixed;inset:0;background:
       <div class="hl-header-left">
         <span style="font-size:18px">🏆</span>
         <div>
-          <div class="hl-label">This Week [7.09.26 - 7.15.26]</div>
+          <div class="hl-label" id="hlRangeLabel">This Week</div>
           <div class="hl-title">Program Highlights</div>
         </div>
       </div>
@@ -365,7 +387,7 @@ body::before{content:'';position:fixed;inset:0;background:
 
   <!-- PANEL 1 — DATE -->
   <div class="panel on" id="p1">
-    <div class="slbl">Select a Session Date - Schedule Will Be Updated Thursday Afternoons</div>
+    <div class="slbl">Select a Session Date</div>
     <div class="date-grid" id="dateGrid">
       <div class="loading-dates"><span class="spin">⟳</span> Loading available dates…</div>
     </div>
@@ -472,41 +494,54 @@ body::before{content:'';position:fixed;inset:0;background:
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// ─── WEEKLY HIGHLIGHTS — EDIT HERE EACH WEEK ─────────────────
+// ─── BOOKING PAGE — WEEKLY INFO CONFIG — EDIT EVERY WEDNESDAY ─
 // ═══════════════════════════════════════════════════════════════
 //
+// SCHEDULE NOTICE — a standing FYI card, separate from Highlights.
+// SHOW_SCHEDULE_NOTICE — true = visible | false = hidden entirely
+// SCHEDULE_NOTICE — { icon, title, body } — body supports <strong>
+//
+const SHOW_SCHEDULE_NOTICE = true;
+const SCHEDULE_NOTICE = {
+  icon: '📅',
+  title: 'Schedule Update',
+  body: 'The upcoming training schedule will be updated every <strong>Thursday afternoon</strong>.'
+};
+
+// WEEKLY HIGHLIGHTS
 // SHOW_HIGHLIGHTS — true = visible | false = hidden entirely
+// HIGHLIGHTS_RANGE — date range shown in the header, e.g. '7.09.26 - 7.15.26'
+//                    leave '' to fall back to 'This Week'
 // HIGHLIGHTS_EXPIRES — 'YYYY-MM-DD' auto-hides after this date
 //                      remove the field to keep it up indefinitely
 // HIGHLIGHTS — up to 4 items: { icon, title, body }
 //   body supports <strong> tags for bold text
 //
-const SHOW_HIGHLIGHTS = true;
-
-const HIGHLIGHTS_EXPIRES = '2026-07-23';
-
+const SHOW_HIGHLIGHTS    = true;
+const HIGHLIGHTS_RANGE   = '7.09.26 - 7.15.26';
+const HIGHLIGHTS_EXPIRES = '2026-07-20';
 const HIGHLIGHTS = [
-  {
-    icon: '🚀',
-    title: 'New Speed PR',
-    body: '<strong>William Barefield</strong> set a new personal best of <strong>17.10 MPH</strong> while also recording a <strong>23\' 1"</strong> standing broad jump.'
-  },
-  {
-    icon: '⚡',
-    title: 'Explosive Improvement',
-    body: '<strong>Elijah Stanley</strong> improved his top speed to a new personal best of <strong>13.46 MPH</strong> while lowering his 40-yard dash to <strong>6.94 seconds</strong>.'
-  },
-  {
-    icon: '🏃',
-    title: 'Elite Consistency',
-    body: '<strong>Sam Talavera</strong> continued his outstanding training with another <strong>17.34 MPH</strong> sprint and a <strong>23\' 2"</strong> standing broad jump.'
-  },
-  {
-    icon: '💥',
-    title: 'First 10m Acceleration Test',
-    body: '<strong>Gavin Gonzales</strong> became the first athlete to complete our new <strong>10m Acceleration</strong> assessment, recording a best time of <strong>2.10 seconds</strong>.'
-  }
+  { icon: '🚀', title: 'New Speed PR', body: '<strong>William Barefield</strong> set a new personal best of <strong>17.10 MPH</strong> while also recording a <strong>23\' 1"</strong> standing broad jump.' },
+  { icon: '⚡', title: 'Explosive Improvement', body: '<strong>Elijah Stanley</strong> improved his top speed to a new personal best of <strong>13.46 MPH</strong> while lowering his 40-yard dash to <strong>6.94 seconds</strong>.' },
+  { icon: '🏃', title: 'Elite Consistency', body: '<strong>Sam Talavera</strong> continued his outstanding training with another <strong>17.34 MPH</strong> sprint and a <strong>23\' 2"</strong> standing broad jump.' },
+  { icon: '💥', title: 'New Testing Milestone', body: '<strong>Gavin Gonzales</strong> became the first athlete to complete our new <strong>10m Acceleration</strong> assessment, recording a best time of <strong>2.10 seconds</strong>.' },
 ];
+
+// ─── RENDER SCHEDULE NOTICE ───────────────────────────────────
+(function renderScheduleNotice() {
+  var el = document.getElementById('scheduleNotice');
+  if (!el) return;
+
+  if (!SHOW_SCHEDULE_NOTICE || !SCHEDULE_NOTICE || !SCHEDULE_NOTICE.body) {
+    el.style.display = 'none';
+    return;
+  }
+
+  document.getElementById('noticeIcon').textContent  = SCHEDULE_NOTICE.icon  || '📅';
+  document.getElementById('noticeTitle').textContent = SCHEDULE_NOTICE.title || 'Notice';
+  document.getElementById('noticeBody').innerHTML     = SCHEDULE_NOTICE.body || '';
+  el.style.display = 'flex';
+})();
 
 // ─── RENDER HIGHLIGHTS ────────────────────────────────────────
 (function renderHighlights() {
@@ -524,6 +559,9 @@ const HIGHLIGHTS = [
     wrap.style.display = 'none';
     return;
   }
+
+  var rangeLbl = document.getElementById('hlRangeLabel');
+  if (rangeLbl) rangeLbl.textContent = HIGHLIGHTS_RANGE || 'This Week';
 
   wrap.style.display = 'block';
   var grid = document.getElementById('hlGrid');
