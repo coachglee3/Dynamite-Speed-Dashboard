@@ -742,6 +742,9 @@ function gvizRows(data) {
         const m = String(cell.v).match(/^Date\((\d+),(\d+),(\d+)\)/);
         obj[col] = m ? `${parseInt(m[1])}-${String(parseInt(m[2])+1).padStart(2,'0')}-${String(parseInt(m[3])).padStart(2,'0')}` : '';
       } else {
+        // Prefer the formatted display value (f) — raw v for a TIME-formatted
+        // cell comes back as a literal "Date(1899,11,30,9,30,0)" object notation,
+        // not the "9:30 AM" text the sheet actually shows.
         obj[col] = cell && cell.f != null ? String(cell.f) : (cell && cell.v != null ? String(cell.v) : '');
       }
     });
