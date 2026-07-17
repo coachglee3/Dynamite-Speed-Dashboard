@@ -400,35 +400,8 @@ body::before{
             <div class="avail-dot" style="background:var(--speed)"></div>
             <div class="avail-card-name" style="color:var(--speed)">Speed Academy</div>
           </div>
-          <div class="avail-rows">
-            <div class="avail-row">
-              <span class="avail-day">Sunday</span>
-              <span class="avail-time open">9:30A - 11:00A</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Monday</span>
-              <span class="avail-time open">8:30A</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Tuesday</span>
-              <span class="avail-time open">5:00PM - 7:00PM</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Wednesday</span>
-              <span class="avail-time open">5:00PM - 7:00PM</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Thursday</span>
-              <span class="avail-time limited">8:30A By Request</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Friday</span>
-              <span class="avail-time open">8:30A</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Saturday</span>
-              <span class="avail-time limited">8:30A By Request</span>
-            </div>
+          <div class="avail-rows" id="avlSpeedRows">
+            <div class="avail-row"><span class="avail-day" style="width:auto;color:var(--muted)">Loading…</span></div>
           </div>
         </div>
 
@@ -438,35 +411,8 @@ body::before{
             <div class="avail-dot" style="background:var(--football)"></div>
             <div class="avail-card-name" style="color:var(--football)">Football Skills</div>
           </div>
-          <div class="avail-rows">
-            <div class="avail-row">
-              <span class="avail-day">Sunday</span>
-              <span class="avail-time limited">8:00AM - 10:30AM • 1:00PM - 7:00PM</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Monday</span>
-              <span class="avail-time closed">No Availability</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Tuesday</span>
-              <span class="avail-time open">8:00AM-7:00PM</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Wednesday</span>
-              <span class="avail-time open">8:00AM-7:00PM</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Thursday</span>
-              <span class="avail-time open">8:00AM-7:00PM</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Friday</span>
-              <span class="avail-time open">8:00AM-7:00PM</span>
-            </div>
-            <div class="avail-row">
-              <span class="avail-day">Saturday</span>
-              <span class="avail-time open">8:00AM-7:00PM</span>
-            </div>
+          <div class="avail-rows" id="avlFootballRows">
+            <div class="avail-row"><span class="avail-day" style="width:auto;color:var(--muted)">Loading…</span></div>
           </div>
         </div>
 
@@ -588,6 +534,107 @@ body::before{
 // ─── CONFIG ────────────────────────────────────────────────────
 // Replace with your Apps Script deployment URL
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzg5uqTBKP9NGLBuVkcmzEEdrjMdGLWpvX4bOybHTGL0sGJ2oH2DoJrrfL7IGrOGjBY/exec';
+
+// ─── AVAILABILITY — live from Google Sheet, mirrors home.html ────────────
+const SHEET_ID        = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
+const AVAILABILITY_GID = '1343759507';
+const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
+
+async function gvizFetch(gid) {
+  try {
+    const res = await fetch(GVIZ(gid));
+    if (!res.ok) return null;
+    const txt = await res.text();
+    const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+    if (s < 0 || e < 0) return null;
+    return JSON.parse(txt.slice(s, e+1));
+  } catch(err) { return null; }
+}
+
+function gvizRows(data) {
+  if (!data || !data.table) return [];
+  const cols = (data.table.cols||[]).map(c => c.label||'');
+  return (data.table.rows||[]).map(row => {
+    const obj = {};
+    cols.forEach((col, i) => {
+      const cell = row.c ? row.c[i] : null;
+      obj[col] = cell && cell.v != null ? String(cell.v) : '';
+    });
+    return obj;
+  });
+}
+
+function titleCaseWords(s) {
+  return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function parseAvailability(rows) {
+  const dayIdx = { SUNDAY:0, MONDAY:1, TUESDAY:2, WEDNESDAY:3, THURSDAY:4, FRIDAY:5, SATURDAY:6 };
+  const result = { speed: Array(7).fill(null), football: Array(7).fill(null) };
+
+  rows.forEach(r => {
+    const program = (r['PROGRAM']||'').toString().trim().toUpperCase();
+    const key = program === 'FOOTBALL' ? 'football' : (program === 'SPEED' ? 'speed' : null);
+    if (!key) return;
+
+    const orderRaw = parseInt(r['ORDER'], 10);
+    const day = (r['DAY']||'').toString().trim().toUpperCase();
+    const idx = !isNaN(orderRaw) ? orderRaw - 1 : dayIdx[day];
+    if (idx == null || idx < 0 || idx > 6) return;
+
+    result[key][idx] = {
+      active: (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE',
+      status: (r['STATUS']||'').toString().trim().toUpperCase(),
+      time:   (r['TIME']||'').toString().trim(),
+      note:   (r['NOTE']||'').toString().trim()
+    };
+  });
+
+  return result;
+}
+
+function availDisplay(entry) {
+  if (!entry || !entry.active || !entry.status || entry.status === 'CLOSED') {
+    return { cls: 'closed', text: 'Unavailable' };
+  }
+  const cls = entry.status === 'LIMITED' ? 'limited' : 'open';
+  const note = entry.note ? titleCaseWords(entry.note) : '';
+  const text = note && entry.time ? (note + ' • ' + entry.time)
+             : note  ? note
+             : entry.time ? entry.time
+             : 'Unavailable';
+  return { cls, text };
+}
+
+function renderAvailabilityGrid(avail) {
+  const dayLabels = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const targets = { speed: 'avlSpeedRows', football: 'avlFootballRows' };
+  Object.keys(targets).forEach(key => {
+    const el = document.getElementById(targets[key]);
+    if (!el) return;
+    el.innerHTML = avail[key].map((entry, i) => {
+      const d = availDisplay(entry);
+      return '<div class="avail-row"><span class="avail-day">' + dayLabels[i] + '</span><span class="avail-time ' + d.cls + '">' + d.text + '</span></div>';
+    }).join('');
+  });
+}
+
+async function loadAvailability() {
+  const targets = ['avlSpeedRows', 'avlFootballRows'];
+  try {
+    const data = await gvizFetch(AVAILABILITY_GID);
+    if (data) {
+      renderAvailabilityGrid(parseAvailability(gvizRows(data)));
+      return;
+    }
+    throw new Error('no data');
+  } catch(e) {
+    targets.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '<div class="avail-row"><span class="avail-day" style="width:auto;color:var(--muted)">Check with your coach for current availability</span></div>';
+    });
+  }
+}
 
 // ─── STATE ─────────────────────────────────────────────────────
 let selectedProg = '';
@@ -826,6 +873,7 @@ document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
 // ─── INIT ────────────────────────────────────────────────────────
 addAthlete();
+loadAvailability();
 </script>
 </body>
 </html>
