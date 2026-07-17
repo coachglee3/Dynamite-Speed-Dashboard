@@ -418,7 +418,7 @@ body::before{
 
       </div>
       <p style="font-size:12px;color:var(--muted);margin-top:10px;font-style:italic;">
-        ⚡ Speed Academy sessions run Sundays at Thrive Park. Sessions throughout the week will be held at various locations. Contact Coach Lee for more info. Football Skills availability reflects private/small group training — contact coach for scheduling.
+        ⚡ Speed Academy sessions run Sundays at Thrive Park. Football Skills availability reflects private/small group training — contact coach for scheduling.
       </p>
     </div>
 
@@ -558,7 +558,10 @@ function gvizRows(data) {
     const obj = {};
     cols.forEach((col, i) => {
       const cell = row.c ? row.c[i] : null;
-      obj[col] = cell && cell.v != null ? String(cell.v) : '';
+      // Prefer the formatted display value (f) — raw v for a TIME-formatted
+      // cell comes back as a literal "Date(1899,11,30,9,30,0)" object notation,
+      // not the "9:30 AM" text the sheet actually shows.
+      obj[col] = cell && cell.f != null ? String(cell.f) : (cell && cell.v != null ? String(cell.v) : '');
     });
     return obj;
   });
