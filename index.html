@@ -912,11 +912,7 @@ function renderOverview(pg, athlete){
         <div class="ksub">Triple broad jump</div>
         ${prTBJ?'<div class="kpr '+cls+'">⭐ Season PR</div>':''}
       </div>
-      ${prog==='YOUTH' ? `<div class="kpi ${cls}">
-        <div class="klbl">Best 10m Accel</div>
-        <div class="kval ${cls}" style="font-size:22px">${prAccel?prAccel.toFixed(2):'—'}<span class="kunit">s</span></div>
-        <div class="ksub">0–10m drive phase — lower is faster</div>
-      </div>` : ''}
+      ${prog==='YOUTH' ? '<div class="kpi '+cls+'"><div class="klbl">Best 10m Accel</div><div class="kval '+cls+'" style="font-size:22px">'+(prAccel?prAccel.toFixed(2):'—')+'<span class="kunit">s</span></div><div class="ksub">0–10m drive phase — lower is faster</div></div>' : ''}
       <div class="kpi ${cls}">
         <div class="klbl">Last Drop%</div>
         <div class="kval ${dropCls(last&&last.f10drop)}" style="font-size:22px">${last&&last.f10drop?last.f10drop:'—'}</div>
@@ -946,11 +942,7 @@ function renderOverview(pg, athlete){
         <div class="cwrap"><canvas id="c40"></canvas></div>
       </div>
     </div>
-    ${prog==='YOUTH' ? `<div class="ccard" style="margin-top:14px">
-      <div class="ctitle">10m Acceleration — Season Trend</div>
-      <div class="csub">Time from 0–10m (raw seconds) — lower is faster. We want this going down. ↓</div>
-      <div class="cwrap"><canvas id="cAccel"></canvas></div>
-    </div>` : ''}`;
+    ${prog==='YOUTH' ? '<div class="ccard" style="margin-top:14px"><div class="ctitle">10m Acceleration — Season Trend</div><div class="csub">Time from 0–10m (raw seconds) — lower is faster. We want this going down. ↓</div><div class="cwrap"><canvas id="cAccel"></canvas></div></div>' : ''}`;
 
   if(S.override) document.getElementById('bbtn').onclick=()=>{S.override=null;buildTabs();};
   const fswEl=document.getElementById('familySwitcherBar');
@@ -1071,9 +1063,7 @@ function renderSessions(pg, athlete) {
             <div style="font-size:12px;color:var(--dim);margin-top:1px;">${fmtFull(b.date)}</div>
           </div>
         </div>
-        ${isSoon ? `<span style="font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;
-          padding:3px 10px;border-radius:4px;text-transform:uppercase;
-          background:#1a1400;border:1px solid var(--gold-dim);color:var(--gold);">This Week</span>` : ''}
+        ${isSoon ? '<span style="font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:4px;text-transform:uppercase;background:#1a1400;border:1px solid var(--gold-dim);color:var(--gold);">This Week</span>' : ''}
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
         <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;padding:8px 12px;">
@@ -1093,7 +1083,7 @@ function renderSessions(pg, athlete) {
           <div style="font-family:var(--fd);font-size:16px;font-weight:800;color:var(--gold);">${price}<span style="font-size:11px;font-weight:400;color:var(--dim);margin-left:3px;">/ athlete</span></div>
         </div>
       </div>
-      ${b.notes ? `<div style="font-size:12px;color:var(--muted);font-style:italic;padding-top:4px;">📝 ${b.notes}</div>` : ''}
+      ${b.notes ? '<div style="font-size:12px;color:var(--muted);font-style:italic;padding-top:4px;">📝 '+b.notes+'</div>' : ''}
     </div>`;
   }).join('');
 
@@ -1573,17 +1563,9 @@ function renderSchedule(pg) {
       </a>
     </div>
 
-    ${notConfigured ? `
-    <div style="background:#1a1400;border:1px solid var(--gold-dim);border-radius:10px;padding:18px 20px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-start">
-      <div style="font-size:20px">⚙️</div>
-      <div>
-        <div style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--gold);margin-bottom:4px">Schedule Not Yet Configured</div>
-        <div style="font-size:13px;color:var(--dim);line-height:1.6">Add your Schedule and Bookings sheet GIDs to the CONFIG section, then add session dates to your Schedule tab.</div>
-      </div>
-    </div>` : ''}
+    ${notConfigured ? '<div style="background:#1a1400;border:1px solid var(--gold-dim);border-radius:10px;padding:18px 20px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-start"><div style="font-size:20px">⚙️</div><div><div style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--gold);margin-bottom:4px">Schedule Not Yet Configured</div><div style="font-size:13px;color:var(--dim);line-height:1.6">Add your Schedule and Bookings sheet GIDs to the CONFIG section, then add session dates to your Schedule tab.</div></div></div>' : ''}
 
-    ${upcoming.length === 0 && !notConfigured ? `
-    <div class="tcard"><div class="empty"><div class="ei">📅</div>No upcoming sessions scheduled.</div></div>` : ''}
+    ${upcoming.length === 0 && !notConfigured ? '<div class="tcard"><div class="empty"><div class="ei">📅</div>No upcoming sessions scheduled.</div></div>' : ''}
 
     ${upcoming.map(sch => {
       const d = new Date(sch.date+'T12:00:00');
@@ -1626,40 +1608,30 @@ function renderSchedule(pg) {
           +'</div>';
       }).join('');
 
-      return `
-        <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:16px 18px;margin-bottom:12px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-            <div style="font-family:var(--fd);font-size:18px;font-weight:800;color:var(--text)">${dayLabel}</div>
-            ${sch.notes?`<div style="font-size:12px;color:var(--dim);font-style:italic">${sch.notes}</div>`:''}
-            <div style="font-size:11px;color:var(--muted)">${bkForDate.length} booking${bkForDate.length!==1?'s':''}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px">${slotRows}</div>
-        </div>`;
+      return '<div style="background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:16px 18px;margin-bottom:12px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px"><div style="font-family:var(--fd);font-size:18px;font-weight:800;color:var(--text)">'+dayLabel+'</div>'
+        +(sch.notes?'<div style="font-size:12px;color:var(--dim);font-style:italic">'+sch.notes+'</div>':'')
+        +'<div style="font-size:11px;color:var(--muted)">'+bkForDate.length+' booking'+(bkForDate.length!==1?'s':'')+'</div>'
+        +'</div><div style="display:flex;flex-direction:column;gap:8px">'+slotRows+'</div></div>';
     }).join('')}
 
     <div style="margin-top:24px;background:var(--surf);border:1px solid var(--bdr);border-radius:10px;overflow:hidden">
       <div class="thdr">All Bookings — Full Log</div>
-      ${S.bookings.length === 0 ? '<div class="empty"><div class="ei">📋</div>No bookings yet.</div>' : `
-      <div class="tscroll"><table class="dt">
-        <thead><tr>
-          <th>Date</th><th>Program</th><th>Athletes</th><th>Family Code</th><th>Parent</th><th>Notes</th><th>Booked At</th>
-        </tr></thead>
-        <tbody>
-          ${S.bookings.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).map(b=>{
+      ${S.bookings.length === 0 ? '<div class="empty"><div class="ei">📋</div>No bookings yet.</div>' : (
+        '<div class="tscroll"><table class="dt"><thead><tr><th>Date</th><th>Program</th><th>Athletes</th><th>Family Code</th><th>Parent</th><th>Notes</th><th>Booked At</th></tr></thead><tbody>'
+        + S.bookings.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).map(b=>{
             const pc = progColors[b.program]||'var(--dim)';
             const pl = progLabels[b.program]||b.program;
-            return `<tr>
-              <td style="color:var(--dim);white-space:nowrap">${fmtDate(b.date)}</td>
-              <td><span style="font-family:var(--fd);font-size:13px;font-weight:700;color:${pc}">${pl}</span></td>
-              <td style="font-weight:600">${b.athletes||'—'}</td>
-              <td style="font-family:monospace;font-size:12px;color:var(--blue)">${b.familyCode||'—'}</td>
-              <td style="color:var(--dim)">${b.parent||'—'}</td>
-              <td style="font-size:12px;color:var(--muted)">${b.notes||'—'}</td>
-              <td style="font-size:11px;color:var(--muted)">${b.timestamp?b.timestamp.split('T')[0]:'—'}</td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table></div>`}
+            return '<tr><td style="color:var(--dim);white-space:nowrap">'+fmtDate(b.date)+'</td>'
+              +'<td><span style="font-family:var(--fd);font-size:13px;font-weight:700;color:'+pc+'">'+pl+'</span></td>'
+              +'<td style="font-weight:600">'+(b.athletes||'—')+'</td>'
+              +'<td style="font-family:monospace;font-size:12px;color:var(--blue)">'+(b.familyCode||'—')+'</td>'
+              +'<td style="color:var(--dim)">'+(b.parent||'—')+'</td>'
+              +'<td style="font-size:12px;color:var(--muted)">'+(b.notes||'—')+'</td>'
+              +'<td style="font-size:11px;color:var(--muted)">'+(b.timestamp?b.timestamp.split('T')[0]:'—')+'</td>'
+              +'</tr>';
+          }).join('')
+        + '</tbody></table></div>'
+      )}
     </div>`;
 }
 
