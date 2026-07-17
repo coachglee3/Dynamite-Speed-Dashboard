@@ -338,7 +338,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   <div class="hero-bg-lines"></div>
   <div class="hero-glow"></div>
   <div class="hero-eyebrow">San Diego, CA · Ages 6–18</div>
-  <h1 class="hero-title">S.D. Dynamite Speed<em>Academies</em></h1>
+  <h1 class="hero-title">S.D. Dynamite<em>Academies</em></h1>
   <p class="hero-tagline">Speed. Movement. Performance.</p>
   <p class="hero-desc">A session-based dual-performance academy where athletes build <strong>real, measurable sprint speed</strong> and position-specific football skills — timed with elite Fully Automatic Timing technology every rep.</p>
   <div class="timing-badge"><span class="tb-dot"></span>ArenaGear Fully Automatic Timing — Every Sprint. Every Session.</div>
@@ -358,7 +358,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 <hr class="divider">
 
 <!-- ─── ANNOUNCEMENTS ─────────────────────────────────────────── -->
-<!-- Edit ANNOUNCEMENTS array in the <script> block below to manage all posts -->
+<!-- Alerts/Info/Highlights are pulled live from the "Highlights" Google Sheet tab (TYPE column). ANNOUNCEMENTS array in the script block below is a manual-override fallback only. -->
 <div class="ann-section" id="annSection">
   <div class="ann-section-inner">
     <div class="ann-stack" id="annStack"></div>
@@ -618,26 +618,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       <div class="reg-avail-grid">
         <div class="rav-card">
           <div class="rav-head"><div class="rav-dot" style="background:var(--speed)"></div><div class="rav-name" style="color:var(--speed)">Speed</div></div>
-          <div class="rav-rows">
-            <div class="rav-row"><span class="rav-day">Sunday</span><span class="rav-time open">9:30AM-11:00AM</span></div>
-            <div class="rav-row"><span class="rav-day">Mon</span><span class="rav-time limited">By Request • 930AM-2PM</span></div>
-            <div class="rav-row"><span class="rav-day">Tue</span><span class="rav-time limited">By Request • 5PM-7PM</span></div>
-            <div class="rav-row"><span class="rav-day">Wed</span><span class="rav-time limited">By Request • 5PM-7PM</span></div>
-            <div class="rav-row"><span class="rav-day">Thu</span><span class="rav-time limited">8:30AM By Request</span></div>
-            <div class="rav-row"><span class="rav-day">Fri</span><span class="rav-time limited">8:30AM By Request</span></div>
-            <div class="rav-row"><span class="rav-day">Sat</span><span class="rav-time limited">8:30AM By Request</span></div>
+          <div class="rav-rows" id="ravSpeedRows">
+            <div class="rav-row"><span class="rav-day" style="width:auto;color:var(--muted)">Loading…</span></div>
           </div>
         </div>
         <div class="rav-card">
           <div class="rav-head"><div class="rav-dot" style="background:var(--football)"></div><div class="rav-name" style="color:var(--football)">Football</div></div>
-          <div class="rav-rows">
-            <div class="rav-row"><span class="rav-day">Sunday</span><span class="rav-time open">8AM–10:30AM</span></div>
-            <div class="rav-row"><span class="rav-day">Mon</span><span class="rav-time closed">Unavailable</span></div>
-            <div class="rav-row"><span class="rav-day">Tue</span><span class="rav-time open">By Request • 8AM–7PM</span></div>
-            <div class="rav-row"><span class="rav-day">Wed</span><span class="rav-time open">By Request • 8AM–7PM</span></div>
-            <div class="rav-row"><span class="rav-day">Thu</span><span class="rav-time open">By Request • 8AM–7PM</span></div>
-            <div class="rav-row"><span class="rav-day">Fri</span><span class="rav-time open">By Request • 8AM–7PM</span></div>
-            <div class="rav-row"><span class="rav-day">Sat</span><span class="rav-time open">By Request • 8AM–7PM</span></div>
+          <div class="rav-rows" id="ravFootballRows">
+            <div class="rav-row"><span class="rav-day" style="width:auto;color:var(--muted)">Loading…</span></div>
           </div>
         </div>
       </div>
@@ -718,6 +706,7 @@ const SHEET_ID    = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
 const SCHEDULE_GID = '673816025';
 const BOOKINGS_GID = '1223610839';
 const HIGHLIGHTS_GID = '381306568';
+const AVAILABILITY_GID = '1343759507';
 const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
 
 const PROG_COLORS  = { speed:'var(--speed)', football:'var(--football)', combined:'var(--combined)' };
@@ -928,10 +917,14 @@ const BANNER = {
 // type: 'alert' → red/orange — cancellations, urgent changes
 // type: 'info'  → gold       — schedule notes, location changes, reminders
 //
-// Program Highlights (the green good-news grid) is no longer edited here —
-// it's pulled live from the "Highlights" tab in the Google Sheet (see
-// loadHighlights() below). Toggle a highlight on/off with the ACTIVE column
-// on that sheet instead of editing this file.
+// Alert/Info cards — like Program Highlights — are pulled live from the same
+// "Highlights" Google Sheet tab (see loadAnnouncementSheet() below), using the
+// TYPE column (HIGHLIGHT / ALERT / INFO) plus ACTIVE and EXPIRES. RANGE_LABEL
+// is reused as the small caption line at the bottom of the card.
+//
+// The ANNOUNCEMENTS array below still works as a manual override for a
+// one-off post you don't want to put in the sheet — sheet-driven alerts/info
+// render first, then anything listed here.
 //
 //   { type, icon, badge, title, body, date }
 //
@@ -957,33 +950,59 @@ const ANNOUNCEMENTS = [
   // },
 ];
 
-// ─── HIGHLIGHTS — live from Google Sheet "Highlights" tab ─────
+// ─── HIGHLIGHTS / ALERTS / INFO — all live from the "Highlights" Google Sheet tab ─────
+// Same tab, split by the TYPE column. One fetch, three buckets.
 let HIGHLIGHT_ITEMS = [];
+let SHEET_ALERTS     = [];
+let SHEET_INFOS      = [];
 
-function parseHighlights(rows) {
+function parseAnnouncementSheet(rows) {
   const today = new Date(); today.setHours(0,0,0,0);
-  return rows
+
+  const live = rows
     .filter(r => (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE')
-    .filter(r => (r['TYPE']||'').toString().trim().toUpperCase() === 'HIGHLIGHT')
     .filter(r => {
       const exp = (r['EXPIRES']||'').toString().trim();
       if (!exp) return true;
       const expDate = new Date(exp + 'T00:00:00');
       return expDate >= today;
-    })
+    });
+
+  const highlights = live
+    .filter(r => (r['TYPE']||'').toString().trim().toUpperCase() === 'HIGHLIGHT')
     .map(r => ({
       icon:  (r['ICON']||'').toString().trim(),
       title: (r['TITLE']||'').toString().trim(),
       body:  (r['BODY']||'').toString().trim()
     }))
     .slice(0, 8); // soft cap so the grid stays readable — raise anytime
+
+  function mapAlertOrInfo(r) {
+    return {
+      type:  (r['TYPE']||'').toString().trim().toLowerCase(), // 'alert' or 'info'
+      icon:  (r['ICON']||'').toString().trim(),
+      title: (r['TITLE']||'').toString().trim(),
+      body:  (r['BODY']||'').toString().trim(),
+      date:  (r['RANGE_LABEL']||'').toString().trim()
+    };
+  }
+
+  const alerts = live.filter(r => (r['TYPE']||'').toString().trim().toUpperCase() === 'ALERT').map(mapAlertOrInfo);
+  const infos  = live.filter(r => (r['TYPE']||'').toString().trim().toUpperCase() === 'INFO').map(mapAlertOrInfo);
+
+  return { highlights, alerts, infos };
 }
 
-async function loadHighlights() {
+async function loadAnnouncementSheet() {
   try {
     const data = await gvizFetch(HIGHLIGHTS_GID);
-    if (data) HIGHLIGHT_ITEMS = parseHighlights(gvizRows(data));
-  } catch(e) { /* highlights are non-critical — section just stays hidden on failure */ }
+    if (data) {
+      const parsed = parseAnnouncementSheet(gvizRows(data));
+      HIGHLIGHT_ITEMS = parsed.highlights;
+      SHEET_ALERTS    = parsed.alerts;
+      SHEET_INFOS     = parsed.infos;
+    }
+  } catch(e) { /* sheet-driven announcements are non-critical — section just stays hidden on failure */ }
   renderAnnouncements();
 }
 
@@ -1000,11 +1019,11 @@ function renderAnnouncements() {
     banner.classList.add('hidden');
   }
 
-  // Mid-page stack
+  // Mid-page stack — sheet-driven alerts/info first, then any manual entries
   const stack   = document.getElementById('annStack');
   const section = document.getElementById('annSection');
 
-  const items = ANNOUNCEMENTS.slice();
+  const items = SHEET_ALERTS.concat(SHEET_INFOS, ANNOUNCEMENTS);
   if (HIGHLIGHT_ITEMS.length) {
     items.unshift({ type: 'good-news', items: HIGHLIGHT_ITEMS });
   }
@@ -1055,10 +1074,86 @@ function dismissBanner() {
   document.getElementById('annBanner').classList.add('hidden');
 }
 
+// ─── AVAILABILITY — live from the "Availability" Google Sheet tab ─────
+// Columns: PROGRAM | DAY | STATUS | TIME | NOTE | ORDER | ACTIVE
+// A day with ACTIVE not TRUE, or no STATUS, renders as "Unavailable".
+function titleCaseWords(s) {
+  return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function parseAvailability(rows) {
+  const dayIdx = { SUNDAY:0, MONDAY:1, TUESDAY:2, WEDNESDAY:3, THURSDAY:4, FRIDAY:5, SATURDAY:6 };
+  const result = { speed: Array(7).fill(null), football: Array(7).fill(null) };
+
+  rows.forEach(r => {
+    const program = (r['PROGRAM']||'').toString().trim().toUpperCase();
+    const key = program === 'FOOTBALL' ? 'football' : (program === 'SPEED' ? 'speed' : null);
+    if (!key) return;
+
+    const orderRaw = parseInt(r['ORDER'], 10);
+    const day = (r['DAY']||'').toString().trim().toUpperCase();
+    const idx = !isNaN(orderRaw) ? orderRaw - 1 : dayIdx[day];
+    if (idx == null || idx < 0 || idx > 6) return;
+
+    result[key][idx] = {
+      active: (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE',
+      status: (r['STATUS']||'').toString().trim().toUpperCase(),
+      time:   (r['TIME']||'').toString().trim(),
+      note:   (r['NOTE']||'').toString().trim()
+    };
+  });
+
+  return result;
+}
+
+function availDisplay(entry) {
+  if (!entry || !entry.active || !entry.status || entry.status === 'CLOSED') {
+    return { cls: 'closed', text: 'Unavailable' };
+  }
+  const cls = entry.status === 'LIMITED' ? 'limited' : 'open';
+  const note = entry.note ? titleCaseWords(entry.note) : '';
+  const text = note && entry.time ? (note + ' • ' + entry.time)
+             : note  ? note
+             : entry.time ? entry.time
+             : 'Unavailable';
+  return { cls, text };
+}
+
+function renderAvailabilityGrid(avail) {
+  const dayLabels = ['Sunday','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const targets = { speed: 'ravSpeedRows', football: 'ravFootballRows' };
+  Object.keys(targets).forEach(key => {
+    const el = document.getElementById(targets[key]);
+    if (!el) return;
+    el.innerHTML = avail[key].map((entry, i) => {
+      const d = availDisplay(entry);
+      return '<div class="rav-row"><span class="rav-day">' + dayLabels[i] + '</span><span class="rav-time ' + d.cls + '">' + d.text + '</span></div>';
+    }).join('');
+  });
+}
+
+async function loadAvailability() {
+  const targets = ['ravSpeedRows', 'ravFootballRows'];
+  try {
+    const data = await gvizFetch(AVAILABILITY_GID);
+    if (data) {
+      renderAvailabilityGrid(parseAvailability(gvizRows(data)));
+      return;
+    }
+    throw new Error('no data');
+  } catch(e) {
+    targets.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '<div class="rav-row"><span class="rav-day" style="width:auto;color:var(--muted)">Check with your coach for current availability</span></div>';
+    });
+  }
+}
+
 // Load sessions on page load
 loadSessions();
 renderAnnouncements();
-loadHighlights();
+loadAnnouncementSheet();
+loadAvailability();
 </script>
 </body>
 </html>
