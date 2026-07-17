@@ -3,402 +3,733 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dynamite Speed — Dashboard</title>
+<title>Dynamite Speed Academy — San Diego, CA</title>
+<meta name="description" content="Lee Brothers Academy — session-based speed and football performance training for athletes ages 6–18 in San Diego, CA. ArenaGear timed every rep.">
 <link rel="icon" type="image/png" href="https://i.imgur.com/Kxww0Xn.png">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,700;1,800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
 :root{
-  --gold:#F5C518;--gold-dim:#c9a012;--black:#0e0e0e;
-  --surf:#1a1a1a;--surf2:#242424;--surf3:#2e2e2e;--bdr:#333;
-  --text:#f0f0f0;--dim:#888;--muted:#555;
-  --green:#4caf72;--red:#e05555;--orange:#e08844;--blue:#5599dd;
-  --youth:#38bdf8;--youth-dim:#0369a1;--youth-bg:#051825;
+  --gold:#F5C518;--gold-dim:#c9a012;--gold-glow:rgba(245,197,24,.10);
+  --black:#09090b;--s1:#111113;--s2:#18181b;--s3:#242428;
+  --bdr:#2c2c30;--bdr2:#38383e;--text:#f4f4f5;--dim:#888;--muted:#555;
+  --speed:#F5C518;--football:#e05555;--combined:#4caf72;--youth:#38bdf8;
   --fd:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--black);color:var(--text);font-family:var(--fb);min-height:100vh;font-size:14px;}
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:var(--surf);}
-::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px;}
+body{background:var(--black);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.6;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--s1);}::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px;}
+a{color:inherit;text-decoration:none;}img{display:block;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 70% 50% at 50% -5%,rgba(245,197,24,.06) 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 90% 90%,rgba(56,189,248,.03) 0%,transparent 50%);}
 
-/* HEADER */
-.hdr{background:var(--surf);border-bottom:2px solid var(--gold);padding:0 22px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.hdr.ya{border-bottom-color:var(--youth);}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo-img{height:34px;width:auto;object-fit:contain;display:block;}
-.logo small{font-family:var(--fd);font-weight:400;font-size:14px;color:var(--dim);}
-.hdr-r{display:flex;align-items:center;gap:8px;}
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,11,.92);border-bottom:1px solid var(--bdr);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);height:58px;display:flex;align-items:center;padding:0 24px;gap:20px;}
+.nav-logo a{display:flex;align-items:center;gap:10px;}
+.nav-logo img{height:30px;width:auto;}
+.nav-logo-text{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--dim);letter-spacing:.5px;text-transform:uppercase;}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:auto;}
+.nav-link{font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);padding:6px 13px;border-radius:6px;transition:color .15s,background .15s;white-space:nowrap;}
+.nav-link:hover,.nav-link.active{color:var(--text);background:var(--s2);}
+.nav-cta{background:var(--gold);color:var(--black)!important;border-radius:7px;padding:7px 16px!important;font-weight:800!important;transition:background .15s,transform .1s;}
+.nav-cta:hover{background:#e6b800!important;transform:translateY(-1px);}
+.nav-mobile-btn{display:none;background:none;border:1px solid var(--bdr);border-radius:6px;padding:5px 10px;color:var(--dim);cursor:pointer;font-size:18px;margin-left:auto;}
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .nav-links.open{display:flex;flex-direction:column;align-items:flex-start;position:absolute;top:58px;left:0;right:0;background:var(--s1);border-bottom:1px solid var(--bdr);padding:12px 20px;gap:4px;z-index:200;}
+  .nav-mobile-btn{display:block;}
+}
 
-/* PRE-AUTH NAV LINKS */
-.hdr-nav{display:flex;align-items:center;gap:4px;}
-.hdr-nav-link{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);padding:5px 11px;border-radius:6px;text-decoration:none;transition:all .15s;white-space:nowrap;}
-.hdr-nav-link:hover{color:var(--text);background:var(--surf2);}
-.hdr-nav-link.cta{background:var(--gold);color:var(--black)!important;border-radius:6px;}
-.hdr-nav-link.cta:hover{background:#e6b800;}
-.hdr-nav.hidden{display:none;}
+/* BUTTONS */
+.btn-primary{background:var(--gold);color:var(--black);border:none;border-radius:9px;padding:15px 32px;font-family:var(--fd);font-size:17px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;display:inline-block;transition:background .15s,transform .1s,box-shadow .15s;box-shadow:0 0 32px rgba(245,197,24,.25);}
+.btn-primary:hover{background:#e6b800;transform:translateY(-2px);box-shadow:0 4px 40px rgba(245,197,24,.4);}
+.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--bdr2);border-radius:9px;padding:14px 28px;font-family:var(--fd);font-size:16px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;display:inline-block;transition:border-color .15s,color .15s,transform .1s;}
+.btn-secondary:hover{border-color:var(--gold-dim);color:var(--gold);transform:translateY(-2px);}
 
-.ppill{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:20px;display:none;}
-.ppill.hs{background:#2a2200;border:1px solid var(--gold-dim);color:var(--gold);}
-.ppill.ya{background:var(--youth-bg);border:1px solid var(--youth-dim);color:var(--youth);}
-.ppill.on{display:block;}
-.upill{background:var(--surf2);border:1px solid var(--bdr);border-radius:20px;padding:3px 12px;font-size:12px;color:var(--dim);display:none;}
-.upill.on{display:block;}
-.btn-out{background:transparent;border:1px solid var(--bdr);color:var(--dim);padding:5px 11px;border-radius:6px;cursor:pointer;font-size:12px;font-family:var(--fb);display:none;transition:all .15s;}
-.btn-out:hover{border-color:var(--dim);color:var(--text);}
-.btn-out.on{display:block;}
-
-/* STATUS BAR */
-.sbar{background:var(--surf2);border-bottom:1px solid var(--bdr);padding:5px 22px;font-size:11px;color:var(--muted);display:none;justify-content:space-between;align-items:center;}
-.sbar.on{display:flex;}
-.slive{color:var(--green);font-weight:600;}
-.soff{color:var(--orange);font-weight:600;}
-
-/* LOGIN */
-.login-page{min-height:calc(100vh - 54px);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:24px;background:radial-gradient(ellipse at 50% 0%,#2a2400 0%,transparent 55%),var(--black);}
-.prog-sel{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
-.ps{background:var(--surf);border:2px solid var(--bdr);border-radius:12px;padding:22px 28px;cursor:pointer;text-align:center;transition:all .2s;min-width:155px;}
-.ps:hover{transform:translateY(-2px);}
-.ps-hs:hover,.ps-hs.sel{border-color:var(--gold);background:#1e1800;}
-.ps-ya:hover,.ps-ya.sel{border-color:var(--youth);background:var(--youth-bg);}
-.ps-icon{font-size:34px;margin-bottom:8px;}
-.ps-lbl{font-family:var(--fd);font-size:17px;font-weight:800;letter-spacing:.5px;}
-.ps-hs .ps-lbl{color:var(--gold);}
-.ps-ya .ps-lbl{color:var(--youth);}
-.ps-sub{font-size:12px;color:var(--muted);margin-top:3px;}
-.lcard{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:34px;width:100%;max-width:350px;text-align:center;display:none;}
-.lcard.on{display:block;}
-.lcard.hs{border-top:3px solid var(--gold);}
-.lcard.ya{border-top:3px solid var(--youth);}
-.lcat{font-size:38px;margin-bottom:10px;}
-.ltitle{font-family:var(--fd);font-size:25px;font-weight:800;letter-spacing:1px;margin-bottom:4px;}
-.ltitle.hs{color:var(--gold);}
-.ltitle.ya{color:var(--youth);}
-.lsub{color:var(--dim);font-size:13px;margin-bottom:22px;}
-.llbl{text-align:left;font-size:11px;color:var(--dim);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
-.linp{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:12px 16px;color:var(--text);font-size:17px;font-family:var(--fd);font-weight:600;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:12px;transition:border-color .15s;}
-.linp:focus{outline:none;}
-.linp.hs:focus{border-color:var(--gold);}
-.linp.ya:focus{border-color:var(--youth);}
-.btn-go{width:100%;border:none;border-radius:8px;padding:12px;font-family:var(--fd);font-size:17px;font-weight:800;letter-spacing:1px;cursor:pointer;transition:all .15s;}
-.btn-go.hs{background:var(--gold);color:var(--black);}
-.btn-go.hs:hover{background:#e6b800;}
-.btn-go.ya{background:var(--youth);color:var(--black);}
-.btn-go.ya:hover{background:#7dd3fc;}
-.btn-go:active{transform:scale(.98);}
-.btn-back{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:10px;font-family:var(--fb);}
-.lerr{color:var(--red);font-size:13px;margin-top:8px;min-height:16px;}
-.lhint{margin-top:18px;font-size:12px;color:var(--muted);line-height:1.7;}
-.lhint strong{color:var(--dim);}
-.lbar{height:3px;background:var(--surf2);border-radius:2px;margin-top:12px;overflow:hidden;display:none;}
-.lbar.on{display:block;}
-.lfill{height:100%;width:0%;border-radius:2px;transition:width .4s ease;}
-.lfill.hs{background:var(--gold);}
-.lfill.ya{background:var(--youth);}
-.lmsg{font-size:11px;color:var(--muted);margin-top:5px;min-height:14px;}
-
-/* APP */
-.app{display:none;}
-.app.on{display:block;}
-.tabs{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 20px;display:flex;overflow-x:auto;}
-.tab{background:none;border:none;border-bottom:3px solid transparent;color:var(--dim);font-family:var(--fd);font-size:14px;font-weight:600;letter-spacing:.5px;padding:13px 15px 10px;cursor:pointer;transition:all .15s;text-transform:uppercase;white-space:nowrap;}
-.tab:hover{color:var(--text);}
-.tab.on.hs{color:var(--gold);border-bottom-color:var(--gold);}
-.tab.on.ya{color:var(--youth);border-bottom-color:var(--youth);}
-.pg{display:none;padding:20px;max-width:1100px;margin:0 auto;}
-.pg.on{display:block;}
+/* SECTION */
+.section{position:relative;z-index:1;padding:80px 24px;}
+.section-inner{max-width:1040px;margin:0 auto;}
+.section-label{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:.75;margin-bottom:10px;}
+.section-title{font-family:var(--fd);font-size:clamp(34px,5vw,54px);font-weight:900;letter-spacing:-1px;line-height:1.0;color:var(--text);margin-bottom:14px;}
+.section-sub{font-size:16px;color:var(--dim);max-width:560px;line-height:1.7;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--bdr),transparent);margin:0;border:none;}
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
+.fade-up.d1{transition-delay:.07s;}.fade-up.d2{transition-delay:.14s;}.fade-up.d3{transition-delay:.21s;}.fade-up.d4{transition-delay:.28s;}
 
 /* HERO */
-.hero{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
-.av{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:19px;font-weight:800;color:var(--black);flex-shrink:0;}
-.av.hs{background:var(--gold);}
-.av.ya{background:var(--youth);}
-.aname{font-family:var(--fd);font-size:24px;font-weight:800;color:var(--text);}
-.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;}
-.chip{background:var(--surf2);border:1px solid var(--bdr);border-radius:4px;padding:2px 8px;font-size:11px;color:var(--dim);}
-.chip-g{background:#2a2200;border-color:var(--gold-dim);color:var(--gold);}
-.chip-y{background:var(--youth-bg);border-color:var(--youth-dim);color:var(--youth);}
+.hero{position:relative;z-index:1;min-height:92vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 100px;overflow:hidden;}
+.hero-bg-lines{position:absolute;inset:0;pointer-events:none;opacity:.05;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.5) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,.5) 60px);}
+.hero-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:900px;height:500px;pointer-events:none;background:radial-gradient(ellipse at center,rgba(245,197,24,.12) 0%,transparent 70%);}
+.hero-eyebrow{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);opacity:.85;margin-bottom:18px;display:inline-flex;align-items:center;gap:8px;}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';display:inline-block;width:28px;height:1px;background:var(--gold);opacity:.5;}
+.hero-title{font-family:var(--fd);font-weight:900;letter-spacing:-2px;line-height:.92;font-size:clamp(56px,11vw,130px);color:var(--text);margin-bottom:8px;}
+.hero-title em{font-style:normal;color:var(--gold);display:block;}
+.hero-tagline{font-family:var(--fd);font-size:clamp(18px,3vw,28px);font-weight:600;color:var(--dim);letter-spacing:.5px;margin-bottom:28px;text-transform:uppercase;}
+.hero-desc{font-size:16px;color:var(--dim);max-width:520px;margin:0 auto 14px;line-height:1.7;}
+.hero-desc strong{color:var(--text);}
+.timing-badge{display:inline-flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--bdr);border-radius:8px;padding:8px 16px;font-size:13px;color:var(--dim);margin:0 auto 36px;}
+.tb-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 1.6s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:52px;}
+.hero-stats{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;padding:22px 32px;background:var(--s2);border:1px solid var(--bdr);border-radius:14px;max-width:600px;margin:0 auto;}
+.hstat{text-align:center;}
+.hstat-num{font-family:var(--fd);font-size:36px;font-weight:900;color:var(--gold);line-height:1;}
+.hstat-lbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:3px;font-weight:600;}
+.hero-scroll{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;font-family:var(--fd);animation:bob 2s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(5px)}}
 
-/* STATS ROW */
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
-.stat-card{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:13px 15px;}
-.stat-card.hs{border-top:3px solid var(--gold);}
-.stat-card.ya{border-top:3px solid var(--youth);}
-.slbl{font-size:10px;font-weight:700;font-family:var(--fd);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;color:var(--dim);}
-.sval{font-family:var(--fd);font-size:20px;font-weight:700;color:var(--text);}
-.sdef{font-size:11px;color:var(--muted);margin-top:2px;}
+/* PROGRAMS */
+.programs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:48px;}
+.prog-card{background:var(--s2);border:1px solid var(--bdr);border-radius:14px;padding:28px 26px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s;}
+.prog-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.prog-card.speed::before{background:var(--speed);}
+.prog-card.football::before{background:var(--football);}
+.prog-card.combined::before{background:linear-gradient(90deg,var(--speed),var(--combined));}
+.prog-card:hover{transform:translateY(-3px);border-color:var(--bdr2);box-shadow:0 8px 40px rgba(0,0,0,.4);}
+.pc-icon{font-size:30px;margin-bottom:14px;}
+.pc-name{font-family:var(--fd);font-size:24px;font-weight:800;letter-spacing:.5px;margin-bottom:4px;}
+.prog-card.speed .pc-name{color:var(--speed);}
+.prog-card.football .pc-name{color:var(--football);}
+.prog-card.combined .pc-name{color:var(--combined);}
+.pc-price{font-family:var(--fd);font-size:40px;font-weight:900;color:var(--gold);line-height:1;margin-bottom:4px;}
+.pc-price small{font-size:15px;font-weight:400;color:var(--dim);}
+.pc-desc{font-size:14px;color:var(--dim);line-height:1.65;margin-bottom:18px;}
+.pc-features{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;}
+.pc-features li{font-size:13px;color:var(--text);display:flex;align-items:flex-start;gap:8px;}
+.pc-features li::before{content:'✓';color:var(--gold);font-weight:700;font-size:13px;flex-shrink:0;margin-top:1px;}
+.pc-badge{position:absolute;top:18px;right:16px;font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 9px;border-radius:20px;text-transform:uppercase;}
+.badge-popular{background:#221a00;border:1px solid var(--gold-dim);color:var(--dim);}
+.programs-footer{margin-top:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.programs-footer p{font-size:14px;color:var(--muted);}
+.programs-footer a{font-size:14px;color:var(--gold);}
+.programs-footer a.btn-primary{color:var(--black)!important;}
 
-/* EDITABLE GOALS */
-.goals-section{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:16px 18px;margin-bottom:18px;}
-.goals-title{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
-.goals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.goal-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:12px 14px;}
-.gc{border-top:3px solid var(--muted);}
-.gb{border-top:3px solid var(--blue);}
-.ga{border-top:3px solid var(--gold);background:#1a1500;}
-.glbl{font-size:10px;font-weight:700;font-family:var(--fd);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
-.gc .glbl{color:var(--muted);}
-.gb .glbl{color:var(--blue);}
-.ga .glbl{color:var(--gold);}
-.goal-inp{width:100%;background:transparent;border:none;border-bottom:1px solid var(--bdr);color:var(--text);font-family:var(--fd);font-size:20px;font-weight:700;padding:2px 0;text-align:center;transition:border-color .15s;}
-.goal-inp:focus{outline:none;border-bottom-color:var(--gold);}
-.gdef{font-size:11px;color:var(--muted);margin-top:4px;}
-.btn-save-goals{background:var(--gold);color:var(--black);border:none;border-radius:5px;padding:4px 12px;font-family:var(--fd);font-size:12px;font-weight:700;cursor:pointer;transition:background .15s;}
-.btn-save-goals:hover{background:#e6b800;}
-.goals-saved{font-size:11px;color:var(--green);margin-left:8px;}
+/* SESSIONS */
+.sessions-section{background:var(--s1);}
+.sessions-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;margin-top:40px;}
+.session-card{background:var(--s2);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;transition:transform .18s,border-color .18s;}
+.session-card:hover{transform:translateY(-3px);border-color:var(--bdr2);}
+.sc-header{padding:16px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px;}
+.sc-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.sc-name{font-family:var(--fd);font-size:18px;font-weight:800;letter-spacing:.5px;}
+.sc-body{padding:18px 20px;display:flex;flex-direction:column;gap:10px;}
+.sc-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);}
+.sc-row strong{color:var(--text);font-weight:600;}
+.sc-icon{font-size:14px;flex-shrink:0;width:18px;text-align:center;}
+.sc-price{margin-top:4px;padding-top:14px;border-top:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
+.sc-price-num{font-family:var(--fd);font-size:28px;font-weight:900;color:var(--gold);}
+.sc-price-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.sc-note{font-size:12px;color:var(--muted);font-style:italic;padding:10px 20px 16px;border-top:1px solid var(--bdr);line-height:1.5;}
+.sc-spots{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:4px;text-transform:uppercase;display:inline-block;margin-top:6px;}
+.sc-spots.open{background:#081a10;border:1px solid #1a5530;color:var(--combined);}
+.sc-spots.low{background:#1a1000;border:1px solid #5a3800;color:#e08844;}
+.sc-spots.full{background:#1f0808;border:1px solid #5a1a1a;color:var(--football);}
+.sessions-loading{text-align:center;padding:48px 20px;color:var(--dim);font-size:14px;}
+.sessions-empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px;background:var(--s2);border:1px solid var(--bdr);border-radius:12px;}
+.sessions-cta{margin-top:32px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+.sessions-cta p{font-size:14px;color:var(--muted);}
+.sessions-cta p strong{color:var(--text);}
 
-/* KPIs */
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
-.kpi{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:0;transition:opacity .2s;}
-.kpi:hover::before{opacity:1;}
-.kpi.hs::before{background:var(--gold);}
-.kpi.ya::before{background:var(--youth);}
-.klbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
-.kval{font-family:var(--fd);font-size:28px;font-weight:700;line-height:1;}
-.kval.hs{color:var(--gold);}
-.kval.ya{color:var(--youth);}
-.kunit{font-size:13px;color:var(--dim);margin-left:2px;font-family:var(--fb);font-weight:400;}
-.ksub{font-size:11px;color:var(--muted);margin-top:4px;}
-.kpr{display:inline-flex;align-items:center;gap:3px;border-radius:10px;padding:2px 7px;font-size:10px;font-weight:600;margin-top:5px;}
-.kpr.hs{background:#2a2200;border:1px solid var(--gold-dim);color:var(--gold);}
-.kpr.ya{background:var(--youth-bg);border:1px solid var(--youth-dim);color:var(--youth);}
+/* WHY US */
+.why-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--bdr);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;margin-top:40px;}
+.why-item{background:var(--s2);padding:28px 24px;transition:background .15s;}
+.why-item:hover{background:var(--s3);}
+.why-icon{font-size:26px;margin-bottom:12px;}
+.why-title{font-family:var(--fd);font-size:17px;font-weight:800;color:var(--text);margin-bottom:5px;}
+.why-desc{font-size:13px;color:var(--dim);line-height:1.6;}
 
-/* CHARTS */
-.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
-@media(max-width:640px){.chart-row{grid-template-columns:1fr;}}
-.ccard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:16px 18px;}
-.ctitle{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
-.csub{font-size:11px;color:var(--muted);margin-bottom:10px;font-style:italic;}
-.cwrap{position:relative;height:170px;}
+/* LOCATION */
+.location-card{background:var(--s2);border:1px solid var(--bdr);border-radius:14px;padding:36px 32px;margin-top:40px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center;}
+@media(max-width:640px){.location-card{grid-template-columns:1fr;}}
+.loc-detail{display:flex;flex-direction:column;gap:14px;}
+.loc-row{display:flex;gap:12px;align-items:flex-start;}
+.loc-icon{width:36px;height:36px;background:var(--s3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.loc-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:2px;}
+.loc-val{font-size:14px;color:var(--text);}
+.loc-map-btn{background:var(--gold);color:var(--black);border:none;border-radius:9px;padding:12px 22px;font-family:var(--fd);font-size:15px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:background .15s,transform .1s;white-space:nowrap;display:inline-block;}
+.loc-map-btn:hover{background:#e6b800;transform:translateY(-1px);}
 
-/* TABLES */
-.tcard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;overflow:hidden;margin-bottom:18px;}
-.thdr{padding:13px 18px;border-bottom:1px solid var(--bdr);font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.5px;color:var(--dim);text-transform:uppercase;}
-.tscroll{overflow-x:auto;}
-.dt{width:100%;border-collapse:collapse;font-size:13px;}
-.dt th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:8px 10px;border-bottom:1px solid var(--bdr);white-space:nowrap;}
-.dt td{padding:8px 10px;border-bottom:1px solid #1d1d1d;color:var(--text);vertical-align:middle;}
-.dt tr:hover td{background:var(--surf2);}
-.dt tr:last-child td{border-bottom:none;}
+/* REGISTRATION */
+.reg-section{background:linear-gradient(135deg,#0f0f00 0%,var(--s1) 40%,#0a0f0a 100%);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);}
+.reg-inner{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;max-width:1040px;margin:0 auto;padding:80px 24px;}
+@media(max-width:720px){.reg-inner{grid-template-columns:1fr;gap:36px;padding:60px 20px;}}
+.reg-steps{display:flex;flex-direction:column;gap:10px;margin-top:28px;}
+.reg-step{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:var(--s2);border:1px solid var(--bdr);border-radius:9px;transition:border-color .15s;}
+.reg-step:hover{border-color:var(--bdr2);}
+.rs-num{width:28px;height:28px;border-radius:6px;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:13px;font-weight:800;color:var(--gold);flex-shrink:0;}
+.rs-title{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.rs-desc{font-size:12px;color:var(--dim);line-height:1.5;}
+.reg-right{background:var(--s2);border:1px solid var(--bdr);border-radius:14px;padding:32px 28px;position:sticky;top:74px;}
+.reg-card-title{font-family:var(--fd);font-size:28px;font-weight:900;letter-spacing:-.5px;color:var(--text);margin-bottom:6px;}
+.reg-card-title span{color:var(--gold);}
+.reg-card-sub{font-size:14px;color:var(--dim);line-height:1.6;margin-bottom:22px;}
+.reg-avail-label{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.reg-avail-label span{color:var(--muted);font-weight:400;font-size:10px;letter-spacing:0;text-transform:none;font-family:var(--fb);}
+.reg-avail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
+.rav-card{background:var(--s3);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;}
+.rav-head{padding:8px 12px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:6px;}
+.rav-dot{width:6px;height:6px;border-radius:1px;flex-shrink:0;}
+.rav-name{font-family:var(--fd);font-size:13px;font-weight:800;letter-spacing:.3px;}
+.rav-rows{padding:4px 0;}
+.rav-row{display:flex;justify-content:space-between;align-items:center;padding:5px 12px;font-size:11px;border-bottom:1px solid #1a1a1e;}
+.rav-row:last-child{border-bottom:none;}
+.rav-day{color:var(--muted);width:64px;flex-shrink:0;}
+.rav-time{font-family:var(--fd);font-size:11px;font-weight:700;text-align:right;}
+.rav-time.open{color:var(--combined);}
+.rav-time.closed{color:var(--muted);}
+.rav-time.limited{color:var(--gold);}
+.reg-cta-btns{display:flex;flex-direction:column;gap:10px;}
+.reg-cta-btns .btn-primary{text-align:center;font-size:16px;padding:14px;}
+.reg-cta-btns .btn-secondary{text-align:center;font-size:14px;padding:12px;}
+.reg-note{font-size:11px;color:var(--muted);margin-top:10px;text-align:center;line-height:1.5;}
 
-/* TAGS */
-.tag{display:inline-block;font-size:10px;font-weight:700;font-family:var(--fd);letter-spacing:.5px;padding:2px 7px;border-radius:3px;text-transform:uppercase;}
-.ts{background:#1a2a3a;color:var(--blue);}
-.tfly{background:#1f1a2e;color:#9b7fdd;}
-.t23{background:#1a2218;color:#7abf82;}
-.t200{background:#2a1a1e;color:#dd7f9b;}
-.t150{background:#1e2226;color:#7fbfdd;}
-.tczb{background:#2a1e10;color:#e09944;}
-.rep{background:var(--surf2);border:1px solid var(--bdr);border-radius:3px;padding:2px 6px;font-size:11px;font-family:monospace;}
-.repb{border-color:var(--gold-dim);color:var(--gold);}
+/* CTA */
+.cta-banner{position:relative;z-index:1;background:linear-gradient(135deg,var(--s1) 0%,#1a1400 50%,var(--s1) 100%);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);padding:80px 24px;text-align:center;overflow:hidden;}
+.cta-banner::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(245,197,24,.07) 0%,transparent 65%);}
+.cta-banner-inner{position:relative;z-index:1;max-width:680px;margin:0 auto;}
+.cta-paw{font-size:48px;margin-bottom:16px;display:block;}
+.cta-title{font-family:var(--fd);font-size:clamp(38px,7vw,72px);font-weight:900;letter-spacing:-1px;color:var(--text);line-height:1;margin-bottom:12px;}
+.cta-title span{color:var(--gold);}
+.cta-sub{font-size:16px;color:var(--dim);margin-bottom:32px;line-height:1.7;}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
 
-/* DROP COLORS */
-.de{color:var(--green);font-weight:600;}
-.dg{color:var(--gold);}
-.dw{color:var(--orange);}
-.db{color:var(--red);font-weight:600;}
+/* FOOTER */
+.footer{background:var(--s1);border-top:1px solid var(--bdr);padding:40px 24px 32px;position:relative;z-index:1;}
+.footer-inner{max-width:1040px;margin:0 auto;display:flex;flex-wrap:wrap;gap:32px;justify-content:space-between;align-items:flex-start;}
+.footer-brand{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.footer-brand img{height:28px;width:auto;}
+.footer-brand-text{font-family:var(--fd);font-size:16px;font-weight:800;color:var(--text);letter-spacing:.5px;}
+.footer-tagline{font-size:13px;color:var(--muted);max-width:240px;line-height:1.6;margin-bottom:16px;}
+.footer-contact a{color:var(--gold);font-size:13px;}
+.footer-links{display:flex;flex-direction:column;gap:6px;}
+.footer-links h4{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.footer-links a{font-size:13px;color:var(--dim);transition:color .15s;}
+.footer-links a:hover{color:var(--text);}
+.footer-bottom{max-width:1040px;margin:28px auto 0;padding-top:20px;border-top:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);}
 
-/* SUPP TAG */
-.supp-tag{display:inline-block;font-size:10px;font-weight:600;font-family:var(--fd);padding:1px 6px;border-radius:3px;background:#1a2238;color:var(--blue);margin-left:4px;}
+@media(max-width:500px){.hero-stats{gap:24px;}.location-card{padding:24px 20px;}.why-strip{grid-template-columns:1fr;}}
 
-/* ROSTER GRID */
-.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
-.rcard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:15px;cursor:pointer;transition:all .15s;position:relative;}
-.rcard.hs:hover{border-color:var(--gold-dim);background:var(--surf2);transform:translateY(-1px);}
-.rcard.ya:hover{border-color:var(--youth-dim);background:var(--surf2);transform:translateY(-1px);}
-.rcname{font-family:var(--fd);font-size:17px;font-weight:700;color:var(--text);}
-.rcmeta{font-size:12px;color:var(--dim);margin-top:2px;}
-.rcmph{font-family:var(--fd);font-size:24px;font-weight:700;margin:7px 0 2px;}
-.rcmph.hs{color:var(--gold);}
-.rcmph.ya{color:var(--youth);}
-.rccode{font-size:11px;color:var(--muted);font-family:monospace;}
-.rcbadge{position:absolute;top:11px;right:11px;font-size:10px;font-weight:700;font-family:var(--fd);padding:2px 7px;border-radius:3px;}
-.bg1{background:#1a2a3a;color:var(--blue);}
-.bg2{background:#2a1a2a;color:#dd7fdd;}
-.bgya{background:var(--youth-bg);color:var(--youth);}
+/* ─── ANNOUNCEMENT BANNER ─────────────────────────────────────── */
+.ann-banner{
+  position:sticky;top:58px;z-index:90;
+  background:#1a0a00;border-bottom:2px solid var(--football);
+  padding:0;overflow:hidden;
+  transition:max-height .35s ease,opacity .3s ease;
+  max-height:200px;
+}
+.ann-banner.hidden{max-height:0;opacity:0;pointer-events:none;}
+.ann-banner-inner{
+  max-width:1040px;margin:0 auto;padding:10px 20px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.ann-banner-icon{font-size:18px;flex-shrink:0;}
+.ann-banner-text{flex:1;min-width:0;}
+.ann-banner-title{font-family:var(--fd);font-size:15px;font-weight:800;color:var(--football);letter-spacing:.3px;}
+.ann-banner-body{font-size:13px;color:var(--dim);line-height:1.4;margin-top:1px;}
+.ann-banner-dismiss{
+  background:none;border:1px solid #5a1a1a;color:var(--muted);
+  border-radius:5px;padding:3px 10px;font-family:var(--fd);font-size:12px;
+  font-weight:700;letter-spacing:.5px;cursor:pointer;flex-shrink:0;
+  transition:all .15s;text-transform:uppercase;
+}
+.ann-banner-dismiss:hover{border-color:var(--football);color:var(--football);}
 
-/* LEADERBOARD */
-.lb-tabs{display:flex;gap:6px;margin-bottom:14px;}
-.lb-tab{background:var(--surf2);border:1px solid var(--bdr);border-radius:6px;padding:5px 14px;font-family:var(--fd);font-size:13px;font-weight:700;cursor:pointer;color:var(--dim);transition:all .15s;}
-.lb-tab.on.hs{background:#2a2200;border-color:var(--gold-dim);color:var(--gold);}
-.lb-tab.on.ya{background:var(--youth-bg);border-color:var(--youth-dim);color:var(--youth);}
-.lbr{font-family:var(--fd);font-size:18px;font-weight:800;color:var(--muted);}
-.lb1{color:var(--gold);}
-.lb2{color:#aaa;}
-.lb3{color:#cd7f32;}
-.lbn{font-family:var(--fd);font-size:15px;font-weight:700;}
-.lbv{font-family:var(--fd);font-size:15px;font-weight:700;}
-.lbv.hs{color:var(--gold);}
-.lbv.ya{color:var(--youth);}
+/* ─── ANNOUNCEMENTS SECTION ───────────────────────────────────── */
+.ann-section{position:relative;z-index:1;padding:40px 24px 0;}
+.ann-section-inner{max-width:1040px;margin:0 auto;}
+.ann-stack{display:flex;flex-direction:column;gap:10px;}
 
-/* FORM */
-.fcard{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:18px;margin-bottom:16px;}
-.ftitle{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;}
-.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:8px;}
-.fg label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.fi,.fs{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:6px;padding:7px 10px;color:var(--text);font-size:13px;font-family:var(--fb);transition:border-color .15s;}
-.fi:focus,.fs:focus{outline:none;border-color:var(--gold);}
-.fs option{background:var(--surf2);}
-.btn-save{background:var(--gold);color:var(--black);border:none;border-radius:6px;padding:8px 18px;font-family:var(--fd);font-size:15px;font-weight:800;cursor:pointer;transition:background .15s;}
-.btn-save:hover{background:#e6b800;}
-.smsg{font-size:12px;color:var(--green);margin-left:10px;}
-.bbtn{background:none;border:1px solid var(--bdr);color:var(--dim);padding:5px 12px;border-radius:6px;cursor:pointer;font-family:var(--fb);font-size:12px;margin-bottom:14px;transition:all .15s;}
-.bbtn:hover{border-color:var(--dim);color:var(--text);}
-.empty{padding:36px;text-align:center;color:var(--muted);font-size:13px;}
-.ei{font-size:28px;margin-bottom:6px;}
-@media(max-width:580px){.pg{padding:14px;}.kpis{grid-template-columns:repeat(2,1fr);}.goals-grid{grid-template-columns:repeat(3,1fr);}}
+/* base card */
+.ann-card{
+  border-radius:10px;padding:16px 20px;
+  display:flex;align-items:flex-start;gap:14px;
+  border:1px solid var(--bdr);
+  transition:border-color .15s;
+}
+.ann-card:hover{border-color:var(--bdr2);}
+
+/* alert */
+.ann-card.alert{background:#1a0800;border-left:4px solid var(--football);}
+.ann-card.alert .ann-card-title{color:var(--football);}
+.ann-card.alert .ann-card-badge{background:#1f0d0d;border:1px solid #5a1a1a;color:var(--football);}
+
+/* info */
+.ann-card.info{background:#1a1400;border-left:4px solid var(--gold);}
+.ann-card.info .ann-card-title{color:var(--gold);}
+.ann-card.info .ann-card-badge{background:#221a00;border:1px solid var(--gold-dim);color:var(--gold);}
+
+/* good-news — card grid layout, celebratory */
+.ann-goodnews-wrap{
+  background:linear-gradient(135deg,#081a10 0%,#0d1f14 60%,#0a1a0d 100%);
+  border:1px solid #1a5530;border-radius:12px;padding:24px 22px;
+  position:relative;overflow:hidden;
+}
+.ann-goodnews-wrap::before{
+  content:'🐆';position:absolute;right:18px;top:50%;transform:translateY(-50%);
+  font-size:64px;opacity:.08;pointer-events:none;
+}
+.ann-goodnews-header{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+}
+.ann-goodnews-label{
+  font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--combined);opacity:.8;
+}
+.ann-goodnews-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.ann-goodnews-item{
+  background:rgba(76,175,114,.08);border:1px solid #1a5530;border-radius:8px;
+  padding:12px 14px;
+}
+.ann-goodnews-item-icon{font-size:20px;margin-bottom:6px;}
+.ann-goodnews-item-title{font-family:var(--fd);font-size:15px;font-weight:800;color:var(--combined);margin-bottom:2px;}
+.ann-goodnews-item-body{font-size:12px;color:var(--dim);line-height:1.5;}
+
+.ann-card-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.ann-card-content{flex:1;min-width:0;}
+.ann-card-badge{
+  font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.5px;
+  padding:2px 8px;border-radius:3px;text-transform:uppercase;
+  display:inline-block;margin-bottom:4px;
+}
+.ann-card-title{font-family:var(--fd);font-size:17px;font-weight:800;letter-spacing:.3px;margin-bottom:3px;}
+.ann-card-body{font-size:13px;color:var(--dim);line-height:1.6;}
+.ann-card-date{font-size:11px;color:var(--muted);margin-top:5px;font-style:italic;}
 </style>
 </head>
 <body>
 
-<header class="hdr" id="hdr">
-  <div class="logo" id="hdrLogo">
-    <img class="logo-img" id="logoImg" src="https://i.imgur.com/Kxww0Xn.png" alt="Dynamite Speed" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span style="display:none;font-family:var(--fd);font-size:21px;font-weight:800;color:var(--gold)">🐆 DYNAMITE SPEED</span>
-    <small>/ DASHBOARD</small>
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <a href="home.html">
+      <img src="https://i.imgur.com/Kxww0Xn.png" alt="Dynamite Speed" onerror="this.style.display='none'">
+      <span class="nav-logo-text">Dynamite Speed</span>
+    </a>
   </div>
-  <div class="hdr-r">
-    <!-- Pre-auth nav — hidden after login -->
-    <nav class="hdr-nav" id="hdrNav">
-      <a class="hdr-nav-link" href="home.html">Home</a>
-      <a class="hdr-nav-link" href="registration.html">Register</a>
-      <a class="hdr-nav-link cta" href="booking.html">Book Now</a>
-    </nav>
-    <!-- Post-auth elements -->
-    <span class="ppill" id="ppill"></span>
-    <span class="upill" id="upill"></span>
-    <button class="btn-out" id="btnOut" onclick="signOut()">Sign out</button>
+  <div class="nav-links" id="navLinks">
+    <a class="nav-link active" href="home.html">Home</a>
+    <a class="nav-link" href="#programs">Programs</a>
+    <a class="nav-link" href="#sessions">Sessions</a>
+    <a class="nav-link" href="coaches.html">Coaches</a>
+    <a class="nav-link" href="faq.html">FAQ</a>
+    <a class="nav-link" href="index.html">Dashboard</a>
+    <a class="nav-link" href="registration.html">Register</a>
+    <a class="nav-link" href="schedule.html">Schedule</a>
+    <a class="nav-link nav-cta" href="booking.html">Book Now</a>
   </div>
-</header>
+  <button class="nav-mobile-btn" onclick="toggleNav()" aria-label="Menu">☰</button>
+</nav>
 
-<div class="sbar" id="sbar">
-  <span id="smsg"></span>
-  <span id="stime"></span>
-</div>
-
-<!-- LOGIN -->
-<div class="login-page" id="loginPage">
-  <div class="prog-sel" id="progSel">
-    <div class="ps ps-hs" onclick="selectProg('hs')">
-      <div class="ps-icon"><img src="https://i.imgur.com/Kxww0Xn.png" alt="Dynamite Speed" style="height:40px;width:auto;object-fit:contain" onerror="this.outerHTML='🐆'"></div>
-      <div class="ps-lbl">HS PROGRAM</div>
-      <div class="ps-sub">High School Athletes</div>
+<!-- ─── ANNOUNCEMENT BANNER (top — dismissible for session) ─── -->
+<!-- BANNER CONTROL: set bannerActive=false to hide, or clear bannerTitle/bannerBody -->
+<div class="ann-banner" id="annBanner">
+  <div class="ann-banner-inner">
+    <span class="ann-banner-icon" id="annBannerIcon">⚠️</span>
+    <div class="ann-banner-text">
+      <div class="ann-banner-title" id="annBannerTitle"></div>
+      <div class="ann-banner-body" id="annBannerBody"></div>
     </div>
-    <div class="ps ps-ya" onclick="selectProg('ya')">
-      <div class="ps-icon"><img src="https://i.imgur.com/Kxww0Xn.png" alt="Dynamite Speed" style="height:40px;width:auto;object-fit:contain" onerror="this.outerHTML='⚡'"></div>
-      <div class="ps-lbl">YOUTH ACADEMY</div>
-      <div class="ps-sub">Ages U6 – U12</div>
+    <button class="ann-banner-dismiss" onclick="dismissBanner()">Dismiss ✕</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-lines"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-eyebrow">San Diego, CA · Ages 6–18</div>
+  <h1 class="hero-title">Lee Brothers<em>Academy</em></h1>
+  <p class="hero-tagline">Speed. Movement. Performance.</p>
+  <p class="hero-desc">A session-based dual-performance academy where athletes build <strong>real, measurable sprint speed</strong> and position-specific football skills — timed with elite Fully Automatic Timing technology every rep.</p>
+  <div class="timing-badge"><span class="tb-dot"></span>ArenaGear Fully Automatic Timing — Every Sprint. Every Session.</div>
+  <div class="hero-btns">
+    <a class="btn-primary" href="booking.html">Book a Session — $15</a>
+    <a class="btn-secondary" href="#programs">View Programs ↓</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-num">6+</div><div class="hstat-lbl">Ages Served</div></div>
+    <div class="hstat"><div class="hstat-num">$15</div><div class="hstat-lbl">Per Session</div></div>
+    <div class="hstat"><div class="hstat-num">F.A.T.</div><div class="hstat-lbl">Timed Every Rep</div></div>
+    <div class="hstat"><div class="hstat-num">0</div><div class="hstat-lbl">Grinding. Ever.</div></div>
+  </div>
+  <div class="hero-scroll"><span>↓</span> Scroll</div>
+</section>
+
+<hr class="divider">
+
+<!-- ─── ANNOUNCEMENTS ─────────────────────────────────────────── -->
+<!-- Edit ANNOUNCEMENTS array in the <script> block below to manage all posts -->
+<div class="ann-section" id="annSection">
+  <div class="ann-section-inner">
+    <div class="ann-stack" id="annStack"></div>
+  </div>
+</div>
+
+<!-- PROGRAMS -->
+<section class="section" id="programs">
+  <div class="section-inner">
+    <div class="fade-up">
+      <div class="section-label">What We Offer</div>
+      <h2 class="section-title">Choose Your Program</h2>
+      <p class="section-sub">Every program runs on the same principle — max speed, max quality, minimum fatigue. Pick what fits your athlete's goals.</p>
+    </div>
+    <div class="programs-grid">
+      <div class="prog-card speed fade-up d1">
+        <div class="pc-icon">⚡</div>
+        <div class="pc-name">Speed Academy</div>
+        <div class="pc-price">$15 <small>/ session</small></div>
+        <p class="pc-desc">Pure sprint development — timed every rep with the ArenaGear FAT system. Short sprints, full rest, max quality.</p>
+        <ul class="pc-features">
+          <li>ArenaGear fully automatic timing every rep</li>
+          <li>10m Fly &amp; 40 Yard Dash — ranked &amp; published</li>
+          <li>X-Factor explosive training block</li>
+          <li>Wickets, drill work, sprint mechanics</li>
+          <li>Ages 6–18 · All skill levels welcome</li>
+        </ul>
+      </div>
+      <div class="prog-card football fade-up d2">
+        <div class="pc-icon">🏈</div>
+        <div class="pc-name">Football Skills</div>
+        <div class="pc-price">$15 <small>/ session</small></div>
+        <p class="pc-desc">Position-specific development focused on athletic movement, footwork, and game-speed mechanics.</p>
+        <ul class="pc-features">
+          <li>Skill position focus — WR, RB, DB, QB</li>
+          <li>Route running &amp; release mechanics</li>
+          <li>Change of direction &amp; reaction work</li>
+          <li>Game-speed footwork drills</li>
+          <li>Ages 6–18 · All skill levels welcome</li>
+        </ul>
+      </div>
+      <div class="prog-card combined fade-up d3">
+        <span class="pc-badge badge-popular">Best Value</span>
+        <div class="pc-icon">🐆</div>
+        <div class="pc-name">Dual Academy</div>
+        <div class="pc-price">$20 <small>/ session</small></div>
+        <p class="pc-desc">Both academies back to back — the complete package in a single 2-hour session.</p>
+        <ul class="pc-features">
+          <li>Full Speed Academy (8:30–9:30 AM)</li>
+          <li>Full Football Skills (9:30–10:30 AM)</li>
+          <li>Save $10 vs booking separate</li>
+          <li>ArenaGear timed sprint data included</li>
+          <li>Ages 6–18 · All skill levels welcome</li>
+        </ul>
+      </div>
+    </div>
+    <div class="programs-footer fade-up">
+      <a class="btn-primary" href="booking.html" style="font-size:15px;padding:12px 26px;">Book a Session →</a>
+      <p>Questions? <a href="faq.html">See our FAQ</a> or <a href="mailto:Lbasdc@gmail.com">contact coach</a>.</p>
     </div>
   </div>
+</section>
 
-  <div class="lcard hs" id="hsCard">
-    <div class="lcat"><img src="https://i.imgur.com/Kxww0Xn.png" alt="Dynamite Speed" style="height:48px;width:auto;object-fit:contain" onerror="this.outerHTML='🐆'"></div>
-    <div class="ltitle hs">HS PROGRAM</div>
-    <div class="lsub">Enter your Roster ID to view your dashboard</div>
-    <div class="llbl">Roster ID</div>
-    <input class="linp hs" id="hsInp" type="text" placeholder="e.g. DNU2T8" maxlength="12" autocomplete="off"/>
-    <button class="btn-go hs" onclick="doLogin('hs')">GO →</button>
-    <button class="btn-back" onclick="backToSel()">← Back</button>
-    <div class="lerr" id="hsErr"></div>
-    <div class="lhint">Athletes &amp; parents — use your assigned Roster ID.</div>
-    <div class="lbar" id="hsBar"><div class="lfill hs" id="hsFill"></div></div>
-    <div class="lmsg" id="hsMsg"></div>
+<hr class="divider">
+
+<!-- SESSIONS — Live from Google Sheets -->
+<section class="section sessions-section" id="sessions">
+  <div class="section-inner">
+    <div class="fade-up">
+      <div class="section-label">2026 Schedule</div>
+      <h2 class="section-title">Upcoming Sessions</h2>
+      <p class="section-sub">Sessions run Sundays at Thrive Park, San Diego. Rolling enrollment — join or pause anytime.</p>
+    </div>
+    <div class="sessions-grid fade-up" id="sessionsGrid">
+      <div class="sessions-loading" style="grid-column:1/-1">
+        <div style="font-size:28px;margin-bottom:10px">⏳</div>
+        Loading upcoming sessions…
+      </div>
+    </div>
+    <div class="sessions-cta fade-up">
+      <a class="btn-primary" href="booking.html">Book Your Spot Now</a>
+      <p><strong>Spots are limited</strong> — small groups, quality coaching.</p>
+    </div>
   </div>
+</section>
 
-  <div class="lcard ya" id="yaCard">
-    <div class="lcat"><img src="https://i.imgur.com/Kxww0Xn.png" alt="Dynamite Speed" style="height:48px;width:auto;object-fit:contain" onerror="this.outerHTML='⚡'"></div>
-    <div class="ltitle ya">YOUTH ACADEMY</div>
-    <div class="lsub">Enter your Roster ID to view your dashboard</div>
-    <div class="llbl">Roster ID</div>
-    <input class="linp ya" id="yaInp" type="text" placeholder="e.g. YA001" maxlength="12" autocomplete="off"/>
-    <button class="btn-go ya" onclick="doLogin('ya')">GO →</button>
-    <button class="btn-back" onclick="backToSel()">← Back</button>
-    <div class="lerr" id="yaErr"></div>
-    <div class="lhint">Athletes &amp; parents — use your assigned Roster ID.</div>
-    <div class="lbar" id="yaBar"><div class="lfill ya" id="yaFill"></div></div>
-    <div class="lmsg" id="yaMsg"></div>
+<hr class="divider">
+
+<!-- HOW WE TRAIN -->
+<section class="section" style="padding-top:60px;padding-bottom:60px;">
+  <div class="section-inner">
+    <div class="fade-up">
+      <div class="section-label">Why It Works</div>
+      <h2 class="section-title">How We Train</h2>
+    </div>
+    <div class="why-strip fade-up">
+      <div class="why-item">
+        <div class="why-icon">⚡</div>
+        <div class="why-title">Phosphate System Only</div>
+        <p class="why-desc">Short, max-intensity reps with full recovery. No grinding, no junk volume. We build the sprint reservoir first — quality over quantity, always.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">🏁</div>
+        <div class="why-title">ArenaGear FAT Timing</div>
+        <p class="why-desc">Every sprint electronically measured to the hundredth. Athletes see their MPH after every rep. Hand timing doesn't cut it when you're chasing hundredths.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">📈</div>
+        <div class="why-title">Record, Rank, Publish</div>
+        <p class="why-desc">Times ranked and published every session. Every athlete has a number. Speed grows like a tree — we track every inch of development all season.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">😎</div>
+        <div class="why-title">Happy Athletes Run Faster</div>
+        <p class="why-desc">Culture is the product. Athletes who love training compete better and stay injury-free. We train cats — not cogs in a conditioning machine.</p>
+      </div>
+    </div>
+    <div style="margin-top:18px;font-size:13px;color:var(--muted);">Full methodology, gear requirements, and more — <a href="faq.html" style="color:var(--gold)">read our FAQ →</a></div>
   </div>
-</div>
+</section>
 
-<!-- APP -->
-<div class="app" id="app">
-  <div class="tabs" id="tabBar"></div>
-  <div id="pages"></div>
-</div>
+<hr class="divider">
+
+<!-- LOCATION -->
+<section class="section" style="padding-top:60px;padding-bottom:60px;">
+  <div class="section-inner">
+    <div class="fade-up">
+      <div class="section-label">Where We Train</div>
+      <h2 class="section-title">Location</h2>
+    </div>
+
+    <!-- Location #1 -->
+    <div class="location-card fade-up">
+      <div class="loc-detail">
+        <div class="loc-row">
+          <div class="loc-icon">📍</div>
+          <div>
+            <div class="loc-label">Venue</div>
+            <div class="loc-val" style="font-size:18px;font-family:var(--fd);font-weight:700;">
+              Thrive Park · SDSU Mission Valley River Park
+            </div>
+          </div>
+        </div>
+
+        <div class="loc-row">
+          <div class="loc-icon">🏙️</div>
+          <div>
+            <div class="loc-label">City</div>
+            <div class="loc-val">San Diego, CA</div>
+          </div>
+        </div>
+
+        <div class="loc-row">
+          <div class="loc-icon">🌿</div>
+          <div>
+            <div class="loc-label">Surface</div>
+            <div class="loc-val">Grass field — confirmed each week before sessions.</div>
+          </div>
+        </div>
+
+        <div class="loc-row">
+          <div class="loc-icon">📧</div>
+          <div>
+            <div class="loc-label">Contact</div>
+            <div class="loc-val">
+              <a href="mailto:Lbasdc@gmail.com" style="color:var(--gold)">
+                Lbasdc@gmail.com
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a class="loc-map-btn"
+         href="https://maps.google.com?q=Thrive+Park+San+Diego+CA"
+         target="_blank"
+         rel="noopener">
+         Open in Maps ↗
+      </a>
+    </div>
+
+    <!-- Location #2 -->
+    <div class="location-card fade-up" style="margin-top:24px;">
+      <div class="loc-detail">
+        <div class="loc-row">
+          <div class="loc-icon">📍</div>
+          <div>
+            <div class="loc-label">Venue</div>
+            <div class="loc-val" style="font-size:18px;font-family:var(--fd);font-weight:700;">
+              Central Square @ Côta Vera
+            </div>
+          </div>
+        </div>
+
+        <div class="loc-row">
+          <div class="loc-icon">🏙️</div>
+          <div>
+            <div class="loc-label">City</div>
+            <div class="loc-val">Chula Vista, CA</div>
+          </div>
+        </div>
+
+        <div class="loc-row">
+          <div class="loc-icon">🌿</div>
+          <div>
+            <div class="loc-label">Surface</div>
+            <div class="loc-val">Grass</div>
+          </div>
+        </div>
+
+        <div class="loc-row">
+          <div class="loc-icon">📧</div>
+          <div>
+            <div class="loc-label">Contact</div>
+            <div class="loc-val">
+              <a href="mailto:Lbasdc@gmail.com" style="color:var(--gold)">
+                Lbasdc@gmail.com
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a class="loc-map-btn"
+         href="https://www.google.com/maps/search/central+square+otay+ranch/@32.6047384,-116.9796845,14z?entry=s&sa=X&ved=1t%3A199789"
+         target="_blank"
+         rel="noopener">
+         Open in Maps ↗
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- REGISTRATION -->
+<section class="reg-section" id="register">
+  <div class="reg-inner">
+    <div>
+      <div class="fade-up">
+        <div class="section-label">Get Started</div>
+        <h2 class="section-title">Join the Program</h2>
+        <p class="section-sub">Registration builds your athlete's profile, assigns your Family Code, and gets you set up in the dashboard. Takes 2 minutes.</p>
+      </div>
+      <div class="reg-steps">
+        <div class="reg-step fade-up d1"><div class="rs-num">1</div><div><div class="rs-title">Complete Registration</div><p class="rs-desc">Submit your athlete's info and program interest. One form covers your whole family.</p></div></div>
+        <div class="reg-step fade-up d2"><div class="rs-num">2</div><div><div class="rs-title">Receive Your Family Code</div><p class="rs-desc">Coach reviews and sends your unique Family Code by email or text — usually within 24 hours.</p></div></div>
+        <div class="reg-step fade-up d3"><div class="rs-num">3</div><div><div class="rs-title">Book Sessions &amp; Access Dashboard</div><p class="rs-desc">Use your code to book sessions and track your athlete's speed data all season.</p></div></div>
+        <div class="reg-step fade-up d4"><div class="rs-num">4</div><div><div class="rs-title">Show Up &amp; Pay On Site</div><p class="rs-desc">No pre-payment is required to reserve your session. Payment is collected on-site at check-in. Session pricing is applied per athlete, per session.</p></div></div>
+      </div>
+    </div>
+    <div class="reg-right fade-up">
+      <div class="reg-card-title">Ready to <span>Register?</span></div>
+      <p class="reg-card-sub">Spots are limited per session to keep group sizes small and coaching quality high.</p>
+      <div class="reg-avail-label">Current Availability <span>Updated weekly</span></div>
+      <div class="reg-avail-grid">
+        <div class="rav-card">
+          <div class="rav-head"><div class="rav-dot" style="background:var(--speed)"></div><div class="rav-name" style="color:var(--speed)">Speed</div></div>
+          <div class="rav-rows">
+            <div class="rav-row"><span class="rav-day">Sunday</span><span class="rav-time open">9:30AM-11:00AM</span></div>
+            <div class="rav-row"><span class="rav-day">Mon</span><span class="rav-time limited">By Request • 930AM-2PM</span></div>
+            <div class="rav-row"><span class="rav-day">Tue</span><span class="rav-time limited">By Request • 5PM-7PM</span></div>
+            <div class="rav-row"><span class="rav-day">Wed</span><span class="rav-time limited">By Request • 5PM-7PM</span></div>
+            <div class="rav-row"><span class="rav-day">Thu</span><span class="rav-time limited">8:30AM By Request</span></div>
+            <div class="rav-row"><span class="rav-day">Fri</span><span class="rav-time limited">8:30AM By Request</span></div>
+            <div class="rav-row"><span class="rav-day">Sat</span><span class="rav-time limited">8:30AM By Request</span></div>
+          </div>
+        </div>
+        <div class="rav-card">
+          <div class="rav-head"><div class="rav-dot" style="background:var(--football)"></div><div class="rav-name" style="color:var(--football)">Football</div></div>
+          <div class="rav-rows">
+            <div class="rav-row"><span class="rav-day">Sunday</span><span class="rav-time open">8AM–10:30AM</span></div>
+            <div class="rav-row"><span class="rav-day">Mon</span><span class="rav-time closed">Unavailable</span></div>
+            <div class="rav-row"><span class="rav-day">Tue</span><span class="rav-time open">By Request • 8AM–7PM</span></div>
+            <div class="rav-row"><span class="rav-day">Wed</span><span class="rav-time open">By Request • 8AM–7PM</span></div>
+            <div class="rav-row"><span class="rav-day">Thu</span><span class="rav-time open">By Request • 8AM–7PM</span></div>
+            <div class="rav-row"><span class="rav-day">Fri</span><span class="rav-time open">By Request • 8AM–7PM</span></div>
+            <div class="rav-row"><span class="rav-day">Sat</span><span class="rav-time open">By Request • 8AM–7PM</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="reg-cta-btns">
+        <a class="btn-primary" href="registration.html">Register Your Athlete →</a>
+        <a class="btn-secondary" href="booking.html">Book a Session Directly</a>
+      </div>
+      <p class="reg-note">Already registered? Use your Family Code at the <a href="index.html" style="color:var(--gold)">Athlete Dashboard</a>.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CTA -->
+<section class="cta-banner">
+  <div class="cta-banner-inner">
+    <span class="cta-paw">🐆</span>
+    <h2 class="cta-title">Ready to Get<br><span>Faster?</span></h2>
+    <p class="cta-sub">Every cat in this program gets faster. Not all will become elite sprinters — but every one leaves with a stronger foundation and a love for speed work that lasts.</p>
+    <div class="cta-btns">
+      <a class="btn-primary" href="booking.html">Book a Session — $15</a>
+      <a class="btn-secondary" href="registration.html">Register Your Athlete</a>
+    </div>
+    <br>
+    <p style="font-size:13px;color:var(--muted);margin-top:12px">
+      Questions? <a href="mailto:Lbasdc@gmail.com" style="color:var(--gold)">Lbasdc@gmail.com</a>
+      &nbsp;·&nbsp;<a href="faq.html" style="color:var(--gold)">FAQ →</a>
+      &nbsp;·&nbsp;<a href="coaches.html" style="color:var(--gold)">Meet the Coaches →</a>
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">
+        <img src="https://i.imgur.com/Kxww0Xn.png" alt="Dynamite Speed" onerror="this.style.display='none'">
+        <span class="footer-brand-text">Lee Brother's Academy · Dynamite Speed</span>
+      </div>
+      <p class="footer-tagline">Session-based dual-performance training for athletes ages 6–18 in San Diego, CA.</p>
+      <div class="footer-contact"><a href="mailto:Lbasdc@gmail.com">Lbasdc@gmail.com</a></div>
+    </div>
+    <div class="footer-links">
+      <h4>Programs</h4>
+      <a href="#programs">Speed Academy — $15</a>
+      <a href="#programs">Football Skills — $15</a>
+      <a href="#programs">Dual Academy — $20</a>
+    </div>
+    <div class="footer-links">
+      <h4>Navigate</h4>
+      <a href="#sessions">Upcoming Sessions</a>
+      <a href="coaches.html">Coaches</a>
+      <a href="faq.html">FAQ</a>
+      <a href="booking.html">Book a Session</a>
+      <a href="registration.html">Register</a>
+      <a href="index.html">Athlete Dashboard</a>
+    </div>
+    <div class="footer-links">
+      <h4>Resources</h4>
+      <a href="https://play.google.com/store/apps/details?id=com.arenagear" target="_blank" rel="noopener">ArenaGear App ↗</a>
+      <a href="index.html">Athlete Dashboard</a>
+      <a href="registration.html">Registration</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Lee Brothers Academy · Dynamite Speed Academy · San Diego, CA</span>
+    <span>Every cat gets faster. Trust the process. 🐆</span>
+  </div>
+</footer>
 
 <script>
 // ═══════════════════════════════════════
-// CONFIG
+// LIVE SCHEDULE — same Sheet/GIDs as dashboard
 // ═══════════════════════════════════════
-const SHEET_ID   = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
-const COACH_MASTER = ['GL003', 'DL784'];
-const COACH_HS   = 'GL003';
-const COACH_YA   = 'GL003';
-const GIDS = {
-  roster:       '570350565',
-  sprintHS:     '1758897138',
-  sprintYouth:  '1689077697',
-  lactate:      '963377135',
-  schedule:     '673816025',
-  bookings:     '1223610839',
-};
-const BOOKING_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzg5uqTBKP9NGLBuVkcmzEEdrjMdGLWpvX4bOybHTGL0sGJ2oH2DoJrrfL7IGrOGjBY/exec';
+const SHEET_ID    = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
+const SCHEDULE_GID = '673816025';
+const BOOKINGS_GID = '1223610839';
+const HIGHLIGHTS_GID = '381306568';
 const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
 
-// ═══════════════════════════════════════
-// EXACT COLUMN MAPS (row 1 headers)
-// ═══════════════════════════════════════
-const R = {
-  CODE:'ROSTER ID', NAME:'FULL NAME', PROG:'PROGRAM', GRADE:'GRADE',
-  AGE:'AGE\n(auto)', AGEGRP:'AGE GROUP', GENDER:'Gender', GROUP:'GROUP\n(HS)',
-  G200:'Goal\n200m', G400:'Goal\n400m', DOB:'DOB', SPORT:'MULTI-SPORT',
-  FAMCODE:'FAMILY CODE', TEAMCODE:'TEAM CODE'
-};
-const HS = {
-  DATE:'DATE', NAME:'ATHLETE\nNAME', KPI:'KPI\nCODE', SUPP:'SUPP\nCODE',
-  F10R1:'10FLY\nR1', F10R2:'10FLY\nR2', F10R3:'10FLY\nR3',
-  F10BEST:'10FLY\nBEST', F10MPH:'10FLY\nMPH', F10DROP:'10FLY\nDROP%',
-  D40R1:'40M\nR1', D40R2:'40M\nR2', D40R3:'40M\nR3',
-  D40BEST:'40M\nBEST', D40DROP:'40M\nDROP%', D40YD:'40YD\nEQUIV',
-  SUPR1:'SUPP\nR1', SUPR2:'SUPP\nR2', SUPR3:'SUPP\nR3',
-  SUPBEST:'SUPP\nBEST', SUPMPH:'SUPP\nMPH', SUPDROP:'SUPP\nDROP%',
-  TBJFT:'TBJ\nft', TBJIN:'TBJ\nin', TBJDEC:'TBJ\ndecimal', NOTES:'NOTES'
-};
-const YA = {
-  DATE:'DATE', NAME:'ATHLETE\nNAME', AGE:'AGE\n(auto)', AGEGRP:'AGE GRP\n(auto)', GENDER:'Gender\n(auto)',
-  KPI:'KPI\nCODE', SUPP:'SUPP\nCODE',
-  F10R1:'10FLY\nR1', F10R2:'10FLY\nR2',
-  F10BEST:'10FLY\nBEST', F10MPH:'10FLY\nMPH', F10DROP:'10FLY\nDROP%',
-  D40R1:'40Y\nR1', D40R2:'40Y\nR2',
-  D40BEST:'40Y\nBEST', D40DROP:'40Y\nDROP%',
-  ACC10R1:'10ACCEL\nR1', ACC10R2:'10ACCEL\nR2',
-  ACC10BEST:'10ACCEL\nBEST', ACC10DROP:'10ACCEL\nDROP%',
-  TBJFT:'TBJ\nft', TBJIN:'TBJ\nin', TBJDEC:'TBJ\ndecimal'
-};
-const LAC = {
-  DATE:'DATE', NAME:'ATHLETE\nNAME', TYPE:'WORKOUT\nTYPE',
-  R1:'Rep 1', R2:'Rep 2', R3:'Rep 3', SUM:'Sum',
-  PRED:'Predicted\nTime', GOAL:'Goal\nTime', VSGOAL:'vs Goal',
-  DROP:'Drop Off\n%', TIER:'Drop Off\nTier',
-  NOTES:'NOTES', MEET:'MEET\nRESULT'
+const PROG_COLORS  = { speed:'var(--speed)', football:'var(--football)', combined:'var(--combined)' };
+const PROG_LABELS  = { speed:'Speed Academy', football:'Football Skills', combined:'Dual Academy' };
+const PROG_ICONS   = { speed:'⚡', football:'🏈', combined:'🐆' };
+const PROG_PRICES  = { speed:'$15', football:'$15', combined:'$20' };
+const PROG_NOTES   = {
+  speed:    'Cleats required. Track spikes OK. Bring water.',
+  football: 'Cleats required. Bring water.',
+  combined: 'Speed + Football back-to-back. Cleats required. Bring water for both.'
 };
 
-// ═══════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════
-let S = {
-  prog:null, user:null, isCoach:false,
-  isTeamCoach:false, teamCode:null,
-  isFamily:false, familyAthletes:[], familyIdx:0,
-  roster:[], sprintsHS:{}, sprintsYA:{}, lactate:{},
-  schedule:[], bookings:[],
-  live:false, loadedAt:null, charts:{}, override:null,
-  lbMode:'hs'
-};
-
-// ═══════════════════════════════════════
-// GVIZ FETCH + PARSE
-// ═══════════════════════════════════════
 async function gvizFetch(gid) {
   try {
     const res = await fetch(GVIZ(gid));
@@ -407,19 +738,7 @@ async function gvizFetch(gid) {
     const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
     if (s < 0 || e < 0) return null;
     return JSON.parse(txt.slice(s, e+1));
-  } catch(err) { console.warn('gviz fail:', err); return null; }
-}
-
-function parseGvizDate(v) {
-  if (!v) return '';
-  const m = String(v).match(/^Date\((\d+),(\d+),(\d+)\)/);
-  if (m) {
-    const yr=parseInt(m[1]), mo=parseInt(m[2]), dy=parseInt(m[3]);
-    return `${String(mo+1).padStart(2,'0')}/${String(dy).padStart(2,'0')}/${yr}`;
-  }
-  const iso = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (iso) return `${iso[2]}/${iso[3]}/${iso[1]}`;
-  return String(v);
+  } catch(err) { return null; }
 }
 
 function gvizRows(data) {
@@ -430,1238 +749,316 @@ function gvizRows(data) {
     cols.forEach((col, i) => {
       const cell = row.c ? row.c[i] : null;
       if (!cell) { obj[col]=''; return; }
-      const isDate = cell.v && String(cell.v).startsWith('Date(');
-      obj[col] = isDate ? parseGvizDate(cell.v)
-        : (cell.f != null ? String(cell.f) : (cell.v != null ? String(cell.v) : ''));
+      if (cell.v && String(cell.v).startsWith('Date(')) {
+        const m = String(cell.v).match(/^Date\((\d+),(\d+),(\d+)\)/);
+        obj[col] = m ? `${parseInt(m[1])}-${String(parseInt(m[2])+1).padStart(2,'0')}-${String(parseInt(m[3])).padStart(2,'0')}` : '';
+      } else {
+        obj[col] = cell.f != null ? String(cell.f) : (cell.v != null ? String(cell.v) : '');
+      }
     });
     return obj;
   });
 }
 
-function parseRoster(rows) {
-  return rows.filter(r => {
-    const id = (r[R.CODE]||'').trim();
-    const nm = (r[R.NAME]||'').trim();
-    return id.length >= 3 && nm.length > 1 && !/^test/i.test(nm);
-  }).map(r => ({
-    code:    (r[R.CODE]  ||'').trim(),
-    name:    (r[R.NAME]  ||'').trim(),
-    prog:    ((r[R.PROG] ||'').toString().trim().toUpperCase().replace(/\s+/g,'').replace(/[^A-Z]/g,'') === 'YOUTH') ? 'YOUTH' : 'HS',
-    grade:   (r[R.GRADE] ||'').trim(),
-    age:     (r[R.AGE]   ||'').trim(),
-    ageGrp:  (r[R.AGEGRP]||'').trim(),
-    gender:  (r[R.GENDER]||'').trim(),
-    group:   (r[R.GROUP] ||'').trim(),
-    goal200: (r[R.G200]  ||'').trim(),
-    goal400: (r[R.G400]  ||'').trim(),
-    sport:      (r[R.SPORT]   ||'').trim(),
-    dob:        (r[R.DOB]     ||'').trim(),
-    familyCode: (r[R.FAMCODE] ||'').trim().toUpperCase(),
-    teamCode:   (r[R.TEAMCODE]||'').trim().toUpperCase(),
-  }));
+function parseSlots(rows) {
+  return rows.filter(r => (r['SLOT_ID']||'').trim() && (r['DATE']||'').trim())
+    .map(r => ({
+      slotId:      (r['SLOT_ID']      ||'').trim(),
+      date:        (r['DATE']         ||'').trim(),
+      program:     (r['PROGRAM']      ||'').trim().toLowerCase(),
+      startTime:   (r['START_TIME']   ||'').trim(),
+      endTime:     (r['END_TIME']     ||'').trim(),
+      maxCapacity: parseInt(r['MAX_CAPACITY']||'0') || 0,
+      price:       (r['PRICE']        ||'').trim(),
+      location:    (r['LOCATION']     ||'').trim(),
+      coach:       (r['COACH']        ||'').trim(),
+      status:      (r['STATUS']       ||'OPEN').trim().toUpperCase(),
+      notes:       (r['NOTES']        ||'').trim()
+    }));
 }
 
-function parseSprintsHS(rows) {
-  const map = {};
-  rows.forEach(r => {
-    const date = (r[HS.DATE]||'').trim();
-    const name = (r[HS.NAME]||'').trim();
-    if (!date || !name || !/\d/.test(date)) return;
-    if (!map[name]) map[name] = [];
-    map[name].push({
-      date, kpi:r[HS.KPI]||'', supp:r[HS.SUPP]||'',
-      f10r1:r[HS.F10R1]||'', f10r2:r[HS.F10R2]||'', f10r3:r[HS.F10R3]||'',
-      f10best:r[HS.F10BEST]||'', f10mph:r[HS.F10MPH]||'', f10drop:r[HS.F10DROP]||'',
-      d40r1:r[HS.D40R1]||'', d40r2:r[HS.D40R2]||'', d40r3:r[HS.D40R3]||'',
-      d40best:r[HS.D40BEST]||'', d40drop:r[HS.D40DROP]||'', d40yd:r[HS.D40YD]||'',
-      supr1:r[HS.SUPR1]||'', supr2:r[HS.SUPR2]||'', supr3:r[HS.SUPR3]||'',
-      supbest:r[HS.SUPBEST]||'', supmph:r[HS.SUPMPH]||'', supdrop:r[HS.SUPDROP]||'',
-      tbjft:r[HS.TBJFT]||'', tbjin:r[HS.TBJIN]||'', tbjdec:r[HS.TBJDEC]||'',
-      notes:r[HS.NOTES]||''
-    });
-  });
-  return map;
+function parseBookings(rows) {
+  return rows.filter(r => (r['SLOT_ID']||'').trim())
+    .map(r => ({ slotId:(r['SLOT_ID']||'').trim() }));
 }
 
-function parseSprintsYA(rows) {
-  const map = {};
-  rows.forEach(r => {
-    const date = (r[YA.DATE]||'').trim();
-    const name = (r[YA.NAME]||'').trim();
-    if (!date || !name || !/\d/.test(date)) return;
-    if (!map[name]) map[name] = [];
-    map[name].push({
-      date, kpi:r[YA.KPI]||'', supp:r[YA.SUPP]||'',
-      f10r1:r[YA.F10R1]||'', f10r2:r[YA.F10R2]||'',
-      f10best:r[YA.F10BEST]||'', f10mph:r[YA.F10MPH]||'', f10drop:r[YA.F10DROP]||'',
-      d40r1:r[YA.D40R1]||'', d40r2:r[YA.D40R2]||'',
-      d40best:r[YA.D40BEST]||'', d40drop:r[YA.D40DROP]||'',
-      acc10r1:r[YA.ACC10R1]||'', acc10r2:r[YA.ACC10R2]||'',
-      acc10best:r[YA.ACC10BEST]||'', acc10drop:r[YA.ACC10DROP]||'',
-      tbjft:r[YA.TBJFT]||'', tbjin:r[YA.TBJIN]||'', tbjdec:r[YA.TBJDEC]||''
-    });
-  });
-  return map;
+function getBookingCount(bookings, slotId) {
+  return bookings.filter(b => b.slotId === slotId).length;
 }
 
-function parseLactate(rows) {
-  const map = {};
-  rows.forEach(r => {
-    const date = (r[LAC.DATE]||'').trim();
-    const name = (r[LAC.NAME]||'').trim();
-    if (!date || !name || !/\d/.test(date)) return;
-    if (!map[name]) map[name] = [];
-    map[name].push({
-      date, type:r[LAC.TYPE]||'',
-      r1:r[LAC.R1]||'', r2:r[LAC.R2]||'', r3:r[LAC.R3]||'',
-      sum:r[LAC.SUM]||'', predicted:r[LAC.PRED]||'',
-      goal:r[LAC.GOAL]||'', vsgoal:r[LAC.VSGOAL]||'',
-      drop:r[LAC.DROP]||'', tier:r[LAC.TIER]||'',
-      notes:r[LAC.NOTES]||'', meet:r[LAC.MEET]||''
-    });
-  });
-  return map;
+function spotsLabel(slot, bookings) {
+  const count = getBookingCount(bookings, slot.slotId);
+  if (slot.status === 'CANCELLED') return { cls:'full', text:'Cancelled' };
+  if (slot.status === 'CLOSED')    return { cls:'full', text:'Closed' };
+  if (!slot.maxCapacity)           return { cls:'open', text:'Open' };
+  const left = Math.max(0, slot.maxCapacity - count);
+  if (left === 0) return { cls:'full',  text:'Full — Waitlist' };
+  if (left <= 3)  return { cls:'low',   text:`${left} spot${left===1?'':'s'} left` };
+  return { cls:'open', text:`${left} spots left` };
 }
 
-// ═══════════════════════════════════════
-// LOCAL STORAGE
-// ═══════════════════════════════════════
-const lk = (t,n) => `ds4_${t}_${n}`;
-function getLocal(t,n){ try{return JSON.parse(localStorage.getItem(lk(t,n))||'[]');}catch(e){return[];} }
-function addLocal(t,n,o){ const a=getLocal(t,n); a.unshift(o); localStorage.setItem(lk(t,n),JSON.stringify(a)); }
-function getGoals(code){ try{return JSON.parse(localStorage.getItem('ds4_goals_'+code)||'{}');}catch(e){return{};} }
-function saveGoals(code,obj){ localStorage.setItem('ds4_goals_'+code, JSON.stringify(obj)); }
+function buildSessionCard(slot, bookings) {
+  const color  = PROG_COLORS[slot.program]  || 'var(--dim)';
+  const label  = PROG_LABELS[slot.program]  || slot.program;
+  const icon   = PROG_ICONS[slot.program]   || '📅';
+  const price  = slot.price ? `$${slot.price.replace(/[$]/g,'')}` : (PROG_PRICES[slot.program] || '');
+  const note   = slot.notes || PROG_NOTES[slot.program] || '';
+  const spots  = spotsLabel(slot, bookings);
+  const loc    = slot.location || 'Thrive Park, San Diego';
 
-// ═══════════════════════════════════════
-// DATA GETTERS
-// ═══════════════════════════════════════
-function getSprintsHS(name){ return [...getLocal('shs',name), ...(S.sprintsHS[name]||[])]; }
-function getSprintsYA(name){ return [...getLocal('sya',name), ...(S.sprintsYA[name]||[])]; }
-function getSprints(name, prog){ return prog==='YOUTH' ? getSprintsYA(name) : getSprintsHS(name); }
-function getLactate(name){ return [...getLocal('lac',name), ...(S.lactate[name]||[])]; }
-function getRoster(prog){
-  let r = S.roster;
-  if (S.isTeamCoach && S.teamCode) r = r.filter(a => a.teamCode === S.teamCode);
-  if (prog) r = r.filter(a => a.prog===prog);
-  return r;
-}
+  // Format date for display
+  const d      = new Date(slot.date+'T12:00:00');
+  const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateStr = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
+  const timeStr = slot.startTime + (slot.endTime ? ` – ${slot.endTime}` : '');
 
-// ═══════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════
-const fv = v => v && String(v).trim()!=='' ? String(v).trim() : null;
-function normDate(d){
-  if(!d) return '';
-  const iso=String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if(iso) return d;
-  const mdy=String(d).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-  if(mdy) return `${mdy[3]}-${mdy[1].padStart(2,'0')}-${mdy[2].padStart(2,'0')}`;
-  return String(d);
-}
-function fmtDate(d) {
-  if (!d) return '—';
-  const m = String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (m) return `${m[2]}/${m[3]}/${m[1]}`;
-  if (String(d).match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) return String(d);
-  return String(d);
-}
-function getPRMph(ss)  { const v=ss.map(s=>parseFloat(s.f10mph)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.max(...v):null; }
-function getPR40(ss)   { const v=ss.map(s=>parseFloat(s.d40best)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.min(...v):null; }
-function getBestTBJ(ss){ const v=ss.map(s=>parseFloat(s.tbjdec||s.tbjft)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.max(...v):null; }
-function getBestAccel10(ss){ const v=ss.map(s=>parseFloat(s.acc10best)).filter(n=>!isNaN(n)&&n>0); return v.length?Math.min(...v):null; }
-function getFirstSession(ss){
-  if(!ss.length) return null;
-  return ss.slice().sort((a,b)=>new Date(normDate(a.date))-new Date(normDate(b.date)))[0].date;
-}
-function getLastSession(ss){
-  if(!ss.length) return null;
-  return ss.slice().sort((a,b)=>new Date(normDate(b.date))-new Date(normDate(a.date)))[0].date;
-}
-function getMphImprovement(ss) {
-  const pts = ss.filter(s=>s.f10mph&&parseFloat(s.f10mph)>0)
-    .slice().sort((a,b)=>new Date(normDate(a.date))-new Date(normDate(b.date)));
-  if (pts.length < 2) return null;
-  return (parseFloat(pts[pts.length-1].f10mph) - parseFloat(pts[0].f10mph)).toFixed(2);
-}
-function dropCls(v){ const n=parseFloat(v); if(isNaN(n))return ''; return n<=1?'de':n<=2?'dg':n<=3?'dw':'db'; }
-function tierCls(t=''){ if(t.includes('ELITE'))return 'de'; if(t.includes('GOOD'))return 'dg'; if(t.includes('CLOSE')||t.includes('WARN'))return 'dw'; return t.includes('RED')||t.includes('FLAG')?'db':''; }
-function wTag(type=''){
-  const t=type.toUpperCase();
-  if(t.includes('G1-FLY')||t.includes('G1 FLY')) return `<span class="tag tfly">G1-FLY</span>`;
-  if(t.includes('23'))  return `<span class="tag t23">23 DRILL</span>`;
-  if(t.includes('G2-200')||t.includes('200P')) return `<span class="tag t200">G2-200P</span>`;
-  if(t.includes('G2-150')||t.includes('150P')) return `<span class="tag t150">G2-150P</span>`;
-  if(t.includes('CZ'))  return `<span class="tag tczb">${type}</span>`;
-  return `<span class="tag tfly">${type||'—'}</span>`;
-}
-function inits(n){ return n.split(' ').map(w=>w[0]).join('').toUpperCase(); }
-function destroyChart(id){ if(S.charts[id]){try{S.charts[id].destroy();}catch(e){} delete S.charts[id];} }
-function mkChart(id,labels,data,color,suffix=''){
-  destroyChart(id);
-  const el=document.getElementById(id);
-  if(!el||!data.length) return;
-  S.charts[id]=new Chart(el.getContext('2d'),{
-    type:'line',
-    data:{labels,datasets:[{data,borderColor:color,backgroundColor:color+'15',
-      borderWidth:2.5,pointBackgroundColor:color,pointRadius:4,tension:.35,fill:true}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#555',font:{size:10},callback:v=>v.toFixed(1)+suffix}},
-        x:{grid:{display:false},ticks:{color:'#555',font:{size:10}}}
-      }}
-  });
+  const isBookable = slot.status !== 'CANCELLED' && slot.status !== 'CLOSED';
+
+  return `
+    <div class="session-card" style="border-top:3px solid ${color}">
+      <div class="sc-header">
+        <div class="sc-dot" style="background:${color}"></div>
+        <div class="sc-name" style="color:${color}">${icon} ${label}</div>
+      </div>
+      <div class="sc-body">
+        <div class="sc-row"><span class="sc-icon">📅</span><span><strong>Date:</strong> ${dateStr}</span></div>
+        ${timeStr ? '<div class="sc-row"><span class="sc-icon">🕗</span><span><strong>Time:</strong> ' + timeStr + '</span></div>' : ''}
+        <div class="sc-row"><span class="sc-icon">📍</span><span><strong>Location:</strong> ${loc}</span></div>
+        ${slot.coach ? '<div class="sc-row"><span class="sc-icon">👤</span><span><strong>Coach:</strong> ' + slot.coach + '</span></div>' : ''}
+        <div class="sc-row"><span class="sc-icon">👥</span><span><strong>Ages:</strong> 6–18</span></div>
+        <span class="sc-spots ${spots.cls}">${spots.text}</span>
+        <div class="sc-price">
+          <div><div class="sc-price-num">${price}</div><div class="sc-price-lbl">per athlete · pay on site</div></div>
+          ${isBookable
+            ? '<a class="btn-primary" href="booking.html" style="font-size:14px;padding:10px 18px;">Book &rarr;</a>'
+            : '<span style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--muted)">' + spots.text + '</span>'
+          }
+        </div>
+      </div>
+      ${note ? '<div class="sc-note">' + note + '</div>' : ''}
+    </div>`;
 }
 
-// ═══════════════════════════════════════
-// LOGIN FLOW
-// ═══════════════════════════════════════
-function selectProg(prog) {
-  document.getElementById('progSel').style.display='none';
-  document.getElementById('hsCard').classList.toggle('on', prog==='hs');
-  document.getElementById('yaCard').classList.toggle('on', prog==='ya');
-}
-function backToSel(){
-  document.getElementById('progSel').style.display='flex';
-  document.getElementById('hsCard').classList.remove('on');
-  document.getElementById('yaCard').classList.remove('on');
-  ['hsErr','yaErr'].forEach(id=>document.getElementById(id).textContent='');
-}
-document.getElementById('hsInp').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin('hs'); });
-document.getElementById('yaInp').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin('ya'); });
-
-async function doLogin(prog) {
-  const code  = document.getElementById(prog+'Inp').value.trim().toUpperCase();
-  const errEl = document.getElementById(prog+'Err');
-  const bar   = document.getElementById(prog+'Bar');
-  const fill  = document.getElementById(prog+'Fill');
-  const msg   = document.getElementById(prog+'Msg');
-  errEl.textContent='';
-  bar.classList.add('on'); fill.style.width='10%'; msg.textContent='Connecting…';
-
+async function loadSessions() {
+  const grid = document.getElementById('sessionsGrid');
   try {
-    msg.textContent='Loading roster…';
-    const rd = await gvizFetch(GIDS.roster);
-    fill.style.width='30%';
-    if (rd) S.roster = parseRoster(gvizRows(rd));
+    const [schData, bkData] = await Promise.all([
+      gvizFetch(SCHEDULE_GID),
+      gvizFetch(BOOKINGS_GID)
+    ]);
 
-    msg.textContent='Loading sprint data…';
-    const sd = await gvizFetch(GIDS.sprintHS);
-    fill.style.width='50%';
-    if (sd) S.sprintsHS = parseSprintsHS(gvizRows(sd));
+    const slots    = schData ? parseSlots(gvizRows(schData))    : [];
+    const bookings = bkData  ? parseBookings(gvizRows(bkData))  : [];
 
-    const yd = await gvizFetch(GIDS.sprintYouth);
-    fill.style.width='70%';
-    if (yd) S.sprintsYA = parseSprintsYA(gvizRows(yd));
+    const today = new Date(); today.setHours(0,0,0,0);
+    const upcoming = slots
+      .filter(sl => new Date(sl.date+'T12:00:00') >= today && sl.status !== 'CANCELLED')
+      .sort((a,b) => new Date(a.date) - new Date(b.date))
+      .slice(0, 6); // show up to 6 upcoming slots
 
-    msg.textContent='Loading lactate…';
-    const ld = await gvizFetch(GIDS.lactate);
-    fill.style.width='90%';
-    if (ld) S.lactate = parseLactate(gvizRows(ld));
-
-    try {
-      const [schd, bkd] = await Promise.all([
-        gvizFetch(GIDS.schedule),
-        gvizFetch(GIDS.bookings)
-      ]);
-      if (schd) S.schedule = parseScheduleRows(gvizRows(schd));
-      if (bkd)  S.bookings  = parseBookingRows(gvizRows(bkd));
-    } catch(e) { /* schedule not yet configured — silent */ }
-
-    S.live = S.roster.length > 0;
-    S.loadedAt = new Date();
-  } catch(e) { console.warn(e); }
-
-  fill.style.width='100%';
-
-  if (!S.live) {
-    bar.classList.remove('on'); msg.textContent='';
-    errEl.textContent='Could not load from Google Sheets. Check sheet is published.';
-    return;
-  }
-
-  // TIER 1 — Master coach
-  if (COACH_MASTER.includes(code)) {
-    await new Promise(r=>setTimeout(r,250));
-    bar.classList.remove('on');
-    S.prog=prog; S.isCoach=true; S.isTeamCoach=false; S.isFamily=false;
-    S.user=null; S.teamCode=null; S.familyAthletes=[]; S.familyIdx=0;
-    showApp(); return;
-  }
-
-  // TIER 2 — Team coach
-  const teamAthletes = S.roster.filter(a => a.teamCode && a.teamCode === code);
-  if (teamAthletes.length > 0) {
-    msg.textContent='✓ Team loaded — '+teamAthletes.length+' athletes';
-    await new Promise(r=>setTimeout(r,250));
-    bar.classList.remove('on');
-    S.prog=prog; S.isCoach=false; S.isTeamCoach=true; S.isFamily=false;
-    S.user=null; S.teamCode=code; S.familyAthletes=[]; S.familyIdx=0;
-    showApp(); return;
-  }
-
-  // TIER 3 — Family code
-  const familyMembers = S.roster.filter(a => a.familyCode && a.familyCode === code);
-  if (familyMembers.length > 0) {
-    msg.textContent='✓ Family loaded — '+familyMembers.length+' athletes';
-    await new Promise(r=>setTimeout(r,250));
-    bar.classList.remove('on');
-    const famProg = familyMembers[0].prog==='YOUTH'?'ya':'hs';
-    S.prog=famProg; S.isCoach=false; S.isTeamCoach=false; S.isFamily=true;
-    S.user=familyMembers[0]; S.familyAthletes=familyMembers; S.familyIdx=0;
-    S.teamCode=null;
-    showApp(); return;
-  }
-
-  // TIER 4 — Individual athlete
-  const athlete = S.roster.find(a => a.code === code);
-  if (!athlete) {
-    bar.classList.remove('on'); msg.textContent='';
-    errEl.textContent='Code not found. Check your Roster ID and try again.';
-    return;
-  }
-
-  const athleteProg = athlete.prog==='YOUTH'?'ya':'hs';
-  if (athleteProg !== prog) {
-    bar.classList.remove('on'); msg.textContent='';
-    errEl.textContent='This code belongs to the '+(athlete.prog==='YOUTH'?'Youth Academy':'HS Program')+'. Please select that program.';
-    return;
-  }
-
-  msg.textContent='✓ Welcome, '+athlete.name;
-  await new Promise(r=>setTimeout(r,250));
-  bar.classList.remove('on');
-  S.prog=prog; S.user=athlete; S.isCoach=false; S.isTeamCoach=false; S.isFamily=false;
-  S.teamCode=null; S.familyAthletes=[]; S.familyIdx=0;
-  showApp();
-}
-
-function showApp() {
-  document.getElementById('loginPage').style.display='none';
-  document.getElementById('app').classList.add('on');
-  document.getElementById('btnOut').classList.add('on');
-
-  // Hide pre-auth nav links
-  document.getElementById('hdrNav').classList.add('hidden');
-
-  const pill=document.getElementById('upill');
-  pill.classList.add('on');
-  if (S.isCoach)          pill.textContent = '🐆 Coach — '+S.roster.length+' athletes';
-  else if (S.isTeamCoach) pill.textContent = '🐆 Team: '+S.teamCode;
-  else if (S.isFamily)    pill.textContent = 'Family: '+S.familyAthletes.map(a=>a.name.split(' ')[0]).join(' · ');
-  else                    pill.textContent = S.user.name;
-
-  const pp=document.getElementById('ppill');
-  pp.classList.add('on');
-  pp.className = 'ppill '+S.prog+' on';
-  if (S.isCoach||S.isTeamCoach) pp.textContent = 'COACH VIEW';
-  else if (S.isFamily)          pp.textContent = 'FAMILY VIEW';
-  else pp.textContent = S.prog==='ya' ? 'YOUTH ACADEMY' : 'HS PROGRAM';
-
-  if (S.prog==='ya') {
-    document.getElementById('hdr').classList.add('ya');
-    document.getElementById('hdrLogo').classList.add('ya');
-  }
-
-  const sb=document.getElementById('sbar');
-  sb.classList.add('on');
-  document.getElementById('smsg').innerHTML =
-    S.live ? `<span class="slive">● LIVE</span> — ${getRoster('HS').length} HS · ${getRoster('YOUTH').length} Youth · ${S.roster.length} total`
-           : `<span class="soff">⚠ OFFLINE</span>`;
-  document.getElementById('stime').textContent = S.loadedAt ? 'Updated '+S.loadedAt.toLocaleTimeString() : '';
-
-  buildTabs();
-}
-
-function signOut(){
-  S={prog:null,user:null,isCoach:false,isTeamCoach:false,teamCode:null,isFamily:false,familyAthletes:[],familyIdx:0,roster:[],sprintsHS:{},sprintsYA:{},lactate:{},live:false,loadedAt:null,charts:{},override:null,lbMode:'hs'};
-  document.getElementById('loginPage').style.display='flex';
-  document.getElementById('app').classList.remove('on');
-  document.getElementById('btnOut').classList.remove('on');
-  document.getElementById('upill').classList.remove('on');
-  document.getElementById('ppill').classList.remove('on');
-  document.getElementById('sbar').classList.remove('on');
-  document.getElementById('hdr').classList.remove('ya');
-  document.getElementById('hdrLogo').classList.remove('ya');
-  document.getElementById('tabBar').innerHTML='';
-  document.getElementById('pages').innerHTML='';
-  document.getElementById('hsInp').value='';
-  document.getElementById('yaInp').value='';
-  // Restore pre-auth nav links
-  document.getElementById('hdrNav').classList.remove('hidden');
-  backToSel();
-}
-
-// ═══════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════
-function buildTabs(){
-  const prog = S.prog;
-  let tabs;
-  if (S.isCoach) {
-    tabs = [{id:'roster',l:'Roster'},{id:'leaderboard',l:'Leaderboard'},{id:'schedule',l:'Schedule'},{id:'log',l:'Log Session'}];
-  } else if (S.isTeamCoach) {
-    tabs = [{id:'roster',l:'Roster'},{id:'leaderboard',l:'Leaderboard'},{id:'schedule',l:'Schedule'}];
-  } else if (S.isFamily) {
-    const child = S.familyAthletes[S.familyIdx];
-    tabs = child.prog==='YOUTH'
-      ? [{id:'overview',l:'Overview'},{id:'sessions',l:'Sessions'},{id:'speed',l:'Speed'}]
-      : [{id:'overview',l:'Overview'},{id:'sessions',l:'Sessions'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
-  } else if (S.user.prog==='YOUTH') {
-    tabs = [{id:'overview',l:'Overview'},{id:'sessions',l:'Sessions'},{id:'speed',l:'Speed'}];
-  } else {
-    tabs = [{id:'overview',l:'Overview'},{id:'sessions',l:'Sessions'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
-  }
-
-  document.getElementById('tabBar').innerHTML = tabs.map((t,i)=>
-    `<button class="tab ${i===0?'on '+prog:''}" data-id="${t.id}" onclick="switchTab(this,'${t.id}')">${t.l}</button>`
-  ).join('');
-  document.getElementById('pages').innerHTML = tabs.map((t,i)=>
-    `<div class="pg ${i===0?'on':''}" id="pg-${t.id}"></div>`
-  ).join('');
-
-  renderPage(tabs[0].id);
-}
-
-function switchTab(btn,id){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on','hs','ya'));
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  btn.classList.add('on',S.prog);
-  const pg=document.getElementById('pg-'+id);
-  if(pg){pg.classList.add('on'); renderPage(id);}
-}
-
-function renderPage(id){
-  const pg=document.getElementById('pg-'+id);
-  if(!pg) return;
-  const a = S.override || (S.isFamily ? S.familyAthletes[S.familyIdx] : S.user);
-  if      (id==='overview')    renderOverview(pg,a);
-  else if (id==='sessions')    renderSessions(pg,a);
-  else if (id==='speed')       renderSpeed(pg,a);
-  else if (id==='lactate')     renderLactate(pg,a);
-  else if (id==='roster')      renderRoster(pg);
-  else if (id==='leaderboard') renderLeaderboard(pg);
-  else if (id==='schedule')    renderSchedule(pg);
-  else if (id==='log')         renderLog(pg);
-}
-
-// ═══════════════════════════════════════
-// OVERVIEW
-// ═══════════════════════════════════════
-function renderOverview(pg, athlete){
-  if(!athlete){pg.innerHTML='<div class="empty">No athlete selected.</div>';return;}
-  const prog  = athlete.prog;
-  const cls   = prog==='YOUTH'?'ya':'hs';
-  const ss    = getSprints(athlete.name, prog);
-  const prMph = getPRMph(ss);
-  const pr40  = getPR40(ss);
-  const prTBJ = getBestTBJ(ss);
-  const prAccel = getBestAccel10(ss);
-  const last  = ss.find(s=>s.f10mph);
-  const imp   = getMphImprovement(ss);
-  const goals = getGoals(athlete.code);
-
-  const statCards = [
-    {lbl:'Sessions',    val:ss.length,    def:'Total logged'},
-    {lbl:'First Session',val:fmtDate(getFirstSession(ss))||'—', def:'Season start'},
-    {lbl:'Last Session', val:fmtDate(getLastSession(ss))||'—',  def:'Most recent'},
-    {lbl:'MPH Change',   val:imp?(imp>0?'+':'')+imp+' mph':'—', def:'First to latest'},
-  ];
-
-  pg.innerHTML = `
-    ${S.override ? '<button class="bbtn" id="bbtn">← Back to Roster</button>' : ''}
-    ${S.isFamily && S.familyAthletes.length>1 ? '<div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap"><span style="font-size:11px;color:var(--dim);font-family:var(--fd);font-weight:600;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">Viewing:</span><div id="familySwitcherBar" style="display:flex;gap:6px;flex-wrap:wrap"></div></div>' : ''}
-    <div class="hero">
-      <div class="av ${cls}">${inits(athlete.name)}</div>
-      <div>
-        <div class="aname">${athlete.name}</div>
-        <div class="chips">
-          ${prog==='YOUTH'
-            ? (athlete.ageGrp?'<span class="chip chip-y">'+athlete.ageGrp+'</span>':'')
-              +(athlete.age?'<span class="chip">Age '+athlete.age+'</span>':'')
-              +(athlete.sport?'<span class="chip">'+athlete.sport+'</span>':'')
-            : (athlete.group?'<span class="chip chip-g">Group '+athlete.group+'</span>':'')
-              +(athlete.grade?'<span class="chip">Grade '+athlete.grade+'</span>':'')
-              +(athlete.sport?'<span class="chip">'+athlete.sport+'</span>':'')}
-          <span class="chip" style="font-family:monospace;font-size:10px">${athlete.code}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="stats-row">
-      ${statCards.map(c=>'<div class="stat-card '+cls+'"><div class="slbl">'+c.lbl+'</div><div class="sval">'+c.val+'</div><div class="sdef">'+c.def+'</div></div>').join('')}
-    </div>
-
-    ${prog!=='YOUTH' ? '<div class="goals-section"><div class="goals-title"><span>Season Goals</span><div><button class="btn-save-goals" onclick="persistGoals(\'' + athlete.code + '\')">Save Goals</button><span class="goals-saved" id="goalsSaved"></span></div></div><div class="goals-grid"><div class="goal-card gc"><div class="glbl">C Goal — Floor</div><input class="goal-inp" id="gc" placeholder="Last PR" value="' + (goals.c||athlete.goal200||'') + '"><div class="gdef">Non-negotiable minimum</div></div><div class="goal-card gb"><div class="glbl">B Goal — Realistic</div><input class="goal-inp" id="gb" placeholder="Target" value="' + (goals.b||(athlete.group==='G2'&&athlete.goal400?athlete.goal400:athlete.goal200)||'') + '"><div class="gdef">Current trajectory</div></div><div class="goal-card ga"><div class="glbl">A Goal — Dream</div><input class="goal-inp" id="ga" placeholder="Dream" value="' + (goals.a||'') + '"><div class="gdef">Perfect season</div></div></div></div>' : ''}
-
-    <div class="kpis">
-      <div class="kpi ${cls}">
-        <div class="klbl">Best MPH</div>
-        <div class="kval ${cls}">${prMph?prMph.toFixed(2):'—'}<span class="kunit">mph</span></div>
-        <div class="ksub">10m fly top speed</div>
-        ${prMph?'<div class="kpr '+cls+'">⭐ Season PR</div>':''}
-      </div>
-      <div class="kpi ${cls}">
-        <div class="klbl">${prog==='YOUTH'?'Best 40Y':'Best 40M'}</div>
-        <div class="kval ${cls}">${pr40?pr40.toFixed(2):'—'}<span class="kunit">s</span></div>
-        <div class="ksub">${prog==='YOUTH'?'40 yard dash':'40 meter dash'}</div>
-      </div>
-      <div class="kpi ${cls}">
-        <div class="klbl">Best TBJ</div>
-        <div class="kval ${cls}" style="font-size:22px">${prTBJ?prTBJ.toFixed(2):'—'}<span class="kunit">ft</span></div>
-        <div class="ksub">Triple broad jump</div>
-        ${prTBJ?'<div class="kpr '+cls+'">⭐ Season PR</div>':''}
-      </div>
-      ${prog==='YOUTH' ? '<div class="kpi '+cls+'"><div class="klbl">Best 10m Accel</div><div class="kval '+cls+'" style="font-size:22px">'+(prAccel?prAccel.toFixed(2):'—')+'<span class="kunit">s</span></div><div class="ksub">0–10m drive phase — lower is faster</div></div>' : ''}
-      <div class="kpi ${cls}">
-        <div class="klbl">Last Drop%</div>
-        <div class="kval ${dropCls(last&&last.f10drop)}" style="font-size:22px">${last&&last.f10drop?last.f10drop:'—'}</div>
-        <div class="ksub">10FLY consistency</div>
-      </div>
-      <div class="kpi ${cls}">
-        <div class="klbl">Sessions</div>
-        <div class="kval ${cls}">${ss.length}</div>
-        <div class="ksub">Total logged</div>
-      </div>
-    </div>
-
-    <div class="ccard" style="margin-bottom:14px">
-      <div class="ctitle">10m Fly MPH — Season Trend</div>
-      <div class="csub">Top end speed — higher is faster. We want this going up. ↑</div>
-      <div class="cwrap"><canvas id="cMph"></canvas></div>
-    </div>
-    <div class="chart-row">
-      <div class="ccard">
-        <div class="ctitle">Triple Broad Jump — Season Trend</div>
-        <div class="csub">Explosive power — we want this going up. ↑</div>
-        <div class="cwrap"><canvas id="cTBJ"></canvas></div>
-      </div>
-      <div class="ccard">
-        <div class="ctitle" id="c40title">40M — Season Trend</div>
-        <div class="csub">Acceleration time — lower is faster. We want this going down. ↓</div>
-        <div class="cwrap"><canvas id="c40"></canvas></div>
-      </div>
-    </div>
-    ${prog==='YOUTH' ? '<div class="ccard" style="margin-top:14px"><div class="ctitle">10m Acceleration — Season Trend</div><div class="csub">Time from 0–10m (raw seconds) — lower is faster. We want this going down. ↓</div><div class="cwrap"><canvas id="cAccel"></canvas></div></div>' : ''}`;
-
-  if(S.override) document.getElementById('bbtn').onclick=()=>{S.override=null;buildTabs();};
-  const fswEl=document.getElementById('familySwitcherBar');
-  if(fswEl && S.isFamily && S.familyAthletes.length>1){
-    fswEl.innerHTML=S.familyAthletes.map((a,i)=>`
-      <button onclick="switchFamilyMember(${i})" style="
-        background:${i===S.familyIdx?'var(--gold)':'var(--surf2)'};
-        color:${i===S.familyIdx?'var(--black)':'var(--dim)'};
-        border:1px solid ${i===S.familyIdx?'var(--gold)':'var(--bdr)'};
-        border-radius:6px;padding:5px 16px;font-family:var(--fd);
-        font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;
-      ">${a.name.split(' ')[0]}</button>`).join('');
-  }
-
-  setTimeout(()=>{
-    function sortAsc(arr){ return arr.slice().sort((a,b)=>new Date(normDate(a.date))-new Date(normDate(b.date))); }
-    const mphPts=sortAsc(ss.filter(s=>s.f10mph&&parseFloat(s.f10mph)>0));
-    mkChart('cMph',mphPts.map(s=>fmtDate(s.date)),mphPts.map(s=>parseFloat(s.f10mph)),
-      prog==='YOUTH'?'#38bdf8':'#F5C518',' mph');
-    const tbjPts=sortAsc(ss.filter(s=>parseFloat(s.tbjdec||s.tbjft)>0));
-    mkChart('cTBJ',tbjPts.map(s=>fmtDate(s.date)),tbjPts.map(s=>parseFloat(s.tbjdec||s.tbjft)),
-      prog==='YOUTH'?'#38bdf8':'#4caf72',' ft');
-    const d40Pts=sortAsc(ss.filter(s=>parseFloat(s.d40best)>0));
-    mkChart('c40',d40Pts.map(s=>fmtDate(s.date)),d40Pts.map(s=>parseFloat(s.d40best)),'#e08844',' s');
-    const t40=document.getElementById('c40title');
-    if(t40) t40.textContent=(prog==='YOUTH'?'40Y':'40M')+' — Season Trend';
-    if(prog==='YOUTH'){
-      const accelPts=sortAsc(ss.filter(s=>parseFloat(s.acc10best)>0));
-      mkChart('cAccel',accelPts.map(s=>fmtDate(s.date)),accelPts.map(s=>parseFloat(s.acc10best)),'#e08844',' s');
+    if (!upcoming.length) {
+      grid.innerHTML = `
+        <div class="sessions-empty" style="grid-column:1/-1">
+          <div style="font-size:32px;margin-bottom:10px">📅</div>
+          <div style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--dim);margin-bottom:6px">No Sessions Currently Scheduled</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:18px">Check back soon or contact the coach for upcoming dates.</div>
+          <a class="btn-primary" href="mailto:Lbasdc@gmail.com" style="font-size:14px;padding:10px 22px;">Contact Coach →</a>
+        </div>`;
+      return;
     }
-  },50);
-}
 
-function switchFamilyMember(idx){
-  S.familyIdx=idx;
-  S.user=S.familyAthletes[idx];
-  const child=S.familyAthletes[idx];
-  S.prog=child.prog==='YOUTH'?'ya':'hs';
-  const pp=document.getElementById('ppill');
-  if(pp){pp.className='ppill '+S.prog+' on';pp.textContent='FAMILY VIEW';}
-  const hdr=document.getElementById('hdr');
-  if(hdr){hdr.className='hdr'+(S.prog==='ya'?' ya':'');}
-  const hl=document.getElementById('hdrLogo');
-  if(hl){hl.className='logo'+(S.prog==='ya'?' ya':'');}
-  buildTabs();
-}
+    grid.innerHTML = upcoming.map(slot => buildSessionCard(slot, bookings)).join('');
 
-function persistGoals(code){
-  const g = {c:document.getElementById('gc')?.value||'', b:document.getElementById('gb')?.value||'', a:document.getElementById('ga')?.value||''};
-  saveGoals(code,g);
-  const el=document.getElementById('goalsSaved');
-  if(el){el.textContent='✓ Saved';setTimeout(()=>el.textContent='',2500);}
-}
-
-// ═══════════════════════════════════════
-// SESSIONS TAB
-// ═══════════════════════════════════════
-function renderSessions(pg, athlete) {
-  if(!athlete){pg.innerHTML='<div class="empty">No athlete selected.</div>';return;}
-  const cls  = athlete.prog==='YOUTH'?'ya':'hs';
-  const fcode = (athlete.familyCode||'').trim().toUpperCase();
-
-  const PROG_COLORS = { speed:'var(--gold)', football:'#e05555', combined:'#4caf72' };
-  const PROG_LABELS = { speed:'Speed Academy', football:'Football Skills', combined:'Dual Academy' };
-  const PROG_ICONS  = { speed:'⚡', football:'🏈', combined:'🐆' };
-
-  const today = new Date(); today.setHours(0,0,0,0);
-
-  // Match bookings by family code OR roster ID
-  const rosterCode = (athlete.code||'').trim().toUpperCase();
-  const matchCodes = [fcode, rosterCode].filter(Boolean);
-  let myBookings = [];
-  if (matchCodes.length) {
-    myBookings = S.bookings.filter(b => {
-      const bCode = (b.familyCode||'').trim().toUpperCase();
-      const bDate = (function(d){ if(!d) return null; const s=String(d).trim(); if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s+"T12:00:00"); const p=new Date(s); return isNaN(p.getTime())?null:p; })(b.date);
-      return matchCodes.includes(bCode) && bDate && bDate >= today;
+    // Re-observe new cards for fade-up
+    upcoming.forEach((_, i) => {
+      const card = grid.children[i];
+      if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `opacity .45s ease ${i * 0.08}s, transform .45s ease ${i * 0.08}s`;
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 50);
+      }
     });
+
+  } catch(e) {
+    // Fallback — sheet unreachable
+    grid.innerHTML = `
+      <div class="sessions-empty" style="grid-column:1/-1">
+        <div style="font-size:32px;margin-bottom:10px">📅</div>
+        <div style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--dim);margin-bottom:6px">Schedule Temporarily Unavailable</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:18px">Sessions run Sundays at Thrive Park. Contact coach for current dates.</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <a class="btn-primary" href="booking.html" style="font-size:14px;padding:10px 22px;">Book Now →</a>
+          <a class="btn-secondary" href="mailto:Lbasdc@gmail.com" style="font-size:13px;padding:9px 18px;">Email Coach</a>
+        </div>
+      </div>`;
   }
-  const enriched = myBookings.map(b => {
-    const slot = S.schedule.find(sl => sl.slotId === b.slotId) || {};
-    return {
-      ...b,
-      startTime: slot.startTime || '',
-      endTime:   slot.endTime   || '',
-      location:  slot.location  || 'Thrive Park — SDSU Mission Valley River Park, San Diego, CA',
-      coach:     slot.coach     || '',
-      status:    slot.status    || 'OPEN',
-    };
-  }).sort((a,b) => { function pd(d){ if(!d) return 0; const s=String(d).trim(); if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s+"T12:00:00"); return new Date(s); } return pd(a.date)-pd(b.date); });
-
-  // Format date
-  function fmtFull(d) {
-    if(!d) return '—';
-    const dt = (function(d){ const s=String(d).trim(); if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s+"T12:00:00"); return new Date(s); })(d);
-    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return days[dt.getDay()]+', '+months[dt.getMonth()]+' '+dt.getDate()+', '+dt.getFullYear();
-  }
-
-  // Build session cards
-  const cards = enriched.map(b => {
-    const prog    = (b.program||'').toLowerCase();
-    const color   = PROG_COLORS[prog] || 'var(--dim)';
-    const label   = PROG_LABELS[prog] || b.program || '—';
-    const icon    = PROG_ICONS[prog]  || '📅';
-    const price   = b.price ? '$'+String(b.price).replace(/[$]/g,'') : '—';
-    const timeStr = b.startTime+(b.endTime?' – '+b.endTime:'');
-    const isSoon  = ((function(d){ const s=String(d).trim(); if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s+"T12:00:00"); return new Date(s); })(b.date) - today) < 7*24*60*60*1000;
-
-    return `<div style="background:var(--surf);border:1px solid ${color}44;border-left:4px solid ${color};
-      border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:20px;">${icon}</span>
-          <div>
-            <div style="font-family:var(--fd);font-size:18px;font-weight:800;color:${color};">${label}</div>
-            <div style="font-size:12px;color:var(--dim);margin-top:1px;">${fmtFull(b.date)}</div>
-          </div>
-        </div>
-        ${isSoon ? '<span style="font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:4px;text-transform:uppercase;background:#1a1400;border:1px solid var(--gold-dim);color:var(--gold);">This Week</span>' : ''}
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
-        <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;padding:8px 12px;">
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:3px;">Time</div>
-          <div style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text);">${timeStr||'—'}</div>
-        </div>
-        <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;padding:8px 12px;">
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:3px;">Location</div>
-          <div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text);">${b.location}</div>
-        </div>
-        <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;padding:8px 12px;">
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:3px;">Athletes</div>
-          <div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text);">${b.athletes||'—'}</div>
-        </div>
-        <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;padding:8px 12px;">
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:3px;">💰 Due On Site</div>
-          <div style="font-family:var(--fd);font-size:16px;font-weight:800;color:var(--gold);">${price}<span style="font-size:11px;font-weight:400;color:var(--dim);margin-left:3px;">/ athlete</span></div>
-        </div>
-      </div>
-      ${b.notes ? '<div style="font-size:12px;color:var(--muted);font-style:italic;padding-top:4px;">📝 '+b.notes+'</div>' : ''}
-    </div>`;
-  }).join('');
-
-  // Empty state
-  const emptyState = `
-    <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:10px;
-      padding:48px 24px;text-align:center;">
-      <div style="font-size:36px;margin-bottom:12px;">📅</div>
-      <div style="font-family:var(--fd);font-size:20px;font-weight:800;color:var(--text);margin-bottom:6px;">No Upcoming Sessions</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;">
-        ${fcode ? 'No upcoming bookings found for your family.' : 'Log in with your Family Code to see bookings here.'}<br>
-        Sessions run Sundays at Thrive Park, San Diego.
-      </div>
-    </div>`;
-
-  // No family code state
-  const noCodeState = `
-    <div style="background:#1a1000;border:1px solid #5a3800;border-radius:10px;
-      padding:24px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;">
-      <div style="font-size:20px;">⚠️</div>
-      <div>
-        <div style="font-family:var(--fd);font-size:14px;font-weight:700;color:#e08844;margin-bottom:4px;">No Family Code on File</div>
-        <div style="font-size:13px;color:var(--dim);line-height:1.6;">
-          Your roster profile doesn't have a Family Code yet. Contact your coach to get one assigned —
-          then your bookings will appear here automatically.
-        </div>
-      </div>
-    </div>`;
-
-  pg.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-      <div>
-        <div style="font-family:var(--fd);font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.5px;">Upcoming Sessions</div>
-        <div style="font-size:12px;color:var(--dim);margin-top:3px;">
-          ${enriched.length ? enriched.length+' session'+(enriched.length!==1?'s':'')+' booked' : 'No upcoming bookings'}
-        </div>
-      </div>
-      <a href="booking.html" target="_blank" style="
-        display:inline-flex;align-items:center;gap:8px;
-        background:var(--gold);color:var(--black);
-        border:none;border-radius:8px;padding:11px 22px;
-        font-family:var(--fd);font-size:15px;font-weight:800;
-        letter-spacing:.5px;text-decoration:none;text-transform:uppercase;
-        transition:background .15s;box-shadow:0 2px 12px #f5c51833;"
-        onmouseover="this.style.background='#e6b800'"
-        onmouseout="this.style.background='var(--gold)'">
-        + Book a Session
-      </a>
-    </div>
-
-    ${!fcode ? noCodeState : ''}
-
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      ${enriched.length ? cards : emptyState}
-    </div>`;
-}
-function renderSpeed(pg, athlete){
-  if(!athlete){pg.innerHTML='<div class="empty">No athlete.</div>';return;}
-  const prog=athlete.prog;
-  const ss=getSprints(athlete.name,prog);
-  const cls=prog==='YOUTH'?'ya':'hs';
-  if(!ss.length){pg.innerHTML=`<div class="tcard"><div class="thdr">Sprint Sessions</div><div class="empty"><div class="ei">⚡</div>No sprint sessions logged yet.</div></div>`;return;}
-
-  const isYA = prog==='YOUTH';
-  const valColor = prog==='YOUTH'?'var(--youth)':'var(--gold)';
-  const rows = ss.map(s=>{
-    const b=s.f10best;
-    const suppCell = (s.supp&&s.supp!=='—'&&s.supp) ? '<span class="supp-tag">'+s.supp+'</span>' : '';
-    const r3cell   = !isYA ? '<td><span class="rep '+(b&&s.f10r3===b?'repb':'')+'">'+( fv(s.f10r3)||'—')+'</span></td>' : '';
-    const ydCell   = !isYA ? '<td style="color:var(--dim)">'+(fv(s.d40yd)||'—')+'</td>' : '';
-    const supCell  = !isYA ? '<td style="font-size:12px;color:var(--blue)">'+(fv(s.supbest)||'—')+(s.supmph?' ('+s.supmph+')':'')+'</td>' : '';
-    const notesCell= !isYA ? '<td style="font-size:12px;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(s.notes||'')+'</td>' : '';
-    const ya40R1cell = isYA ? '<td><span class="rep">'+(fv(s.d40r1)||'—')+'</span></td>' : '';
-    const ya40R2cell = isYA ? '<td><span class="rep">'+(fv(s.d40r2)||'—')+'</span></td>' : '';
-    const yaAccR1cell   = isYA ? '<td><span class="rep">'+(fv(s.acc10r1)||'—')+'</span></td>' : '';
-    const yaAccR2cell   = isYA ? '<td><span class="rep">'+(fv(s.acc10r2)||'—')+'</span></td>' : '';
-    const yaAccBestCell = isYA ? '<td style="font-weight:600">'+(fv(s.acc10best)||'—')+'</td>' : '';
-    const yaAccDropCell = isYA ? '<td class="'+dropCls(s.acc10drop)+'">'+(fv(s.acc10drop)||'—')+'</td>' : '';
-    const tbjVal   = fv(s.tbjdec)?parseFloat(s.tbjdec).toFixed(2):(fv(s.tbjft)?s.tbjft+(s.tbjin?' ft '+s.tbjin+' in':''):'—');
-    return '<tr>'
-      +'<td style="color:var(--dim);white-space:nowrap">'+fmtDate(s.date)+'</td>'
-      +'<td><span class="tag ts">'+(s.kpi||'—')+'</span>'+suppCell+'</td>'
-      +'<td><span class="rep '+(b&&s.f10r1===b?'repb':'')+'">'+( fv(s.f10r1)||'—')+'</span></td>'
-      +'<td><span class="rep '+(b&&s.f10r2===b?'repb':'')+'">'+( fv(s.f10r2)||'—')+'</span></td>'
-      +r3cell
-      +'<td style="font-weight:600;color:'+valColor+'">'+(fv(b)||'—')+'</td>'
-      +'<td style="font-family:var(--fd);font-size:15px;font-weight:700;color:'+valColor+'">'+(fv(s.f10mph)||'—')+'</td>'
-      +'<td class="'+dropCls(s.f10drop)+'">'+(fv(s.f10drop)||'—')+'</td>'
-      +ya40R1cell
-      +ya40R2cell
-      +'<td style="font-weight:600">'+(fv(s.d40best)||'—')+'</td>'
-      +ydCell
-      +supCell
-      +yaAccR1cell
-      +yaAccR2cell
-      +yaAccBestCell
-      +yaAccDropCell
-      +'<td>'+tbjVal+'</td>'
-      +notesCell
-      +'</tr>';
-  }).join('');
-
-  const th = isYA
-    ? `<th>Date</th><th>KPI</th><th>10FLY R1</th><th>10FLY R2</th><th>Best</th><th>MPH</th><th>Drop%</th><th>40Y R1</th><th>40Y R2</th><th>40Y Best</th><th>10Acc R1</th><th>10Acc R2</th><th>10Acc Best</th><th>10Acc Drop%</th><th>TBJ (ft)</th>`
-    : `<th>Date</th><th>KPI/Supp</th><th>R1</th><th>R2</th><th>R3</th><th>Best</th><th>MPH</th><th>Drop%</th><th>40M</th><th>40Yd</th><th>Supp Best</th><th>TBJ (ft)</th><th>Notes</th>`;
-
-  pg.innerHTML=`<div class="tcard">
-    <div class="thdr">Sprint Sessions — ${athlete.name}</div>
-    <div class="tscroll"><table class="dt">
-      <thead><tr>${th}</tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div></div>`;
 }
 
-// ═══════════════════════════════════════
-// LACTATE TAB (HS only)
-// ═══════════════════════════════════════
-function renderLactate(pg, athlete){
-  if(!athlete){pg.innerHTML='<div class="empty">No athlete.</div>';return;}
-  const ls=getLactate(athlete.name);
-  if(!ls.length){pg.innerHTML=`<div class="tcard"><div class="thdr">Lactate Sessions</div><div class="empty"><div class="ei">🔥</div>No lactate sessions logged yet.</div></div>`;return;}
-  const rows=ls.map(s=>{
-    const vs=parseFloat(s.vsgoal);
-    const vsS=!isNaN(vs)?`color:${vs<=0?'var(--green)':'var(--red)'};font-weight:600`:'';
-    return `<tr>
-      <td style="color:var(--dim);white-space:nowrap">${fmtDate(s.date)}</td>
-      <td>${wTag(s.type)}</td>
-      <td><span class="rep">${fv(s.r1)||'—'}</span></td>
-      <td><span class="rep">${fv(s.r2)||'—'}</span></td>
-      <td><span class="rep">${fv(s.r3)||'—'}</span></td>
-      <td style="font-weight:600">${fv(s.sum)||'—'}</td>
-      <td style="font-family:var(--fd);font-size:15px;font-weight:700;color:var(--gold)">${fv(s.predicted)||'—'}</td>
-      <td>${fv(s.goal)||'—'}</td>
-      <td style="${vsS}">${fv(s.vsgoal)||'—'}</td>
-      <td class="${dropCls(s.drop)}">${fv(s.drop)||'—'}</td>
-      <td class="${tierCls(s.tier)}" style="font-size:12px;font-weight:600">${fv(s.tier)||'—'}</td>
-      <td style="font-size:12px;color:${s.meet?'var(--gold)':'var(--muted)'}">${fv(s.meet)||'—'}</td>
-    </tr>`;
-  }).join('');
-  pg.innerHTML=`<div class="tcard">
-    <div class="thdr">Lactate Sessions — ${athlete.name}</div>
-    <div class="tscroll"><table class="dt">
-      <thead><tr>
-        <th>Date</th><th>Workout</th><th>Rep 1</th><th>Rep 2</th><th>Rep 3</th>
-        <th>Sum</th><th>Predicted</th><th>Goal</th><th>vs Goal</th>
-        <th>Drop%</th><th>Tier</th><th>Meet Result</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div></div>`;
-}
+// Nav + scroll
+function toggleNav(){document.getElementById('navLinks').classList.toggle('open');}
+document.addEventListener('click',e=>{const nl=document.getElementById('navLinks');if(!nl.contains(e.target)&&!e.target.closest('.nav-mobile-btn'))nl.classList.remove('open');});
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.08});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+const navLinks=document.querySelectorAll('.nav-link:not(.nav-cta)');
+const sections=document.querySelectorAll('section[id]');
+window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)current=s.id;});navLinks.forEach(l=>{const href=l.getAttribute('href');l.style.color=href==='#'+current?'var(--text)':'';});},{passive:true});
 
-// ═══════════════════════════════════════
-// ROSTER (coach)
-// ═══════════════════════════════════════
-function renderRoster(pg){
-  const roster=getRoster();
-  if(!roster.length){pg.innerHTML='<div class="empty"><div class="ei">🐆</div>No athletes found.</div>';return;}
-  pg.innerHTML=`
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <input id="rosterSearch" type="text" placeholder="🔍  Search by name or code…"
-        style="flex:1;min-width:200px;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;
-          padding:9px 14px;color:var(--text);font-size:14px;font-family:var(--fb);"
-        oninput="filterRoster(this.value)" autocomplete="off" />
-      <span id="rosterCount" style="font-size:12px;color:var(--muted);white-space:nowrap"></span>
-    </div>
-    <div class="rgrid" id="rosterGrid"></div>`;
-  renderRosterCards(roster);
-}
-function filterRoster(q){
-  const roster=getRoster();
-  const filtered=q.trim()===''?roster:roster.filter(a=>
-    a.name.toLowerCase().includes(q.toLowerCase())||
-    a.code.toLowerCase().includes(q.toLowerCase())||
-    (a.sport&&a.sport.toLowerCase().includes(q.toLowerCase()))||
-    (a.group&&a.group.toLowerCase().includes(q.toLowerCase()))||
-    (a.ageGrp&&a.ageGrp.toLowerCase().includes(q.toLowerCase()))
-  );
-  renderRosterCards(filtered);
-}
-function renderRosterCards(roster){
-  const grid=document.getElementById('rosterGrid');
-  const count=document.getElementById('rosterCount');
-  if(!grid) return;
-  if(count) count.textContent=`${roster.length} athlete${roster.length!==1?'s':''}`;
-  if(!roster.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1">No athletes match your search.</div>';return;}
-  const cards=roster.map(a=>{
-    const isYA=a.prog==='YOUTH';
-    const ss=getSprints(a.name,a.prog);
-    const mph=getPRMph(ss);
-    const tbj=getBestTBJ(ss);
-    const cls=isYA?'ya':'hs';
-    return `<div class="rcard ${cls}" onclick="coachView('${a.code}')">
-      <span class="rcbadge ${isYA?'bgya':a.group==='G1'?'bg1':'bg2'}">${isYA?(a.ageGrp||'Youth'):a.group||'—'}</span>
-      <div class="rcname">${a.name}</div>
-      <div class="rcmeta">${isYA?('Age '+(a.age||'—')+' · '+(a.sport||'—')):('Grade '+(a.grade||'—')+' · '+(a.sport||'—'))}</div>
-      <div class="rcmph ${cls}">${mph?mph.toFixed(2)+' mph':'No data'}</div>
-      <div class="rccode">${a.code} · ${ss.length} sessions${tbj?' · TBJ '+tbj.toFixed(1)+' ft':''}</div>
-    </div>`;
-  }).join('');
-  grid.innerHTML=cards;
-}
+// ═══════════════════════════════════════════════════════════════
+// ─── ANNOUNCEMENTS — EDIT HERE ────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+//
+// BANNER (top sticky bar — best for urgent single alerts)
+// Set bannerActive: false to hide the banner entirely
+// icon options: ⚠️  📢  🚫  ⛔  📍  ❗
+//
+const BANNER = {
+  active: false,          // ← true = show banner | false = hide banner
+  icon: '⚠️',
+  title: 'No Sunday Session — June 8',
+  body: 'Football Practice cancelled this week due to tournament weekend. See you June 15 at Thrive Park.'
+};
 
-function coachView(code){
-  const a=getRoster().find(r=>r.code===code);
-  if(!a) return;
-  S.override=a;
-  const isYA=a.prog==='YOUTH';
-  const prog=isYA?'ya':'hs';
-  const tabs=isYA
-    ? [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'}]
-    : [{id:'overview',l:'Overview'},{id:'speed',l:'Speed'},{id:'lactate',l:'Lactate'}];
-  document.getElementById('tabBar').innerHTML=
-    tabs.map((t,i)=>`<button class="tab ${i===0?'on '+prog:''}" data-id="${t.id}" onclick="switchTab(this,'${t.id}')">${t.l}</button>`).join('')
-    +`<button class="tab" onclick="backToCoach()">← Roster</button>`;
-  document.getElementById('pages').innerHTML=
-    tabs.map((t,i)=>`<div class="pg ${i===0?'on':''}" id="pg-${t.id}"></div>`).join('');
-  renderPage('overview');
-}
-function backToCoach(){ S.override=null; buildTabs(); }
+//
+// ANNOUNCEMENTS SECTION (mid-page stack — up to 5)
+// type: 'alert' → red/orange — cancellations, urgent changes
+// type: 'info'  → gold       — schedule notes, location changes, reminders
+//
+// Program Highlights (the green good-news grid) is no longer edited here —
+// it's pulled live from the "Highlights" tab in the Google Sheet (see
+// loadHighlights() below). Toggle a highlight on/off with the ACTIVE column
+// on that sheet instead of editing this file.
+//
+//   { type, icon, badge, title, body, date }
+//
+const ANNOUNCEMENTS = [
+  // ── EXAMPLE ALERT (uncomment to use) ──
+  // {
+    // type: 'alert',
+    // icon: '🚫',
+    // badge: 'Cancelled',
+    // title: 'No Sunday Session — June 8',
+    // body: 'Football Practice cancelled due to tournament weekend. Next session: June 15 at Thrive Park. Contact Coach D for appointments!',
+    // date: 'Posted Jun 1'
+  // },
 
-// ═══════════════════════════════════════
-// LEADERBOARD
-// ═══════════════════════════════════════
-function renderLeaderboard(pg){
-  pg.innerHTML=`
-    <div class="lb-tabs">
-      <button class="lb-tab on hs" id="lbt-hs" onclick="switchLB('hs')">HS Program</button>
-      <button class="lb-tab" id="lbt-ya" onclick="switchLB('ya')">Youth Academy</button>
-    </div>
-    <div id="lb-content"></div>`;
-  renderLBContent(S.lbMode||'hs');
-}
+  // ── EXAMPLE INFO (uncomment to use) ──
+  // {
+  //   type: 'info',
+  //   icon: '📍',
+  //   badge: 'Location Update',
+  //   title: 'Field Change This Sunday',
+  //   body: 'We are moving to the north grass field this week — same park, look for the orange cones.',
+  //   date: 'Posted Jun 4'
+  // },
+];
 
-function switchLB(mode){
-  S.lbMode=mode;
-  document.getElementById('lbt-hs').className=`lb-tab ${mode==='hs'?'on hs':''}`;
-  document.getElementById('lbt-ya').className=`lb-tab ${mode==='ya'?'on ya':''}`;
-  renderLBContent(mode);
-}
+// ─── HIGHLIGHTS — live from Google Sheet "Highlights" tab ─────
+let HIGHLIGHT_ITEMS = [];
 
-function renderLBContent(mode){
-  const roster=getRoster(mode==='ya'?'YOUTH':'HS');
-  const isYA=mode==='ya';
-  const cls=isYA?'ya':'hs';
-  const rows=roster.map(a=>{
-    const ss=getSprints(a.name,a.prog);
-    return {a, mph:getPRMph(ss), d40:getPR40(ss), tbj:getBestTBJ(ss), accel:getBestAccel10(ss), n:ss.length};
-  }).sort((x,y)=>(y.mph||0)-(x.mph||0));
-
-  const medals=['🥇','🥈','🥉'];
-  const trows=rows.map((r,i)=>`<tr>
-    <td class="lbr ${i===0?'lb1':i===1?'lb2':i===2?'lb3':''}">${medals[i]||i+1}</td>
-    <td class="lbn">${r.a.name}</td>
-    <td>${isYA
-      ? '<span class="tag" style="background:var(--youth-bg);color:var(--youth)">'+(r.a.ageGrp||'—')+'</span>'
-      : '<span class="tag '+(r.a.group==='G1'?'ts':'tfly')+'">'+(r.a.group||'—')+'</span>'}</td>
-    <td class="lbv ${cls}">${r.mph?r.mph.toFixed(2)+' mph':'—'}</td>
-    <td>${r.d40?r.d40.toFixed(2)+'s':'—'}</td>
-    <td>${r.tbj?r.tbj.toFixed(2)+' ft':'—'}</td>
-    ${isYA ? '<td>'+(r.accel?r.accel.toFixed(2)+'s':'—')+'</td>' : ''}
-    <td style="color:var(--muted)">${r.n}</td>
-  </tr>`).join('');
-
-  document.getElementById('lb-content').innerHTML=`<div class="tcard">
-    <div class="thdr">🏆 ${isYA?'Youth Academy':'HS Program'} — Best 10m Fly MPH</div>
-    <div class="tscroll"><table class="dt">
-      <thead><tr>
-        <th>#</th><th>Athlete</th><th>${isYA?'Age Group':'Group'}</th>
-        <th>Best MPH</th><th>Best ${isYA?'40Y':'40M'}</th><th>Best TBJ</th>${isYA?'<th>Best 10Accel</th>':''}<th>Sessions</th>
-      </tr></thead>
-      <tbody>${trows||'<tr><td colspan="'+(isYA?8:7)+'"><div class="empty">No data yet.</div></td></tr>'}</tbody>
-    </table></div></div>`;
-}
-
-// ═══════════════════════════════════════
-// LOG SESSION (coach)
-// ═══════════════════════════════════════
-function renderLog(pg){
-  const today=new Date().toISOString().split('T')[0];
-  const hsOpts=getRoster('HS').map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
-  const yaOpts=getRoster('YOUTH').map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
-
-  pg.innerHTML=`
-  <div class="fcard">
-    <div class="ftitle">Log HS Sprint Session</div>
-    <div class="fgrid">
-      <div class="fg"><label>Athlete</label><select class="fs" id="lA">${hsOpts}</select></div>
-      <div class="fg"><label>Date</label><input class="fi" id="lD" type="date" value="${today}"></div>
-      <div class="fg"><label>KPI</label><select class="fs" id="lK"><option>10FLY</option><option>40M</option></select></div>
-      <div class="fg"><label>Supp</label><select class="fs" id="lSu"><option>—</option><option>20FLY</option><option>40FLY</option><option>30M</option><option>60M</option><option>30BLK</option></select></div>
-    </div>
-    <div class="fgrid">
-      <div class="fg"><label>10FLY R1</label><input class="fi" id="lr1" type="number" step="0.001" placeholder="1.082"></div>
-      <div class="fg"><label>10FLY R2</label><input class="fi" id="lr2" type="number" step="0.001" placeholder="1.079"></div>
-      <div class="fg"><label>10FLY R3</label><input class="fi" id="lr3" type="number" step="0.001" placeholder="1.085"></div>
-      <div class="fg"><label>40M Best</label><input class="fi" id="ld40" type="number" step="0.01" placeholder="4.62"></div>
-      <div class="fg"><label>TBJ ft</label><input class="fi" id="ltf" type="number" step="1" placeholder="19"></div>
-      <div class="fg"><label>TBJ in</label><input class="fi" id="lti" type="number" step="1" placeholder="6"></div>
-      <div class="fg"><label>Notes</label><input class="fi" id="lnotes" type="text" placeholder="Optional"></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-      <button class="btn-save" onclick="saveHSSprint()">Save HS Sprint</button>
-      <span class="smsg" id="sHSMsg"></span>
-    </div>
-  </div>
-
-  <div class="fcard">
-    <div class="ftitle">Log Youth Sprint Session</div>
-    <div class="fgrid">
-      <div class="fg"><label>Athlete</label><select class="fs" id="lyA">${yaOpts}</select></div>
-      <div class="fg"><label>Date</label><input class="fi" id="lyD" type="date" value="${today}"></div>
-      <div class="fg"><label>KPI</label><select class="fs" id="lyK"><option>10FLY</option><option>40Y</option><option>10ACCEL</option></select></div>
-    </div>
-    <div class="fgrid">
-      <div class="fg"><label>10FLY R1</label><input class="fi" id="lyr1" type="number" step="0.001" placeholder="1.140"></div>
-      <div class="fg"><label>10FLY R2</label><input class="fi" id="lyr2" type="number" step="0.001" placeholder="1.145"></div>
-      <div class="fg"><label>40Y R1</label><input class="fi" id="lyd1" type="number" step="0.01" placeholder="5.80"></div>
-      <div class="fg"><label>40Y R2</label><input class="fi" id="lyd2" type="number" step="0.01" placeholder="5.84"></div>
-      <div class="fg"><label>10 Accel R1</label><input class="fi" id="lya1" type="number" step="0.01" placeholder="2.15"></div>
-      <div class="fg"><label>10 Accel R2</label><input class="fi" id="lya2" type="number" step="0.01" placeholder="2.11"></div>
-      <div class="fg"><label>TBJ ft</label><input class="fi" id="lytf" type="number" step="1" placeholder="14"></div>
-      <div class="fg"><label>TBJ in</label><input class="fi" id="lyti" type="number" step="1" placeholder="5"></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-      <button class="btn-save" onclick="saveYASprint()">Save Youth Sprint</button>
-      <span class="smsg" id="sYAMsg"></span>
-    </div>
-  </div>
-
-  <div class="fcard">
-    <div class="ftitle">Log Lactate Session (HS)</div>
-    <div class="fgrid">
-      <div class="fg"><label>Athlete</label><select class="fs" id="lLA">${hsOpts}</select></div>
-      <div class="fg"><label>Date</label><input class="fi" id="lLD" type="date" value="${today}"></div>
-      <div class="fg"><label>Workout Type</label>
-        <select class="fs" id="lLT"><option>G1-FLY</option><option>23 DRILL</option><option>G2-200P</option><option>G2-150P</option><option>CZB</option><option>CZA</option></select></div>
-    </div>
-    <div class="fgrid">
-      <div class="fg"><label>Rep 1</label><input class="fi" id="ll1" type="number" step="0.01" placeholder="10.24"></div>
-      <div class="fg"><label>Rep 2</label><input class="fi" id="ll2" type="number" step="0.01" placeholder="10.26"></div>
-      <div class="fg"><label>Rep 3 (opt)</label><input class="fi" id="ll3" type="number" step="0.01"></div>
-      <div class="fg"><label>Goal Time</label><input class="fi" id="llg" type="number" step="0.01" placeholder="21.00"></div>
-      <div class="fg"><label>Meet Result</label><input class="fi" id="llm" type="text" placeholder="e.g. 10.82"></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-      <button class="btn-save" onclick="saveLactate()">Save Lactate</button>
-      <span class="smsg" id="sLMsg"></span>
-    </div>
-  </div>`;
-}
-
-function saveHSSprint(){
-  const name=document.getElementById('lA').value;
-  const date=document.getElementById('lD').value;
-  const kpi =document.getElementById('lK').value;
-  const supp=document.getElementById('lSu').value;
-  const r1  =document.getElementById('lr1').value;
-  const r2  =document.getElementById('lr2').value;
-  const r3  =document.getElementById('lr3').value;
-  const d40 =document.getElementById('ld40').value;
-  const tf  =document.getElementById('ltf').value;
-  const ti  =document.getElementById('lti').value;
-  const notes=document.getElementById('lnotes').value;
-  if(!name||!date) return;
-  const reps=[r1,r2,r3].map(parseFloat).filter(n=>!isNaN(n));
-  const best=reps.length?Math.min(...reps).toFixed(3):'';
-  const mph =best?(22.369/parseFloat(best)).toFixed(2):'';
-  const drop=reps.length>1?(((Math.max(...reps)-Math.min(...reps))/Math.min(...reps))*100).toFixed(1)+'%':'';
-  const tbjdec=(tf&&ti)?(parseFloat(tf)+parseFloat(ti)/12).toFixed(2):(tf||'');
-  addLocal('shs',name,{date,kpi,supp,f10r1:r1,f10r2:r2,f10r3:r3,f10best:best,f10mph:mph,f10drop:drop,
-    d40best:d40,d40yd:'',supbest:'',supmph:'',supdrop:'',tbjft:tf,tbjin:ti,tbjdec,notes});
-  const m=document.getElementById('sHSMsg');
-  m.textContent=`✓ Saved${mph?' — '+mph+' mph':''}`;
-  setTimeout(()=>m.textContent='',4000);
-}
-
-function saveYASprint(){
-  const name=document.getElementById('lyA').value;
-  const date=document.getElementById('lyD').value;
-  const kpi =document.getElementById('lyK').value;
-  const r1  =document.getElementById('lyr1').value;
-  const r2  =document.getElementById('lyr2').value;
-  const d1  =document.getElementById('lyd1').value;
-  const d2  =document.getElementById('lyd2').value;
-  const a1  =document.getElementById('lya1').value;
-  const a2  =document.getElementById('lya2').value;
-  const tf  =document.getElementById('lytf').value;
-  const ti  =document.getElementById('lyti').value;
-  if(!name||!date) return;
-  const reps=[r1,r2].map(parseFloat).filter(n=>!isNaN(n));
-  const best=reps.length?Math.min(...reps).toFixed(3):'';
-  const mph =best?(22.369/parseFloat(best)).toFixed(2):'';
-  const drop=reps.length>1?(((Math.max(...reps)-Math.min(...reps))/Math.min(...reps))*100).toFixed(1)+'%':'';
-  const d40reps=[d1,d2].map(parseFloat).filter(n=>!isNaN(n));
-  const d40best=d40reps.length?Math.min(...d40reps).toFixed(2):'';
-  const d40drop=d40reps.length>1?(((Math.max(...d40reps)-Math.min(...d40reps))/Math.min(...d40reps))*100).toFixed(1)+'%':'';
-  const accReps=[a1,a2].map(parseFloat).filter(n=>!isNaN(n));
-  const acc10best=accReps.length?Math.min(...accReps).toFixed(2):'';
-  const acc10drop=accReps.length>1?(((Math.max(...accReps)-Math.min(...accReps))/Math.min(...accReps))*100).toFixed(1)+'%':'';
-  const tbjdec=(tf&&ti)?(parseFloat(tf)+parseFloat(ti)/12).toFixed(2):(tf||'');
-  addLocal('sya',name,{date,kpi,supp:'',f10r1:r1,f10r2:r2,f10best:best,f10mph:mph,f10drop:drop,
-    d40r1:d1,d40r2:d2,d40best,d40drop,acc10r1:a1,acc10r2:a2,acc10best,acc10drop,tbjft:tf,tbjin:ti,tbjdec});
-  const m=document.getElementById('sYAMsg');
-  m.textContent=`✓ Saved${mph?' — '+mph+' mph':''}${acc10best?' — Accel '+acc10best+'s':''}`;
-  setTimeout(()=>m.textContent='',4000);
-}
-
-// ═══════════════════════════════════════
-// SCHEDULE PARSERS
-// ═══════════════════════════════════════
-function parseScheduleRows(rows) {
-  return rows.filter(r => (r['SLOT_ID']||r['DATE']||'').trim() !== '').map(r => ({
-    slotId:      (r['SLOT_ID']      ||'').trim(),
-    date:        (r['DATE']         ||'').trim(),
-    program:     (r['PROGRAM']      ||'').trim().toLowerCase(),
-    startTime:   (r['START_TIME']   ||'').trim(),
-    endTime:     (r['END_TIME']     ||'').trim(),
-    maxCapacity: parseInt(r['MAX_CAPACITY']||'0') || 0,
-    price:       (r['PRICE']        ||'').trim(),
-    location:    (r['LOCATION']     ||'').trim(),
-    coach:       (r['COACH']        ||'').trim(),
-    status:      (r['STATUS']       ||'OPEN').trim().toUpperCase(),
-    notes:       (r['NOTES']        ||'').trim()
-  }));
-}
-
-function parseBookingRows(rows) {
-  return rows.filter(r => (r['SLOT_ID']||r['DATE']||'').trim() !== '').map(r => ({
-    timestamp:  (r['TIMESTAMP']  ||'').trim(),
-    slotId:     (r['SLOT_ID']    ||'').trim(),
-    date:       (r['DATE']       ||'').trim(),
-    program:    (r['PROGRAM']    ||'').trim().toLowerCase(),
-    familyCode: (r['FAMILY_CODE']||'').trim().toUpperCase(),
-    parent:     (r['PARENT']     ||'').trim(),
-    athletes:   (r['ATHLETES']   ||'').trim(),
-    price:      (r['PRICE']      ||'').trim(),
-    notes:      (r['NOTES']      ||'').trim()
-  }));
-}
-
-function getSlotAvailability(dateStr) {
-  return S.schedule.filter(sl => sl.date === dateStr && sl.status === 'OPEN').length;
-}
-function getBookingCountForSlot(slotId) {
-  return S.bookings.filter(b => b.slotId === slotId).length;
-}
-function getSpotsLeftForSlot(slot) {
-  if (!slot.maxCapacity) return null;
-  return Math.max(0, slot.maxCapacity - getBookingCountForSlot(slot.slotId));
-}
-
-// ═══════════════════════════════════════
-// RENDER SCHEDULE (coach view)
-// ═══════════════════════════════════════
-function renderSchedule(pg) {
+function parseHighlights(rows) {
   const today = new Date(); today.setHours(0,0,0,0);
-  const upcoming = S.schedule
-    .filter(r => new Date(r.date+'T12:00:00') >= today)
-    .sort((a,b) => new Date(a.date) - new Date(b.date));
+  return rows
+    .filter(r => (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE')
+    .filter(r => (r['TYPE']||'').toString().trim().toUpperCase() === 'HIGHLIGHT')
+    .filter(r => {
+      const exp = (r['EXPIRES']||'').toString().trim();
+      if (!exp) return true;
+      const expDate = new Date(exp + 'T00:00:00');
+      return expDate >= today;
+    })
+    .map(r => ({
+      icon:  (r['ICON']||'').toString().trim(),
+      title: (r['TITLE']||'').toString().trim(),
+      body:  (r['BODY']||'').toString().trim()
+    }))
+    .slice(0, 8); // soft cap so the grid stays readable — raise anytime
+}
 
-  const progColors  = { speed:'var(--gold)', football:'#e05555', combined:'#4caf72' };
-  const progLabels  = { speed:'Speed Academy', football:'Football', combined:'Combined' };
+async function loadHighlights() {
+  try {
+    const data = await gvizFetch(HIGHLIGHTS_GID);
+    if (data) HIGHLIGHT_ITEMS = parseHighlights(gvizRows(data));
+  } catch(e) { /* highlights are non-critical — section just stays hidden on failure */ }
+  renderAnnouncements();
+}
 
-  const notConfigured = GIDS.schedule.includes('YOUR_');
+// ─── RENDER ANNOUNCEMENTS ──────────────────────────────────────
+function renderAnnouncements() {
+  // Banner
+  const banner = document.getElementById('annBanner');
+  if (BANNER.active && BANNER.title) {
+    document.getElementById('annBannerIcon').textContent  = BANNER.icon  || '📢';
+    document.getElementById('annBannerTitle').textContent = BANNER.title || '';
+    document.getElementById('annBannerBody').textContent  = BANNER.body  || '';
+    banner.classList.remove('hidden');
+  } else {
+    banner.classList.add('hidden');
+  }
 
-  pg.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px">
-      <div>
-        <div style="font-family:var(--fd);font-size:22px;font-weight:800;color:var(--text)">Session Schedule</div>
-        <div style="font-size:12px;color:var(--dim);margin-top:2px">${S.schedule.length} dates configured · ${S.bookings.length} total bookings</div>
-      </div>
-      <a href="booking.html" target="_blank" style="background:var(--gold);color:var(--black);border:none;border-radius:7px;
-        padding:9px 18px;font-family:var(--fd);font-size:14px;font-weight:800;letter-spacing:.5px;
-        text-decoration:none;text-transform:uppercase;transition:background .15s;"
-        onmouseover="this.style.background='#e6b800'" onmouseout="this.style.background='var(--gold)'">
-        Open Booking Page ↗
-      </a>
-    </div>
+  // Mid-page stack
+  const stack   = document.getElementById('annStack');
+  const section = document.getElementById('annSection');
 
-    ${notConfigured ? '<div style="background:#1a1400;border:1px solid var(--gold-dim);border-radius:10px;padding:18px 20px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-start"><div style="font-size:20px">⚙️</div><div><div style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--gold);margin-bottom:4px">Schedule Not Yet Configured</div><div style="font-size:13px;color:var(--dim);line-height:1.6">Add your Schedule and Bookings sheet GIDs to the CONFIG section, then add session dates to your Schedule tab.</div></div></div>' : ''}
+  const items = ANNOUNCEMENTS.slice();
+  if (HIGHLIGHT_ITEMS.length) {
+    items.unshift({ type: 'good-news', items: HIGHLIGHT_ITEMS });
+  }
 
-    ${upcoming.length === 0 && !notConfigured ? '<div class="tcard"><div class="empty"><div class="ei">📅</div>No upcoming sessions scheduled.</div></div>' : ''}
+  if (!items.length) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
 
-    ${upcoming.map(sch => {
-      const d = new Date(sch.date+'T12:00:00');
-      const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const dayLabel = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
-      const bkForDate = S.bookings.filter(b => b.date === sch.date);
-      const dateSlots = S.schedule.filter(sl => sl.date === sch.date)
-        .sort((a,b) => a.startTime.localeCompare(b.startTime));
-
-      const slotRows = dateSlots.map(slot => {
-        const color    = progColors[slot.program] || 'var(--dim)';
-        const label    = progLabels[slot.program] || slot.program;
-        const bkCount  = getBookingCountForSlot(slot.slotId);
-        const spotsLeft= getSpotsLeftForSlot(slot);
-        const bkList   = S.bookings.filter(b => b.slotId === slot.slotId);
-        const isFull   = slot.maxCapacity > 0 && bkCount >= slot.maxCapacity;
-        const statusCl = slot.status==='CANCELLED'?'var(--red)':slot.status==='CLOSED'?'var(--muted)':isFull?'var(--orange)':'var(--green)';
-        const statusLb = slot.status==='CANCELLED'?'Cancelled':slot.status==='CLOSED'?'Closed':isFull?'Full':spotsLeft!==null?spotsLeft+' left':'Open';
-        const price    = slot.price ? '$'+slot.price.replace(/[$]/g,'') : '';
-        return '<div style="background:var(--surf2);border:1px solid '+(bkList.length?color+'44':'var(--bdr)')+';border-radius:7px;padding:12px 14px;">'
-          +'<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:'+(bkList.length?'10px':'0')+'">'
-          +'<div style="display:flex;align-items:center;gap:10px">'
-          +'<div style="width:8px;height:8px;border-radius:2px;background:'+color+';flex-shrink:0"></div>'
-          +'<div>'
-          +'<div style="font-family:var(--fd);font-size:15px;font-weight:700;color:'+color+'">'+label+'</div>'
-          +'<div style="font-size:11px;color:var(--dim)">'+slot.startTime+(slot.endTime?' – '+slot.endTime:'')+(slot.coach?' · Coach '+slot.coach:'')+(slot.location?' · '+slot.location:'')+'</div>'
-          +'</div></div>'
-          +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
-          +(price?'<span style="font-family:var(--fd);font-size:16px;font-weight:800;color:var(--gold)">'+price+'</span>':'')
-          +'<div style="font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:4px;text-transform:uppercase;background:var(--surf3);border:1px solid '+statusCl+'44;color:'+statusCl+'">'+statusLb+'</div>'
-          +'<div style="font-size:11px;color:var(--muted);font-family:monospace">'+slot.slotId+'</div>'
-          +'</div></div>'
-          +(bkList.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap">'+bkList.map(b=>
-            '<div style="background:var(--surf3);border:1px solid '+color+'33;border-radius:5px;padding:4px 10px;">'
-            +'<div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text)">'+(b.athletes||b.familyCode)+'</div>'
-            +'<div style="font-size:10px;color:var(--dim)">'+b.familyCode+(b.price?' · '+b.price:'')+(b.notes?' · '+b.notes:'')+'</div>'
-            +'</div>'
-          ).join('')+'</div>' : '')
-          +'</div>';
+  stack.innerHTML = items.slice(0, 5).map(function(a) {
+    if (a.type === 'good-news') {
+      var items = (a.items || []).map(function(it) {
+        return '<div class="ann-goodnews-item">'
+          + '<div class="ann-goodnews-item-icon">' + (it.icon || '🏆') + '</div>'
+          + '<div class="ann-goodnews-item-title">' + it.title + '</div>'
+          + '<div class="ann-goodnews-item-body">'  + it.body  + '</div>'
+          + '</div>';
       }).join('');
+      return '<div class="ann-goodnews-wrap fade-up">'
+        + '<div class="ann-goodnews-header">'
+        + '<span style="font-size:20px">🏆</span>'
+        + '<span class="ann-goodnews-label">Program Highlights</span>'
+        + '</div>'
+        + '<div class="ann-goodnews-grid">' + items + '</div>'
+        + '</div>';
+    }
 
-      return '<div style="background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:16px 18px;margin-bottom:12px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px"><div style="font-family:var(--fd);font-size:18px;font-weight:800;color:var(--text)">'+dayLabel+'</div>'
-        +(sch.notes?'<div style="font-size:12px;color:var(--dim);font-style:italic">'+sch.notes+'</div>':'')
-        +'<div style="font-size:11px;color:var(--muted)">'+bkForDate.length+' booking'+(bkForDate.length!==1?'s':'')+'</div>'
-        +'</div><div style="display:flex;flex-direction:column;gap:8px">'+slotRows+'</div></div>';
-    }).join('')}
+    var iconMap  = { alert:'⚠️', info:'📢' };
+    var icon     = a.icon  || iconMap[a.type] || '📢';
+    var badge    = a.badge || (a.type === 'alert' ? 'Alert' : 'Update');
+    return '<div class="ann-card ' + a.type + ' fade-up">'
+      + '<div class="ann-card-icon">' + icon + '</div>'
+      + '<div class="ann-card-content">'
+      + '<span class="ann-card-badge">' + badge + '</span>'
+      + '<div class="ann-card-title">'  + a.title + '</div>'
+      + '<div class="ann-card-body">'   + a.body  + '</div>'
+      + (a.date ? '<div class="ann-card-date">' + a.date + '</div>' : '')
+      + '</div>'
+      + '</div>';
+  }).join('');
 
-    <div style="margin-top:24px;background:var(--surf);border:1px solid var(--bdr);border-radius:10px;overflow:hidden">
-      <div class="thdr">All Bookings — Full Log</div>
-      ${S.bookings.length === 0 ? '<div class="empty"><div class="ei">📋</div>No bookings yet.</div>' : (
-        '<div class="tscroll"><table class="dt"><thead><tr><th>Date</th><th>Program</th><th>Athletes</th><th>Family Code</th><th>Parent</th><th>Notes</th><th>Booked At</th></tr></thead><tbody>'
-        + S.bookings.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).map(b=>{
-            const pc = progColors[b.program]||'var(--dim)';
-            const pl = progLabels[b.program]||b.program;
-            return '<tr><td style="color:var(--dim);white-space:nowrap">'+fmtDate(b.date)+'</td>'
-              +'<td><span style="font-family:var(--fd);font-size:13px;font-weight:700;color:'+pc+'">'+pl+'</span></td>'
-              +'<td style="font-weight:600">'+(b.athletes||'—')+'</td>'
-              +'<td style="font-family:monospace;font-size:12px;color:var(--blue)">'+(b.familyCode||'—')+'</td>'
-              +'<td style="color:var(--dim)">'+(b.parent||'—')+'</td>'
-              +'<td style="font-size:12px;color:var(--muted)">'+(b.notes||'—')+'</td>'
-              +'<td style="font-size:11px;color:var(--muted)">'+(b.timestamp?b.timestamp.split('T')[0]:'—')+'</td>'
-              +'</tr>';
-          }).join('')
-        + '</tbody></table></div>'
-      )}
-    </div>`;
+  // Trigger fade-up on new cards
+  stack.querySelectorAll('.fade-up').forEach(function(el) { obs.observe(el); });
 }
 
-function saveLactate(){
-  const name=document.getElementById('lLA').value;
-  const date=document.getElementById('lLD').value;
-  const type=document.getElementById('lLT').value;
-  const r1  =document.getElementById('ll1').value;
-  const r2  =document.getElementById('ll2').value;
-  const r3  =document.getElementById('ll3').value;
-  const goal=document.getElementById('llg').value;
-  const meet=document.getElementById('llm').value;
-  if(!name||!date||!r1) return;
-  const reps=[r1,r2,r3].map(parseFloat).filter(n=>!isNaN(n));
-  const sum=reps.reduce((a,b)=>a+b,0).toFixed(2);
-  const drop=reps.length>1?(((Math.max(...reps)-Math.min(...reps))/Math.min(...reps))*100).toFixed(1)+'%':'';
-  const s=parseFloat(sum); let predicted='';
-  const t=type.toUpperCase();
-  if(t.includes('G1-FLY')) predicted=(s*0.667+0.19).toFixed(2);
-  else if(t.includes('200P')) predicted=(s*0.67+2).toFixed(2);
-  else if(t.includes('150P')) predicted=s.toFixed(2);
-  else if(t.includes('CZ')) predicted=(s*0.667).toFixed(2);
-  const vsgoal=(predicted&&goal)?(parseFloat(predicted)-parseFloat(goal)).toFixed(2):'';
-  const dn=parseFloat(drop);
-  const tier=isNaN(dn)?'':dn<=1?'ELITE 🔥':dn<=3?'GOOD ✓':dn<=8?'CLOSE':'WARNING ⚠';
-  addLocal('lac',name,{date,type,r1,r2,r3:r3||'',sum,predicted,goal,vsgoal,drop,tier,notes:'',meet});
-  const m=document.getElementById('sLMsg');
-  m.textContent=`✓ Saved — Predicted: ${predicted||'—'}`;
-  setTimeout(()=>m.textContent='',4000);
+function dismissBanner() {
+  document.getElementById('annBanner').classList.add('hidden');
 }
+
+// Load sessions on page load
+loadSessions();
+renderAnnouncements();
+loadHighlights();
 </script>
 </body>
 </html>
