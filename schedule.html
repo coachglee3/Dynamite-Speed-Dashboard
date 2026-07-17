@@ -910,7 +910,7 @@ function buildGroupedHtml(slots, isPast = false){
             </div>
             <div class="slot-badges">
               <span class="badge ${badge.cls}">${badge.label}</span>
-              ${slot.status === 'CANCELLED' || slot.status === 'CLOSED' ? '' : `<span style="font-family:var(--fd);font-size:11px;font-weight:700;color:var(--gold)">${price}</span>`}
+              ${slot.status === 'CANCELLED' || slot.status === 'CLOSED' ? '' : '<span style="font-family:var(--fd);font-size:11px;font-weight:700;color:var(--gold)">'+price+'</span>'}
             </div>
           </div>
 
@@ -925,22 +925,16 @@ function buildGroupedHtml(slots, isPast = false){
             </div>
             <div class="slot-detail">
               <div class="sd-label">Capacity</div>
-              <div class="sd-value">${slot.maxCapacity ? `${bkCount} / ${slot.maxCapacity}` : `${bkCount} booked`}</div>
+              <div class="sd-value">${slot.maxCapacity ? (bkCount+' / '+slot.maxCapacity) : (bkCount+' booked')}</div>
             </div>
             <div class="slot-detail">
               <div class="sd-label">Slot ID</div>
               <div class="sd-value" style="font-family:monospace;font-size:12px;color:var(--blue)">${slot.slotId}</div>
             </div>
-            ${slot.notes ? `<div class="slot-detail" style="grid-column:1/-1"><div class="sd-label">Notes</div><div class="sd-value" style="font-size:13px;font-family:var(--fb);font-weight:400;color:var(--dim)">${slot.notes}</div></div>` : ''}
+            ${slot.notes ? '<div class="slot-detail" style="grid-column:1/-1"><div class="sd-label">Notes</div><div class="sd-value" style="font-size:13px;font-family:var(--fb);font-weight:400;color:var(--dim)">'+slot.notes+'</div></div>' : ''}
           </div>
 
-          ${slot.maxCapacity ? `
-          <div class="capacity-row">
-            <div class="cap-bar-wrap">
-              <div class="cap-bar-fill ${barCls}" style="width:${pct}%"></div>
-            </div>
-            <div class="cap-text">${pct}% full${spotsLeft !== null ? ' · '+spotsLeft+' open' : ''}</div>
-          </div>` : ''}
+          ${slot.maxCapacity ? ('<div class="capacity-row"><div class="cap-bar-wrap"><div class="cap-bar-fill '+barCls+'" style="width:'+pct+'%"></div></div><div class="cap-text">'+pct+'% full'+(spotsLeft !== null ? ' · '+spotsLeft+' open' : '')+'</div></div>') : ''}
 
           <div class="bookings-section">
             <div class="bookings-toggle" onclick="toggleBookings(this)" data-slot="${slot.slotId}">
@@ -951,18 +945,8 @@ function buildGroupedHtml(slots, isPast = false){
             </div>
             <div class="bookings-list" id="bklist-${slot.slotId}">
               ${bkCount === 0
-                ? `<div style="font-size:13px;color:var(--muted);padding:8px 0;font-style:italic;">No bookings yet for this slot.</div>`
-                : bks.map(b => `
-                  <div class="booking-item">
-                    <div>
-                      <div class="bi-athletes">${b.athletes||'—'}</div>
-                      <div class="bi-meta">${b.parent||'—'}${b.notes ? ' · <em>'+b.notes+'</em>' : ''}</div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                      <span class="bi-code">${b.familyCode||'—'}</span>
-                      ${b.price ? `<span class="bi-price">$${b.price.replace(/[$]/g,'')}</span>` : ''}
-                    </div>
-                  </div>`).join('')
+                ? '<div style="font-size:13px;color:var(--muted);padding:8px 0;font-style:italic;">No bookings yet for this slot.</div>'
+                : bks.map(b => '<div class="booking-item"><div><div class="bi-athletes">'+(b.athletes||'—')+'</div><div class="bi-meta">'+(b.parent||'—')+(b.notes ? ' · <em>'+b.notes+'</em>' : '')+'</div></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span class="bi-code">'+(b.familyCode||'—')+'</span>'+(b.price ? '<span class="bi-price">$'+b.price.replace(/[$]/g,'')+'</span>' : '')+'</div></div>').join('')
               }
             </div>
           </div>
