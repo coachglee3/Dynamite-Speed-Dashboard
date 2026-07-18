@@ -489,106 +489,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     <div class="fade-up">
       <div class="section-label">Where We Train</div>
       <h2 class="section-title">Location</h2>
+      <p class="section-sub">Training sites vary by day and session, based on booking and family preference.</p>
     </div>
 
-    <!-- Location #1 -->
-    <div class="location-card fade-up">
-      <div class="loc-detail">
-        <div class="loc-row">
-          <div class="loc-icon">📍</div>
-          <div>
-            <div class="loc-label">Venue</div>
-            <div class="loc-val" style="font-size:18px;font-family:var(--fd);font-weight:700;">
-              Thrive Park · SDSU Mission Valley River Park
-            </div>
-          </div>
-        </div>
-
-        <div class="loc-row">
-          <div class="loc-icon">🏙️</div>
-          <div>
-            <div class="loc-label">City</div>
-            <div class="loc-val">San Diego, CA</div>
-          </div>
-        </div>
-
-        <div class="loc-row">
-          <div class="loc-icon">🌿</div>
-          <div>
-            <div class="loc-label">Surface</div>
-            <div class="loc-val">Grass field — confirmed each week before sessions.</div>
-          </div>
-        </div>
-
-        <div class="loc-row">
-          <div class="loc-icon">📧</div>
-          <div>
-            <div class="loc-label">Contact</div>
-            <div class="loc-val">
-              <a href="mailto:Lbasdc@gmail.com" style="color:var(--gold)">
-                Lbasdc@gmail.com
-              </a>
-            </div>
+    <div id="locationsGrid">
+      <div class="location-card fade-up">
+        <div class="loc-detail">
+          <div class="loc-row">
+            <div class="loc-icon">📍</div>
+            <div><div class="loc-val" style="color:var(--muted)">Loading locations…</div></div>
           </div>
         </div>
       </div>
-
-      <a class="loc-map-btn"
-         href="https://maps.google.com?q=Thrive+Park+San+Diego+CA"
-         target="_blank"
-         rel="noopener">
-         Open in Maps ↗
-      </a>
-    </div>
-
-    <!-- Location #2 -->
-    <div class="location-card fade-up" style="margin-top:24px;">
-      <div class="loc-detail">
-        <div class="loc-row">
-          <div class="loc-icon">📍</div>
-          <div>
-            <div class="loc-label">Venue</div>
-            <div class="loc-val" style="font-size:18px;font-family:var(--fd);font-weight:700;">
-              Central Square @ Côta Vera
-            </div>
-          </div>
-        </div>
-
-        <div class="loc-row">
-          <div class="loc-icon">🏙️</div>
-          <div>
-            <div class="loc-label">City</div>
-            <div class="loc-val">Chula Vista, CA</div>
-          </div>
-        </div>
-
-        <div class="loc-row">
-          <div class="loc-icon">🌿</div>
-          <div>
-            <div class="loc-label">Surface</div>
-            <div class="loc-val">Grass</div>
-          </div>
-        </div>
-
-        <div class="loc-row">
-          <div class="loc-icon">📧</div>
-          <div>
-            <div class="loc-label">Contact</div>
-            <div class="loc-val">
-              <a href="mailto:Lbasdc@gmail.com" style="color:var(--gold)">
-                Lbasdc@gmail.com
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <a class="loc-map-btn"
-         href="https://www.google.com/maps/search/central+square+otay+ranch/@32.6047384,-116.9796845,14z?entry=s&sa=X&ved=1t%3A199789"
-         target="_blank"
-         rel="noopener">
-         Open in Maps ↗
-      </a>
     </div>
 
   </div>
@@ -708,6 +620,7 @@ const SCHEDULE_GID = '673816025';
 const BOOKINGS_GID = '1223610839';
 const HIGHLIGHTS_GID = '381306568';
 const AVAILABILITY_GID = '1343759507';
+const LOCATIONS_GID = '851160819';
 const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
 
 const PROG_COLORS  = { speed:'var(--speed)', football:'var(--football)', combined:'var(--combined)' };
@@ -1204,11 +1117,64 @@ async function loadAvailability() {
   }
 }
 
+// ─── LOCATIONS — live from the "Locations" Google Sheet tab ─────
+// Columns: NAME | ADDRESS | MAP_LINK | SURFACE | NOTE | ACTIVE
+function parseLocations(rows) {
+  return rows
+    .filter(r => (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE')
+    .map(r => ({
+      name:    (r['NAME']||'').toString().trim(),
+      address: (r['ADDRESS']||'').toString().trim(),
+      mapLink: (r['MAP_LINK']||'').toString().trim(),
+      surface: (r['SURFACE']||'').toString().trim(),
+      note:    (r['NOTE']||'').toString().trim()
+    }))
+    .filter(loc => loc.name);
+}
+
+function locationCardHtml(loc, isFirst) {
+  const surfaceLine = loc.surface + (loc.note ? ' — ' + loc.note : '');
+  return '<div class="location-card fade-up"' + (isFirst ? '' : ' style="margin-top:24px;"') + '>'
+    + '<div class="loc-detail">'
+    + '<div class="loc-row"><div class="loc-icon">📍</div><div><div class="loc-label">Venue</div><div class="loc-val" style="font-size:18px;font-family:var(--fd);font-weight:700;">' + loc.name + '</div></div></div>'
+    + '<div class="loc-row"><div class="loc-icon">🏙️</div><div><div class="loc-label">Address</div><div class="loc-val">' + (loc.address || '—') + '</div></div></div>'
+    + (loc.surface ? '<div class="loc-row"><div class="loc-icon">🌿</div><div><div class="loc-label">Surface</div><div class="loc-val">' + surfaceLine + '</div></div></div>' : '')
+    + '<div class="loc-row"><div class="loc-icon">📧</div><div><div class="loc-label">Contact</div><div class="loc-val"><a href="mailto:Lbasdc@gmail.com" style="color:var(--gold)">Lbasdc@gmail.com</a></div></div></div>'
+    + '</div>'
+    + (loc.mapLink ? '<a class="loc-map-btn" href="' + loc.mapLink + '" target="_blank" rel="noopener">Open in Maps ↗</a>' : '')
+    + '</div>';
+}
+
+function renderLocationsGrid(locations) {
+  const el = document.getElementById('locationsGrid');
+  if (!el) return;
+  if (!locations.length) {
+    el.innerHTML = '<div class="location-card fade-up"><div class="loc-detail"><div class="loc-row"><div class="loc-icon">📍</div><div><div class="loc-val" style="color:var(--muted)">Check with your coach for current training locations.</div></div></div></div></div>';
+    return;
+  }
+  el.innerHTML = locations.map((loc, i) => locationCardHtml(loc, i === 0)).join('');
+  el.querySelectorAll('.fade-up').forEach(card => obs.observe(card));
+}
+
+async function loadLocations() {
+  try {
+    const data = await gvizFetch(LOCATIONS_GID);
+    if (data) {
+      renderLocationsGrid(parseLocations(gvizRowsFormatted(data)));
+      return;
+    }
+    throw new Error('no data');
+  } catch(e) {
+    renderLocationsGrid([]);
+  }
+}
+
 // Load sessions on page load
 loadSessions();
 renderAnnouncements();
 loadAnnouncementSheet();
 loadAvailability();
+loadLocations();
 </script>
 </body>
 </html>
