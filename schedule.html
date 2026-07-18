@@ -240,6 +240,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .badge-full{background:var(--red-bg);border:1px solid var(--red-bdr);color:var(--red);}
 .badge-cancelled{background:var(--s3);border:1px solid var(--bdr);color:var(--muted);}
 .badge-closed{background:var(--s3);border:1px solid var(--bdr);color:var(--muted);}
+.badge-appt{background:#051825;border:1px solid #0369a1;color:#38bdf8;}
 
 /* SLOT DETAIL ROW */
 .slot-details{
@@ -716,6 +717,7 @@ function getSpotsLeft(slot){
 function getStatusBadge(slot){
   if(slot.status === 'CANCELLED') return { cls:'badge-cancelled', label:'Cancelled' };
   if(slot.status === 'CLOSED')    return { cls:'badge-closed',    label:'Closed'    };
+  if(slot.status === 'APPT')      return { cls:'badge-appt',      label:'By Appointment' };
   const left = getSpotsLeft(slot);
   if(left === null)  return { cls:'badge-open', label:'Open'           };
   if(left === 0)     return { cls:'badge-full', label:'Full'           };
