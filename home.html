@@ -124,6 +124,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .sc-spots.open{background:#081a10;border:1px solid #1a5530;color:var(--combined);}
 .sc-spots.low{background:#1a1000;border:1px solid #5a3800;color:#e08844;}
 .sc-spots.full{background:#1f0808;border:1px solid #5a1a1a;color:var(--football);}
+.sc-spots.appt{background:#051825;border:1px solid #0369a1;color:#38bdf8;}
 .sessions-loading{text-align:center;padding:48px 20px;color:var(--dim);font-size:14px;}
 .sessions-empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px;background:var(--s2);border:1px solid var(--bdr);border-radius:12px;}
 .sessions-cta{margin-top:32px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
@@ -719,6 +720,26 @@ const PROG_NOTES   = {
   combined: 'Speed + Football back-to-back. Cleats required. Bring water for both.'
 };
 
+// ─── BOOKING CUTOFF — mirrors booking.html's global cutoff so the homepage
+// feed doesn't invite a click-through to a slot that's already closed.
+const BOOKING_CUTOFF = { daysBefore: 1, hour: 19, minute: 0 }; // 7:00 PM Pacific, night before session
+
+function nowInPacific() {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+}
+
+function getCutoffDate(slot) {
+  const parts = slot.date.split('-').map(Number);
+  const cutoff = new Date(parts[0], parts[1]-1, parts[2]);
+  cutoff.setDate(cutoff.getDate() - BOOKING_CUTOFF.daysBefore);
+  cutoff.setHours(BOOKING_CUTOFF.hour, BOOKING_CUTOFF.minute, 0, 0);
+  return cutoff;
+}
+
+function isPastCutoff(slot) {
+  return nowInPacific().getTime() >= getCutoffDate(slot).getTime();
+}
+
 async function gvizFetch(gid) {
   try {
     const res = await fetch(GVIZ(gid));
@@ -779,6 +800,8 @@ function spotsLabel(slot, bookings) {
   const count = getBookingCount(bookings, slot.slotId);
   if (slot.status === 'CANCELLED') return { cls:'full', text:'Cancelled' };
   if (slot.status === 'CLOSED')    return { cls:'full', text:'Closed' };
+  if (slot.status === 'APPT')      return { cls:'appt', text:'By Appointment' };
+  if (isPastCutoff(slot))          return { cls:'full', text:'Booking Closed' };
   if (!slot.maxCapacity)           return { cls:'open', text:'Open' };
   const left = Math.max(0, slot.maxCapacity - count);
   if (left === 0) return { cls:'full',  text:'Full — Waitlist' };
@@ -803,6 +826,16 @@ function buildSessionCard(slot, bookings) {
   const timeStr = slot.startTime + (slot.endTime ? ` – ${slot.endTime}` : '');
 
   const isBookable = slot.status !== 'CANCELLED' && slot.status !== 'CLOSED';
+  const isAppt     = slot.status === 'APPT';
+  const isClosedByCutoff = isBookable && !isAppt && isPastCutoff(slot);
+
+  let ctaLabel = 'Book &rarr;';
+  if (isAppt) ctaLabel = 'Details &rarr;';
+  else if (isClosedByCutoff) ctaLabel = 'View &rarr;';
+
+  const apptNote = isAppt
+    ? '<div class="sc-row" style="background:#0a1e2e;border:1px solid #0369a1;border-radius:7px;padding:8px 12px;color:#7dd3fc;font-size:12px;">📅 Flexible session — time confirmed with your coach. Book or text first to coordinate.</div>'
+    : '';
 
   return `
     <div class="session-card" style="border-top:3px solid ${color}">
@@ -816,11 +849,12 @@ function buildSessionCard(slot, bookings) {
         <div class="sc-row"><span class="sc-icon">📍</span><span><strong>Location:</strong> ${loc}</span></div>
         ${slot.coach ? '<div class="sc-row"><span class="sc-icon">👤</span><span><strong>Coach:</strong> ' + slot.coach + '</span></div>' : ''}
         <div class="sc-row"><span class="sc-icon">👥</span><span><strong>Ages:</strong> 6–18</span></div>
+        ${apptNote}
         <span class="sc-spots ${spots.cls}">${spots.text}</span>
         <div class="sc-price">
           <div><div class="sc-price-num">${price}</div><div class="sc-price-lbl">per athlete · pay on site</div></div>
           ${isBookable
-            ? '<a class="btn-primary" href="booking.html" style="font-size:14px;padding:10px 18px;">Book &rarr;</a>'
+            ? '<a class="btn-primary" href="booking.html" style="font-size:14px;padding:10px 18px;">' + ctaLabel + '</a>'
             : '<span style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--muted)">' + spots.text + '</span>'
           }
         </div>
