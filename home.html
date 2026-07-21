@@ -388,7 +388,16 @@ function renderProofStrip(data){
     else if(mph > groupBest[label]) groupBest[label] = mph;
   });
 
-  groupOrder.sort();
+  const AGE_ORDER = {
+  "U8": 0,
+  "U10": 1,
+  "U12": 2,
+  "U14": 3
+};
+
+groupOrder.sort(function(a,b){
+  return AGE_ORDER[a] - AGE_ORDER[b];
+});
 
   if(!groupOrder.length){
     grid.innerHTML = '<div class="proof-loading">Season data not available yet — check back soon.</div>';
