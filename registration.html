@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — Dynamite Speed Academy</title>
+<meta name="description" content="Register your athlete for Dynamite Speed Academy — Speed and Football performance training for ages 6–18 in San Diego, CA.">
+<link rel="icon" type="image/png" href="https://i.imgur.com/9umCYT5.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ───────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+:root{
+  --gold:#F5C518;--gold-dim:#c9a012;--gold-glow:rgba(245,197,24,.08);
+  --black:#09090b;--s1:#111113;--s2:#18181b;--s3:#242428;
+  --bdr:#2c2c30;--bdr2:#38383e;
+  --text:#f4f4f5;--dim:#888;--muted:#555;
+  --green:#4caf72;--green-bg:#081a10;--green-bdr:#1a5530;
+  --red:#e05555;--red-bg:#1f0808;--red-bdr:#5a1a1a;
+  --speed:#F5C518;--football:#e05555;--combined:#4caf72;
+  --fd:'Barlow Condensed',sans-serif;
+  --fb:'Barlow',sans-serif;
+  --r:10px;
+}
+body{
+  background:var(--black);color:var(--text);
+  font-family:var(--fb);font-size:15px;line-height:1.6;
+  min-height:100vh;overflow-x:hidden;
+}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--s1);}
+::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px;}
+a{color:inherit;text-decoration:none;}
+
+/* ─── BG ───────────────────────────────────────────────────── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -5%, rgba(245,197,24,.06) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 90% 90%, rgba(229,85,85,.03) 0%,transparent 50%);
+}
+
+/* ─── NAV ──────────────────────────────────────────────────── */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(9,9,11,.92);border-bottom:1px solid var(--bdr);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  height:58px;display:flex;align-items:center;
+  padding:0 24px;gap:16px;
+}
+.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.nav-logo img{height:30px;width:auto;}
+.nav-logo-text{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--dim);letter-spacing:.5px;text-transform:uppercase;}
+.nav-links{display:flex;align-items:center;gap:4px;margin-left:auto;}
+.nav-link{
+  font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:.5px;
+  text-transform:uppercase;color:var(--dim);
+  padding:6px 13px;border-radius:6px;
+  transition:color .15s,background .15s;white-space:nowrap;
+}
+.nav-link:hover{color:var(--text);background:var(--s2);}
+.nav-cta{
+  background:var(--gold);color:var(--black)!important;
+  border-radius:7px;padding:7px 16px!important;font-weight:800!important;
+  transition:background .15s,transform .1s;
+}
+.nav-cta:hover{background:#e6b800!important;transform:translateY(-1px);}
+.nav-mobile-btn{
+  display:none;background:none;border:1px solid var(--bdr);
+  border-radius:6px;padding:5px 10px;color:var(--dim);cursor:pointer;
+  font-size:18px;margin-left:auto;
+}
+@media(max-width:680px){
+  .nav-links{display:none;}
+  .nav-links.open{
+    display:flex;flex-direction:column;align-items:flex-start;
+    position:absolute;top:58px;left:0;right:0;
+    background:var(--s1);border-bottom:1px solid var(--bdr);
+    padding:12px 20px;gap:4px;z-index:200;
+  }
+  .nav-mobile-btn{display:block;}
+}
+
+/* ─── LAYOUT ───────────────────────────────────────────────── */
+.wrap{
+  position:relative;z-index:1;
+  max-width:740px;margin:0 auto;
+  padding:52px 20px 80px;
+}
+
+/* ─── HERO ─────────────────────────────────────────────────── */
+.page-hero{text-align:center;margin-bottom:48px;}
+.eyebrow{
+  font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--gold);opacity:.8;
+  margin-bottom:14px;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.eyebrow::before,.eyebrow::after{content:'';display:inline-block;width:24px;height:1px;background:var(--gold);opacity:.5;}
+.page-title{
+  font-family:var(--fd);font-size:clamp(42px,8vw,72px);font-weight:900;
+  letter-spacing:-1.5px;line-height:.95;color:var(--text);margin-bottom:12px;
+}
+.page-title span{color:var(--gold);}
+.page-sub{font-size:15px;color:var(--dim);max-width:480px;margin:0 auto;line-height:1.7;}
+
+/* ─── PROGRAM SELECTOR ─────────────────────────────────────── */
+.prog-selector{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  margin-bottom:32px;
+}
+@media(max-width:480px){.prog-selector{grid-template-columns:1fr;}}
+.prog-opt{
+  background:var(--s2);border:2px solid var(--bdr);border-radius:10px;
+  padding:16px 14px;cursor:pointer;text-align:center;
+  transition:all .18s;user-select:none;
+}
+.prog-opt:hover{border-color:var(--bdr2);}
+.prog-opt.selected-speed{border-color:var(--speed);background:#1a1400;}
+.prog-opt.selected-football{border-color:var(--football);background:#1f0808;}
+.prog-opt.selected-combined{border-color:var(--combined);background:#081a10;}
+.po-icon{font-size:26px;margin-bottom:8px;}
+.po-name{font-family:var(--fd);font-size:16px;font-weight:800;letter-spacing:.5px;margin-bottom:3px;}
+.prog-opt:nth-child(1) .po-name{color:var(--speed);}
+.prog-opt:nth-child(2) .po-name{color:var(--football);}
+.prog-opt:nth-child(3) .po-name{color:var(--combined);}
+.po-price{font-size:12px;color:var(--dim);}
+.po-check{
+  width:18px;height:18px;border-radius:50%;border:2px solid var(--bdr);
+  margin:8px auto 0;display:flex;align-items:center;justify-content:center;
+  font-size:10px;transition:all .18s;
+}
+.prog-opt.selected-speed .po-check{background:var(--speed);border-color:var(--speed);color:var(--black);}
+.prog-opt.selected-football .po-check{background:var(--football);border-color:var(--football);color:#fff;}
+.prog-opt.selected-combined .po-check{background:var(--combined);border-color:var(--combined);color:#fff;}
+
+/* ─── FORM CARD ────────────────────────────────────────────── */
+.form-card{
+  background:var(--s2);border:1px solid var(--bdr);border-radius:14px;
+  padding:32px 28px;margin-bottom:16px;
+}
+@media(max-width:480px){.form-card{padding:22px 18px;}}
+.fc-title{
+  font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--dim);
+  padding-bottom:14px;border-bottom:1px solid var(--bdr);
+  margin-bottom:22px;display:flex;align-items:center;gap:8px;
+}
+.fc-title-icon{font-size:16px;}
+
+/* ─── FIELD GRID ───────────────────────────────────────────── */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.fgrid.full{grid-template-columns:1fr;}
+.fgrid.thirds{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:520px){.fgrid,.fgrid.thirds{grid-template-columns:1fr;}}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg label{
+  font-size:11px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.fg label span{color:var(--red);margin-left:2px;}
+.fi,.fsel,.ftxt{
+  width:100%;background:var(--s3);border:1px solid var(--bdr);
+  border-radius:8px;padding:10px 14px;
+  color:var(--text);font-size:14px;font-family:var(--fb);
+  transition:border-color .15s,box-shadow .15s;
+  -webkit-appearance:none;appearance:none;
+}
+.fi:focus,.fsel:focus,.ftxt:focus{
+  outline:none;border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(245,197,24,.08);
+}
+.fi::placeholder,.ftxt::placeholder{color:var(--muted);}
+.fsel{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+.fsel option{background:var(--s2);}
+.ftxt{resize:vertical;min-height:90px;line-height:1.5;}
+.fi.err,.fsel.err,.ftxt.err{border-color:var(--red);}
+.field-err{font-size:11px;color:var(--red);min-height:14px;}
+
+/* ─── ATHLETE BLOCK ────────────────────────────────────────── */
+.athlete-block{
+  background:var(--s3);border:1px solid var(--bdr);border-radius:10px;
+  padding:18px;margin-bottom:12px;position:relative;
+}
+.athlete-block-title{
+  font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:.5px;
+  color:var(--gold);text-transform:uppercase;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.remove-athlete{
+  background:none;border:1px solid var(--bdr);color:var(--muted);
+  border-radius:5px;padding:2px 8px;font-size:11px;cursor:pointer;
+  font-family:var(--fb);transition:all .15s;
+}
+.remove-athlete:hover{border-color:var(--red);color:var(--red);}
+.add-athlete-btn{
+  width:100%;background:transparent;border:1px dashed var(--bdr2);
+  border-radius:8px;padding:12px;color:var(--dim);
+  font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;cursor:pointer;transition:all .18s;
+  margin-top:4px;
+}
+.add-athlete-btn:hover{border-color:var(--gold-dim);color:var(--gold);}
+
+/* ─── PARENT SECTION divider ──────────────────────────────── */
+.section-note{
+  font-size:12px;color:var(--muted);font-style:italic;
+  margin-top:-6px;margin-bottom:16px;line-height:1.5;
+}
+
+/* ─── SUBMIT AREA ──────────────────────────────────────────── */
+.submit-area{margin-top:8px;}
+.submit-note{
+  font-size:13px;color:var(--muted);margin-bottom:16px;
+  padding:12px 16px;background:var(--s3);border:1px solid var(--bdr);
+  border-radius:8px;line-height:1.6;
+}
+.submit-note strong{color:var(--dim);}
+.btn-submit{
+  width:100%;background:var(--gold);color:var(--black);
+  border:none;border-radius:10px;padding:16px;
+  font-family:var(--fd);font-size:20px;font-weight:900;letter-spacing:.5px;
+  text-transform:uppercase;cursor:pointer;
+  transition:background .15s,transform .1s,box-shadow .15s;
+  box-shadow:0 0 28px rgba(245,197,24,.2);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.btn-submit:hover{background:#e6b800;transform:translateY(-2px);box-shadow:0 4px 36px rgba(245,197,24,.35);}
+.btn-submit:active{transform:scale(.99);}
+.btn-submit:disabled{background:var(--muted);color:var(--bdr);cursor:not-allowed;transform:none;box-shadow:none;}
+.form-global-err{
+  color:var(--red);font-size:13px;margin-top:10px;
+  min-height:18px;text-align:center;
+}
+
+/* ─── AVAILABILITY SECTION ─────────────────────────────────── */
+.avail-section{margin-bottom:32px;}
+.avail-header{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;margin-bottom:16px;
+}
+.avail-title{
+  font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--dim);
+}
+.avail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:500px){.avail-grid{grid-template-columns:1fr;}}
+.avail-card{
+  background:var(--s2);border:1px solid var(--bdr);border-radius:10px;
+  overflow:hidden;
+}
+.avail-card-header{
+  padding:12px 16px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;gap:8px;
+}
+.avail-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.avail-card-name{font-family:var(--fd);font-size:16px;font-weight:800;letter-spacing:.5px;}
+.avail-rows{padding:8px 0;}
+.avail-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 16px;font-size:13px;
+  border-bottom:1px solid #1a1a1e;
+}
+.avail-row:last-child{border-bottom:none;}
+.avail-day{color:var(--dim);font-weight:500;width:90px;flex-shrink:0;}
+.avail-time{
+  font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:.3px;
+  text-align:right;
+}
+.avail-time.open{color:var(--green);}
+.avail-time.closed{color:var(--muted);}
+.avail-time.limited{color:var(--gold);}
+
+/* ─── SUCCESS SCREEN ───────────────────────────────────────── */
+.success-screen{
+  display:none;
+  background:var(--s2);border:1px solid var(--green-bdr);border-radius:14px;
+  padding:52px 32px;text-align:center;
+}
+.success-screen.on{display:block;}
+.success-paw{font-size:54px;margin-bottom:16px;display:block;}
+.success-title{
+  font-family:var(--fd);font-size:48px;font-weight:900;letter-spacing:-1px;
+  color:var(--green);margin-bottom:10px;
+}
+.success-sub{font-size:15px;color:var(--dim);line-height:1.7;max-width:440px;margin:0 auto 28px;}
+.success-details{
+  background:var(--s3);border:1px solid var(--bdr);border-radius:10px;
+  padding:18px 22px;text-align:left;max-width:380px;margin:0 auto 28px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.sd-row{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:13px;}
+.sd-k{color:var(--dim);text-transform:uppercase;letter-spacing:.5px;font-size:11px;font-weight:600;}
+.sd-v{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--text);}
+.success-note{
+  font-size:13px;color:var(--muted);
+  background:var(--s3);border:1px solid var(--bdr);border-radius:8px;
+  padding:12px 16px;max-width:420px;margin:0 auto 24px;line-height:1.6;
+}
+.success-note strong{color:var(--dim);}
+.btn-new-reg{
+  background:transparent;border:1px solid var(--bdr);color:var(--dim);
+  border-radius:8px;padding:10px 22px;
+  font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;cursor:pointer;transition:all .15s;
+}
+.btn-new-reg:hover{border-color:var(--gold-dim);color:var(--gold);}
+
+/* ─── PROGRESS BAR ─────────────────────────────────────────── */
+.progress-bar{
+  height:3px;background:var(--s3);border-radius:2px;
+  margin-bottom:36px;overflow:hidden;display:none;
+}
+.progress-bar.on{display:block;}
+.progress-fill{
+  height:100%;background:var(--gold);border-radius:2px;
+  width:0%;transition:width .4s ease;
+}
+
+/* ─── LOADING SPINNER ──────────────────────────────────────── */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{
+  display:inline-block;width:18px;height:18px;
+  border:2px solid rgba(0,0,0,.2);border-top-color:var(--black);
+  border-radius:50%;animation:spin .7s linear infinite;
+}
+
+/* ─── FADE ANIM ────────────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────────────────────── -->
+<nav class="nav">
+  <div class="nav-logo">
+    <img src="https://i.imgur.com/9umCYT5.png" alt="Dynamite Speed" onerror="this.style.display='none'">
+    <span class="nav-logo-text">Dynamite Speed</span>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a class="nav-link" href="home.html">Home</a>
+    <a class="nav-link" href="home.html#programs">Programs</a>
+    <a class="nav-link" href="home.html#sessions">Sessions</a>
+    <a class="nav-link" href="index.html">Dashboard</a>
+    <a class="nav-link" href="schedule.html">Schedule</a>
+    <a class="nav-link nav-cta" href="booking.html">Book Now</a>
+  </div>
+  <button class="nav-mobile-btn" onclick="toggleNav()" aria-label="Menu">☰</button>
+</nav>
+
+<div class="wrap">
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- ─── SUCCESS ─────────────────────────────────────────── -->
+  <div class="success-screen" id="successScreen">
+    <span class="success-paw">🐆</span>
+    <div class="success-title">You're In.</div>
+    <p class="success-sub">
+      Registration received. Your coach will be in touch with your Family Code and session details shortly.
+    </p>
+    <div class="success-details" id="successDetails"></div>
+    <div class="success-note">
+      <strong>What happens next:</strong> Your coach will review your registration and send your Family Code via email or text. You'll use that code to log into the Athlete Dashboard and book sessions.
+    </div>
+    <a class="btn-new-reg" href="booking.html" style="display:inline-block;margin-bottom:12px;">Book a Session →</a>
+    <br>
+    <button class="btn-new-reg" onclick="resetForm()">Register Another Athlete</button>
+  </div>
+
+  <!-- ─── FORM ─────────────────────────────────────────────── -->
+  <div id="formWrap">
+
+    <!-- HERO -->
+    <div class="page-hero fade-up">
+      <div class="eyebrow">Lee Brothers Speed & Performance Dual Academy · San Diego, CA</div>
+      <h1 class="page-title">Join the<br><span>Program</span></h1>
+      <p class="page-sub">
+        Spots are limited to maintain small group sizes and quality coaching.
+        Complete the form below to secure your athlete's place.
+      </p>
+    </div>
+
+    <!-- AVAILABILITY -->
+    <div class="avail-section fade-up">
+      <div class="avail-header">
+        <div class="avail-title">📅 Current Availability</div>
+        <span style="font-size:11px;color:var(--muted);font-style:italic">Updated weekly</span>
+      </div>
+      <div class="avail-grid">
+
+        <!-- SPEED -->
+        <div class="avail-card">
+          <div class="avail-card-header">
+            <div class="avail-dot" style="background:var(--speed)"></div>
+            <div class="avail-card-name" style="color:var(--speed)">Speed Academy</div>
+          </div>
+          <div class="avail-rows" id="avlSpeedRows">
+            <div class="avail-row"><span class="avail-day" style="width:auto;color:var(--muted)">Loading…</span></div>
+          </div>
+        </div>
+
+        <!-- FOOTBALL -->
+        <div class="avail-card">
+          <div class="avail-card-header">
+            <div class="avail-dot" style="background:var(--football)"></div>
+            <div class="avail-card-name" style="color:var(--football)">Football Skills</div>
+          </div>
+          <div class="avail-rows" id="avlFootballRows">
+            <div class="avail-row"><span class="avail-day" style="width:auto;color:var(--muted)">Loading…</span></div>
+          </div>
+        </div>
+
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px;font-style:italic;">
+        ⚡ Speed Academy sessions run Sundays at Thrive Park. Football Skills availability reflects private/small group training — contact coach for scheduling.
+      </p>
+    </div>
+
+    <!-- PROGRAM SELECT -->
+    <div class="fade-up" style="margin-bottom:8px;">
+      <div style="font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-bottom:12px;">
+        Select Program <span style="color:var(--red)">*</span>
+      </div>
+      <div class="prog-selector">
+        <div class="prog-opt" id="opt-speed" onclick="selectProg('speed')">
+          <div class="po-icon">⚡</div>
+          <div class="po-name">Speed Academy</div>
+          <div class="po-price">$15 / session</div>
+          <div class="po-check" id="chk-speed"></div>
+        </div>
+        <div class="prog-opt" id="opt-football" onclick="selectProg('football')">
+          <div class="po-icon">🏈</div>
+          <div class="po-name">Football Skills</div>
+          <div class="po-price">$15 / session</div>
+          <div class="po-check" id="chk-football"></div>
+        </div>
+        <div class="prog-opt" id="opt-combined" onclick="selectProg('combined')">
+          <div class="po-icon">🐆</div>
+          <div class="po-name">Dual Academy</div>
+          <div class="po-price">$20 / session</div>
+          <div class="po-check" id="chk-combined"></div>
+        </div>
+      </div>
+      <div class="field-err" id="prog-err"></div>
+    </div>
+
+    <!-- ATHLETE INFO -->
+    <div class="form-card fade-up">
+      <div class="fc-title"><span class="fc-title-icon">🏃</span> Athlete Information</div>
+
+      <div id="athleteBlocks">
+        <!-- Athlete 1 — injected by JS -->
+      </div>
+      <button class="add-athlete-btn" onclick="addAthlete()" id="addBtn">+ Add Another Athlete</button>
+    </div>
+
+    <!-- PARENT 1 -->
+    <div class="form-card fade-up">
+      <div class="fc-title"><span class="fc-title-icon">👤</span> Parent / Guardian 1</div>
+      <div class="fgrid">
+        <div class="fg">
+          <label>Full Name <span>*</span></label>
+          <input class="fi" id="p1name" type="text" placeholder="First and last name" autocomplete="name">
+          <div class="field-err" id="p1name-err"></div>
+        </div>
+        <div class="fg">
+          <label>Phone <span>*</span></label>
+          <input class="fi" id="p1phone" type="tel" placeholder="(619) 000-0000" autocomplete="tel">
+          <div class="field-err" id="p1phone-err"></div>
+        </div>
+      </div>
+      <div class="fgrid full">
+        <div class="fg">
+          <label>Email <span>*</span></label>
+          <input class="fi" id="p1email" type="email" placeholder="parent@email.com" autocomplete="email">
+          <div class="field-err" id="p1email-err"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARENT 2 -->
+    <div class="form-card fade-up">
+      <div class="fc-title"><span class="fc-title-icon">👤</span> Parent / Guardian 2 <span style="font-size:11px;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(optional)</span></div>
+      <p class="section-note">Leave blank if not applicable.</p>
+      <div class="fgrid">
+        <div class="fg">
+          <label>Full Name</label>
+          <input class="fi" id="p2name" type="text" placeholder="First and last name" autocomplete="off">
+        </div>
+        <div class="fg">
+          <label>Phone</label>
+          <input class="fi" id="p2phone" type="tel" placeholder="(619) 000-0000" autocomplete="off">
+        </div>
+      </div>
+      <div class="fgrid full">
+        <div class="fg">
+          <label>Email</label>
+          <input class="fi" id="p2email" type="email" placeholder="parent2@email.com" autocomplete="off">
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="form-card fade-up">
+      <div class="fc-title"><span class="fc-title-icon">📝</span> Additional Notes</div>
+      <div class="fg">
+        <label>Medical Info, Injuries, or General Notes</label>
+        <textarea class="ftxt" id="notes" placeholder="Any relevant medical information, existing injuries, or anything else your coach should know..."></textarea>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-area fade-up">
+      <div class="submit-note">
+        <strong>Payment is due on-site</strong> at each session — $15 Speed / $15 Football / $20 Dual Academy. No pre-payment required to register. Your coach will contact you with your Family Code after reviewing your registration.
+      </div>
+      <button class="btn-submit" id="submitBtn" onclick="submitForm()">
+        <span id="submitLabel">Complete Registration</span>
+        <span>🐆</span>
+      </button>
+      <div class="form-global-err" id="globalErr"></div>
+    </div>
+
+  </div><!-- /formWrap -->
+</div><!-- /wrap -->
+
+<script>
+// ─── CONFIG ────────────────────────────────────────────────────
+// Replace with your Apps Script deployment URL
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzg5uqTBKP9NGLBuVkcmzEEdrjMdGLWpvX4bOybHTGL0sGJ2oH2DoJrrfL7IGrOGjBY/exec';
+
+// ─── AVAILABILITY — live from Google Sheet, mirrors home.html ────────────
+const SHEET_ID        = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
+const AVAILABILITY_GID = '1343759507';
+const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
+
+async function gvizFetch(gid) {
+  try {
+    const res = await fetch(GVIZ(gid));
+    if (!res.ok) return null;
+    const txt = await res.text();
+    const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+    if (s < 0 || e < 0) return null;
+    return JSON.parse(txt.slice(s, e+1));
+  } catch(err) { return null; }
+}
+
+function gvizRows(data) {
+  if (!data || !data.table) return [];
+  const cols = (data.table.cols||[]).map(c => c.label||'');
+  return (data.table.rows||[]).map(row => {
+    const obj = {};
+    cols.forEach((col, i) => {
+      const cell = row.c ? row.c[i] : null;
+      // Prefer the formatted display value (f) — raw v for a TIME-formatted
+      // cell comes back as a literal "Date(1899,11,30,9,30,0)" object notation,
+      // not the "9:30 AM" text the sheet actually shows.
+      obj[col] = cell && cell.f != null ? String(cell.f) : (cell && cell.v != null ? String(cell.v) : '');
+    });
+    return obj;
+  });
+}
+
+function titleCaseWords(s) {
+  return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function parseAvailability(rows) {
+  const dayIdx = { SUNDAY:0, MONDAY:1, TUESDAY:2, WEDNESDAY:3, THURSDAY:4, FRIDAY:5, SATURDAY:6 };
+  const result = { speed: Array(7).fill(null), football: Array(7).fill(null) };
+
+  rows.forEach(r => {
+    const program = (r['PROGRAM']||'').toString().trim().toUpperCase();
+    const key = program === 'FOOTBALL' ? 'football' : (program === 'SPEED' ? 'speed' : null);
+    if (!key) return;
+
+    const orderRaw = parseInt(r['ORDER'], 10);
+    const day = (r['DAY']||'').toString().trim().toUpperCase();
+    const idx = !isNaN(orderRaw) ? orderRaw - 1 : dayIdx[day];
+    if (idx == null || idx < 0 || idx > 6) return;
+
+    result[key][idx] = {
+      active: (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE',
+      status: (r['STATUS']||'').toString().trim().toUpperCase(),
+      time:   (r['TIME']||'').toString().trim(),
+      note:   (r['NOTE']||'').toString().trim()
+    };
+  });
+
+  return result;
+}
+
+function availDisplay(entry) {
+  if (!entry || !entry.active || !entry.status || entry.status === 'CLOSED') {
+    return { cls: 'closed', text: 'Unavailable' };
+  }
+  const cls = entry.status === 'LIMITED' ? 'limited' : 'open';
+  const note = entry.note ? titleCaseWords(entry.note) : '';
+  const text = note && entry.time ? (note + ' • ' + entry.time)
+             : note  ? note
+             : entry.time ? entry.time
+             : 'Unavailable';
+  return { cls, text };
+}
+
+function renderAvailabilityGrid(avail) {
+  const dayLabels = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const targets = { speed: 'avlSpeedRows', football: 'avlFootballRows' };
+  Object.keys(targets).forEach(key => {
+    const el = document.getElementById(targets[key]);
+    if (!el) return;
+    el.innerHTML = avail[key].map((entry, i) => {
+      const d = availDisplay(entry);
+      return '<div class="avail-row"><span class="avail-day">' + dayLabels[i] + '</span><span class="avail-time ' + d.cls + '">' + d.text + '</span></div>';
+    }).join('');
+  });
+}
+
+async function loadAvailability() {
+  const targets = ['avlSpeedRows', 'avlFootballRows'];
+  try {
+    const data = await gvizFetch(AVAILABILITY_GID);
+    if (data) {
+      renderAvailabilityGrid(parseAvailability(gvizRows(data)));
+      return;
+    }
+    throw new Error('no data');
+  } catch(e) {
+    targets.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '<div class="avail-row"><span class="avail-day" style="width:auto;color:var(--muted)">Check with your coach for current availability</span></div>';
+    });
+  }
+}
+
+// ─── STATE ─────────────────────────────────────────────────────
+let selectedProg = '';
+let athleteCount = 0;
+
+// ─── NAV MOBILE ────────────────────────────────────────────────
+function toggleNav(){
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+// ─── PROGRAM SELECT ─────────────────────────────────────────────
+function selectProg(p){
+  selectedProg = p;
+  ['speed','football','combined'].forEach(id => {
+    const el = document.getElementById('opt-'+id);
+    el.className = 'prog-opt' + (id===p ? ' selected-'+id : '');
+    document.getElementById('chk-'+id).textContent = id===p ? '✓' : '';
+  });
+  document.getElementById('prog-err').textContent = '';
+}
+
+// ─── ATHLETE BLOCKS ─────────────────────────────────────────────
+function addAthlete(){
+  athleteCount++;
+  const idx = athleteCount;
+  const container = document.getElementById('athleteBlocks');
+  const div = document.createElement('div');
+  div.className = 'athlete-block';
+  div.id = 'athlete-'+idx;
+  div.innerHTML = `
+    <div class="athlete-block-title">
+      <span>Athlete ${idx}</span>
+      ${idx > 1 ? '<button class="remove-athlete" onclick="removeAthlete('+idx+')">Remove</button>' : ''}
+    </div>
+    <div class="fgrid">
+      <div class="fg">
+        <label>First Name <span>*</span></label>
+        <input class="fi" id="a${idx}first" type="text" placeholder="First name" autocomplete="off">
+        <div class="field-err" id="a${idx}first-err"></div>
+      </div>
+      <div class="fg">
+        <label>Last Name <span>*</span></label>
+        <input class="fi" id="a${idx}last" type="text" placeholder="Last name" autocomplete="off">
+        <div class="field-err" id="a${idx}last-err"></div>
+      </div>
+    </div>
+    <div class="fgrid full">
+      <div class="fg">
+        <label>Date of Birth <span>*</span></label>
+        <input class="fi" id="a${idx}dob" type="date" max="${new Date().toISOString().split('T')[0]}">
+        <div class="field-err" id="a${idx}dob-err"></div>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+  // Show/hide add button — max 4 athletes per registration
+  document.getElementById('addBtn').style.display = athleteCount >= 4 ? 'none' : 'block';
+}
+
+function removeAthlete(idx){
+  const el = document.getElementById('athlete-'+idx);
+  if(el) el.remove();
+  document.getElementById('addBtn').style.display = 'block';
+}
+
+// ─── VALIDATION ─────────────────────────────────────────────────
+function clearErrors(){
+  document.querySelectorAll('.field-err').forEach(e => e.textContent = '');
+  document.querySelectorAll('.fi,.fsel,.ftxt').forEach(e => e.classList.remove('err'));
+  document.getElementById('globalErr').textContent = '';
+  document.getElementById('prog-err').textContent = '';
+}
+
+function setErr(fieldId, msg){
+  const el = document.getElementById(fieldId+'-err');
+  const inp = document.getElementById(fieldId);
+  if(el) el.textContent = msg;
+  if(inp) inp.classList.add('err');
+  return false;
+}
+
+function validateForm(){
+  clearErrors();
+  let valid = true;
+
+  // Program
+  if(!selectedProg){
+    document.getElementById('prog-err').textContent = 'Please select a program.';
+    valid = false;
+  }
+
+  // Athletes
+  const blocks = document.querySelectorAll('.athlete-block');
+  if(!blocks.length){
+    document.getElementById('globalErr').textContent = 'Please add at least one athlete.';
+    valid = false;
+  }
+  blocks.forEach(b => {
+    const idx = b.id.replace('athlete-','');
+    const first = document.getElementById('a'+idx+'first');
+    const last  = document.getElementById('a'+idx+'last');
+    const dob   = document.getElementById('a'+idx+'dob');
+    if(!first?.value.trim()) { setErr('a'+idx+'first','Required'); valid=false; }
+    if(!last?.value.trim())  { setErr('a'+idx+'last','Required');  valid=false; }
+    if(!dob?.value)          { setErr('a'+idx+'dob','Required');   valid=false; }
+  });
+
+  // Parent 1
+  const p1name  = document.getElementById('p1name').value.trim();
+  const p1phone = document.getElementById('p1phone').value.trim();
+  const p1email = document.getElementById('p1email').value.trim();
+  if(p1name.length < 2)  { setErr('p1name','Please enter a full name.'); valid=false; }
+  if(p1phone.length < 7) { setErr('p1phone','Please enter a valid phone number.'); valid=false; }
+  if(!/\S+@\S+\.\S+/.test(p1email)) { setErr('p1email','Please enter a valid email address.'); valid=false; }
+
+  return valid;
+}
+
+// ─── BUILD PAYLOAD ──────────────────────────────────────────────
+function buildPayload(){
+  const blocks = document.querySelectorAll('.athlete-block');
+  const athletes = [];
+  blocks.forEach(b => {
+    const idx = b.id.replace('athlete-','');
+    athletes.push({
+      firstName: document.getElementById('a'+idx+'first')?.value.trim() || '',
+      lastName:  document.getElementById('a'+idx+'last')?.value.trim()  || '',
+      dob:       document.getElementById('a'+idx+'dob')?.value          || ''
+    });
+  });
+
+  return {
+    action:    'register',
+    timestamp: new Date().toISOString(),
+    program:   selectedProg,
+    athletes,
+    p1name:    document.getElementById('p1name').value.trim(),
+    p1phone:   document.getElementById('p1phone').value.trim(),
+    p1email:   document.getElementById('p1email').value.trim(),
+    p2name:    document.getElementById('p2name').value.trim(),
+    p2phone:   document.getElementById('p2phone').value.trim(),
+    p2email:   document.getElementById('p2email').value.trim(),
+    notes:     document.getElementById('notes').value.trim()
+  };
+}
+
+// ─── SUBMIT ─────────────────────────────────────────────────────
+async function submitForm(){
+  if(!validateForm()) return;
+
+  const btn   = document.getElementById('submitBtn');
+  const label = document.getElementById('submitLabel');
+  const bar   = document.getElementById('progressBar');
+  const fill  = document.getElementById('progressFill');
+  const errEl = document.getElementById('globalErr');
+
+  btn.disabled = true;
+  label.innerHTML = '<span class="spinner"></span> Submitting…';
+  bar.classList.add('on');
+  fill.style.width = '30%';
+
+  const payload = buildPayload();
+
+  try {
+    fill.style.width = '65%';
+    const res = await fetch(SCRIPT_URL, {
+      method:'POST',
+      body:JSON.stringify(payload)
+    });
+    fill.style.width = '100%';
+    let data = {status:'ok'};
+    try{ data = await res.json(); }catch(e){}
+
+    if(data.status === 'ok' || data.status === undefined){
+      showSuccess(payload);
+    } else {
+      throw new Error(data.message || 'Submission error.');
+    }
+  } catch(e){
+    fill.style.width = '0%';
+    bar.classList.remove('on');
+    errEl.textContent = e.message || 'Something went wrong. Please try again or contact coach.glee3@gmail.com';
+    btn.disabled = false;
+    label.textContent = 'Complete Registration';
+  }
+}
+
+// ─── SUCCESS ────────────────────────────────────────────────────
+function showSuccess(payload){
+  const progLabels = {speed:'Speed Academy',football:'Football Skills',combined:'Dual Academy'};
+  const athletes = payload.athletes.map(a => a.firstName+' '+a.lastName).join(', ');
+
+  document.getElementById('successDetails').innerHTML = `
+    <div class="sd-row"><span class="sd-k">Program</span><span class="sd-v">${progLabels[payload.program]||payload.program}</span></div>
+    <div class="sd-row"><span class="sd-k">Athlete(s)</span><span class="sd-v">${athletes}</span></div>
+    <div class="sd-row"><span class="sd-k">Parent</span><span class="sd-v">${payload.p1name}</span></div>
+    <div class="sd-row"><span class="sd-k">Contact</span><span class="sd-v" style="font-size:13px">${payload.p1email}</span></div>
+  `;
+
+  document.getElementById('formWrap').style.display = 'none';
+  document.getElementById('progressBar').style.display = 'none';
+  document.getElementById('successScreen').classList.add('on');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ─── RESET ──────────────────────────────────────────────────────
+function resetForm(){
+  document.getElementById('successScreen').classList.remove('on');
+  document.getElementById('formWrap').style.display = 'block';
+  document.getElementById('athleteBlocks').innerHTML = '';
+  athleteCount = 0;
+  selectedProg = '';
+  ['speed','football','combined'].forEach(id => {
+    document.getElementById('opt-'+id).className = 'prog-opt';
+    document.getElementById('chk-'+id).textContent = '';
+  });
+  document.getElementById('p1name').value = '';
+  document.getElementById('p1phone').value = '';
+  document.getElementById('p1email').value = '';
+  document.getElementById('p2name').value = '';
+  document.getElementById('p2phone').value = '';
+  document.getElementById('p2email').value = '';
+  document.getElementById('notes').value = '';
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitLabel').textContent = 'Complete Registration';
+  document.getElementById('addBtn').style.display = 'block';
+  addAthlete();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ─── SCROLL FADE ────────────────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); }});
+}, {threshold:0.06});
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+// ─── INIT ────────────────────────────────────────────────────────
+addAthlete();
+loadAvailability();
+</script>
+</body>
+</html>
