@@ -46,6 +46,29 @@ img{display:block;}
 .section-sub{font-size:15px;color:var(--dim);max-width:540px;line-height:1.7;}
 .divider{height:1px;background:linear-gradient(90deg,transparent,var(--bdr),transparent);border:none;}
 
+/* ─── ANNOUNCEMENT BAR — slim, single item, alert/info only ────── */
+.ann-bar{
+  background:#1a0800;border-bottom:2px solid var(--football);
+  overflow:hidden;transition:max-height .3s ease,opacity .25s ease;
+  max-height:80px;
+}
+.ann-bar.info-type{background:#1a1400;border-bottom-color:var(--gold-dim);}
+.ann-bar.hidden{max-height:0;opacity:0;border-bottom-width:0;}
+.ann-bar-inner{
+  max-width:1080px;margin:0 auto;padding:10px 20px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.ann-bar-icon{font-size:16px;flex-shrink:0;}
+.ann-bar-text{flex:1;min-width:0;font-size:13px;color:var(--dim);}
+.ann-bar-text strong{color:var(--text);font-weight:700;}
+.ann-bar-dismiss{
+  background:none;border:1px solid var(--bdr2);color:var(--muted);
+  border-radius:5px;padding:3px 10px;font-family:var(--fd);font-size:11px;
+  font-weight:700;letter-spacing:.5px;cursor:pointer;flex-shrink:0;
+  transition:all .15s;text-transform:uppercase;
+}
+.ann-bar-dismiss:hover{border-color:var(--gold-dim);color:var(--gold);}
+
 /* ─── HERO ─────────────────────────────────────────────────── */
 .hero{
   min-height:82vh;display:flex;align-items:center;justify-content:center;
@@ -151,6 +174,15 @@ img{display:block;}
   </div>
   <button class="nav-mobile-btn" onclick="toggleNav()" aria-label="Menu">☰</button>
 </nav>
+
+<!-- ANNOUNCEMENT BAR — live from Highlights sheet, ALERT/INFO only, single item -->
+<div class="ann-bar hidden" id="annBar">
+  <div class="ann-bar-inner">
+    <span class="ann-bar-icon" id="annBarIcon">⚠️</span>
+    <span class="ann-bar-text" id="annBarText"></span>
+    <button class="ann-bar-dismiss" onclick="dismissAnnBar()">Dismiss ✕</button>
+  </div>
+</div>
 
 <!-- HERO -->
 <section class="hero" style="background-image:linear-gradient(180deg,rgba(9,9,11,.45) 0%,rgba(9,9,11,.85) 75%,var(--black) 100%),url('https://i.imgur.com/9jrFHCx.jpeg');background-size:cover;background-position:center;">
@@ -297,6 +329,7 @@ var BOOKINGS_GID = '1223610839';
 var ROSTER_GID = '570350565';
 var SPRINT_HS_GID = '1758897138';
 var SPRINT_YOUTH_GID = '1689077697';
+var HIGHLIGHTS_GID = '381306568';
 
 function gvizUrl(gid){
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&gid=' + gid;
@@ -507,8 +540,59 @@ async function loadSessionsTeaser(){
   }
 }
 
+// ═══════════════════════════════════════════════════════════════
+// ANNOUNCEMENT BAR — live from Highlights sheet tab
+// Alert/Info only — HIGHLIGHT (good-news) items are booking.html's job
+// ═══════════════════════════════════════════════════════════════
+function parseAnnouncementRows(rows){
+  var today = new Date(); today.setHours(0,0,0,0);
+  var live = rows.filter(function(r){
+    return (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE';
+  }).filter(function(r){
+    var exp = (r['EXPIRES']||'').toString().trim();
+    if(!exp) return true;
+    var expDate = new Date(exp + 'T00:00:00');
+    return expDate >= today;
+  });
+  var alerts = live.filter(function(r){ return (r['TYPE']||'').toString().trim().toUpperCase() === 'ALERT'; });
+  var infos  = live.filter(function(r){ return (r['TYPE']||'').toString().trim().toUpperCase() === 'INFO'; });
+  return { alerts: alerts, infos: infos };
+}
+
+function dismissAnnBar(){
+  document.getElementById('annBar').classList.add('hidden');
+  try{ sessionStorage.setItem('ds_ann_dismissed', '1'); }catch(e){}
+}
+
+async function loadAnnouncementBar(){
+  try{
+    if(sessionStorage.getItem('ds_ann_dismissed') === '1') return;
+  }catch(e){}
+
+  var bar = document.getElementById('annBar');
+  try{
+    var data = await gvizFetch(HIGHLIGHTS_GID);
+    if(!data) return;
+    var rows = gvizRows(data);
+    var parsed = parseAnnouncementRows(rows);
+    var item = parsed.alerts[0] || parsed.infos[0];
+    if(!item) return;
+
+    var isAlert = (item['TYPE']||'').toString().trim().toUpperCase() === 'ALERT';
+    var icon = (item['ICON']||'').toString().trim() || (isAlert ? '⚠️' : '📢');
+    var title = (item['TITLE']||'').toString().trim();
+    var body = (item['BODY']||'').toString().trim();
+
+    document.getElementById('annBarIcon').textContent = icon;
+    document.getElementById('annBarText').innerHTML = (title ? '<strong>' + title + '</strong> — ' : '') + body;
+    bar.classList.toggle('info-type', !isAlert);
+    bar.classList.remove('hidden');
+  }catch(e){ /* non-critical — bar just stays hidden on failure */ }
+}
+
 loadProofStrip();
 loadSessionsTeaser();
+loadAnnouncementBar();
 </script>
 </body>
 </html>
