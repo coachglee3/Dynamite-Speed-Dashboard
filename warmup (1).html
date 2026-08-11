@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warmup — Dynamite Speed Academy</title>
+<meta name="description" content="The exact warmup our athletes run every session — Dynamite Speed Academy, San Diego, CA.">
+<link rel="icon" type="image/png" href="https://i.imgur.com/9umCYT5.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+:root{
+  --gold:#F5C518;--gold-dim:#c9a012;--gold-glow:rgba(245,197,24,.10);
+  --black:#09090b;--s1:#111113;--s2:#18181b;--s3:#242428;
+  --bdr:#2c2c30;--bdr2:#38383e;--text:#f4f4f5;--dim:#888;--muted:#555;
+  --fd:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
+}
+body{background:var(--black);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.6;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--s1);}::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px;}
+a{color:inherit;text-decoration:none;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 70% 50% at 50% -5%,rgba(245,197,24,.05) 0%,transparent 60%);}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,11,.92);border-bottom:1px solid var(--bdr);backdrop-filter:blur(14px);height:58px;display:flex;align-items:center;padding:0 24px;gap:20px;}
+.nav-logo a{display:flex;align-items:center;gap:10px;}
+.nav-logo img{height:30px;width:auto;}
+.nav-logo-text{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--dim);letter-spacing:.5px;text-transform:uppercase;}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:auto;}
+.nav-link{font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);padding:6px 13px;border-radius:6px;transition:color .15s,background .15s;white-space:nowrap;}
+.nav-link:hover,.nav-link.active{color:var(--text);background:var(--s2);}
+.nav-cta{background:var(--gold);color:var(--black)!important;border-radius:7px;padding:7px 16px!important;font-weight:800!important;}
+.nav-cta:hover{background:#e6b800!important;}
+.nav-mobile-btn{display:none;background:none;border:1px solid var(--bdr);border-radius:6px;padding:5px 10px;color:var(--dim);cursor:pointer;font-size:18px;margin-left:auto;}
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .nav-links.open{display:flex;flex-direction:column;align-items:flex-start;position:absolute;top:58px;left:0;right:0;background:var(--s1);border-bottom:1px solid var(--bdr);padding:12px 20px;gap:4px;z-index:200;}
+  .nav-mobile-btn{display:block;}
+}
+
+/* LAYOUT */
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:56px 24px 100px;}
+
+/* HERO */
+.page-hero{margin-bottom:32px;}
+.eyebrow{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);opacity:.8;margin-bottom:12px;display:inline-flex;align-items:center;gap:8px;}
+.eyebrow::before,.eyebrow::after{content:'';display:inline-block;width:24px;height:1px;background:var(--gold);opacity:.5;}
+.page-title{font-family:var(--fd);font-size:clamp(38px,7vw,60px);font-weight:900;letter-spacing:-1.5px;line-height:.95;color:var(--text);margin-bottom:10px;}
+.page-sub{font-size:14px;color:var(--dim);max-width:560px;line-height:1.7;}
+
+.home-note{
+  background:#1a1400;border:1px solid var(--gold-dim);border-radius:10px;
+  padding:16px 20px;margin-bottom:44px;font-size:13.5px;color:var(--text);line-height:1.7;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.home-note-icon{font-size:20px;flex-shrink:0;}
+
+/* SECTION */
+.sec{margin-bottom:40px;}
+.sec-title{font-family:var(--fd);font-size:22px;font-weight:800;letter-spacing:.3px;color:var(--gold);margin-bottom:2px;padding-bottom:12px;border-bottom:1px solid var(--bdr);}
+.sec-meta{font-size:12.5px;color:var(--muted);margin:8px 0 16px;}
+
+/* TABLE */
+.rtable{width:100%;border-collapse:collapse;background:var(--s2);border:1px solid var(--bdr);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.rtable th{background:var(--gold-glow);color:var(--text);font-family:var(--fd);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:10px 14px;border-bottom:1px solid var(--bdr);}
+.rtable td{padding:9px 14px;font-size:13.5px;color:var(--text);border-bottom:1px solid #1d1d1f;vertical-align:top;}
+.rtable tr:last-child td{border-bottom:none;}
+.rtable td.num{color:var(--muted);width:36px;}
+.rtable td.dur{color:var(--gold);font-family:var(--fd);font-weight:700;white-space:nowrap;}
+.rtable .item-cue{display:block;font-size:12px;color:var(--dim);font-style:italic;margin-top:3px;}
+
+/* GATE BOX */
+.gate-box{background:#1a1400;border:1px solid var(--gold-dim);border-radius:10px;padding:20px 22px;margin-bottom:14px;}
+.gate-box-title{font-family:var(--fd);font-size:16px;font-weight:800;color:var(--gold);letter-spacing:.3px;margin-bottom:14px;}
+.gate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;}
+.gate-item{background:var(--s2);border:1px solid var(--bdr);border-radius:7px;padding:10px 14px;}
+.gate-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:3px;}
+.gate-val{font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text);}
+
+.loading-state,.error-state{text-align:center;padding:60px 20px;color:var(--muted);font-family:var(--fd);font-size:14px;letter-spacing:.5px;}
+
+/* FOOTER */
+.footer{background:var(--s1);border-top:1px solid var(--bdr);padding:32px 24px;text-align:center;position:relative;z-index:1;}
+.footer-text{font-size:12px;color:var(--muted);}
+.footer-text a{color:var(--gold);}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <a href="home.html">
+      <img src="https://i.imgur.com/9umCYT5.png" alt="Dynamite Speed" onerror="this.style.display='none'">
+      <span class="nav-logo-text">Dynamite Speed</span>
+    </a>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a class="nav-link" href="home.html">Home</a>
+    <a class="nav-link" href="home.html#programs">Programs</a>
+    <a class="nav-link" href="coaches.html">Coaches</a>
+    <a class="nav-link" href="faq.html">FAQ</a>
+    <a class="nav-link active" href="warmup.html">Warmup</a>
+    <a class="nav-link nav-cta" href="booking.html">Book Now</a>
+  </div>
+  <button class="nav-mobile-btn" onclick="toggleNav()" aria-label="Menu">☰</button>
+</nav>
+
+<div class="wrap">
+
+  <div class="page-hero">
+    <div class="eyebrow">Dynamite Speed Academy</div>
+    <h1 class="page-title">The Warmup</h1>
+    <p class="page-sub">This is the exact sequence every athlete runs before every session — same order, same cues, every time.</p>
+  </div>
+
+  <div class="home-note">
+    <div class="home-note-icon">🏠</div>
+    <div><strong>"What can I do at home?"</strong> — this is a great place to start. Walk through this same sequence with your athlete between sessions. Consistency is what makes it stick.</div>
+  </div>
+
+  <div id="warmupContent">
+    <div class="loading-state">Loading warmup…</div>
+  </div>
+
+</div><!-- /wrap -->
+
+<footer class="footer">
+  <div class="footer-text">Every cat gets faster. Trust the process. 🐆 · Dynamite Speed Academy · San Diego, CA</div>
+</footer>
+
+<script>
+function toggleNav(){
+  document.getElementById('navLinks').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const nl = document.getElementById('navLinks');
+  if(!nl.contains(e.target) && !e.target.closest('.nav-mobile-btn')) nl.classList.remove('open');
+});
+
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
+const SHEET_ID    = '1qnr1Kv0rdKhuYow04khd44y9B75S-gD7ac6H8zvtNiA';
+const WARMUP_GID  = '1090550644';
+const GVIZ = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
+
+async function gvizFetch(gid) {
+  if (!gid || gid.includes('REPLACE_WITH')) return null;
+  try {
+    const res = await fetch(GVIZ(gid));
+    if (!res.ok) return null;
+    const txt = await res.text();
+    const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+    if (s < 0 || e < 0) return null;
+    return JSON.parse(txt.slice(s, e+1));
+  } catch(e) { return null; }
+}
+
+function gvizRows(data) {
+  if (!data || !data.table) return [];
+  const cols = (data.table.cols||[]).map(c => c.label||'');
+  return (data.table.rows||[]).map(row => {
+    const obj = {};
+    cols.forEach((col, i) => {
+      const cell = row.c ? row.c[i] : null;
+      obj[col] = cell && cell.f != null ? String(cell.f) : (cell && cell.v != null ? String(cell.v) : '');
+    });
+    return obj;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PARSE + RENDER
+// ═══════════════════════════════════════════════════════════════
+function parseWarmupRows(rows) {
+  return rows
+    .filter(r => (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE')
+    .map(r => ({
+      phase:      parseInt(r['PHASE'], 10) || 0,
+      phaseLabel: (r['PHASE_LABEL']||'').toString().trim(),
+      phaseMeta:  (r['PHASE_META']||'').toString().trim(),
+      order:      parseFloat(r['ORDER']) || 0,
+      item:       (r['ITEM']||'').toString().trim(),
+      detail:     (r['DETAIL']||'').toString().trim(),
+      cue:        (r['CUE']||'').toString().trim(),
+      style:      (r['STYLE']||'').toString().trim().toLowerCase()
+    }))
+    .filter(r => r.phase && r.item);
+}
+
+function renderWarmup(rows) {
+  const container = document.getElementById('warmupContent');
+
+  if (!rows.length) {
+    container.innerHTML = '<div class="error-state">Warmup content is being updated — check back shortly, or see your coach for the current sequence.</div>';
+    return;
+  }
+
+  const phases = [...new Set(rows.map(r => r.phase))].sort((a,b) => a - b);
+
+  container.innerHTML = phases.map(phaseNum => {
+    const phaseRows = rows.filter(r => r.phase === phaseNum).sort((a,b) => a.order - b.order);
+    const label = (phaseRows.find(r => r.phaseLabel) || {}).phaseLabel || ('Phase ' + phaseNum);
+    const meta  = (phaseRows.find(r => r.phaseMeta) || {}).phaseMeta || '';
+
+    const tableRows = phaseRows.filter(r => r.style !== 'gate');
+    const gateRows   = phaseRows.filter(r => r.style === 'gate');
+
+    let html = '<div class="sec">';
+    html += '<div class="sec-title">' + label + '</div>';
+    if (meta) html += '<div class="sec-meta">' + meta + '</div>';
+
+    if (tableRows.length) {
+      html += '<table class="rtable"><thead><tr><th style="width:36px">#</th><th>Item</th><th>Detail</th></tr></thead><tbody>';
+      tableRows.forEach((r, i) => {
+        html += '<tr><td class="num">' + (i+1) + '</td><td>' + r.item
+          + (r.cue ? '<span class="item-cue">' + r.cue + '</span>' : '')
+          + '</td><td class="dur">' + r.detail + '</td></tr>';
+      });
+      html += '</tbody></table>';
+    }
+
+    if (gateRows.length) {
+      html += '<div class="gate-box"><div class="gate-box-title">10m Fly Gate Placement</div><div class="gate-grid">';
+      gateRows.forEach(r => {
+        html += '<div class="gate-item"><div class="gate-lbl">' + r.item + '</div><div class="gate-val">' + r.detail + '</div></div>';
+      });
+      html += '</div></div>';
+    }
+
+    html += '</div>';
+    return html;
+  }).join('');
+}
+
+async function loadWarmup() {
+  try {
+    const data = await gvizFetch(WARMUP_GID);
+    if (!data) {
+      document.getElementById('warmupContent').innerHTML = '<div class="error-state">Warmup content is being updated — check back shortly, or see your coach for the current sequence.</div>';
+      return;
+    }
+    renderWarmup(parseWarmupRows(gvizRows(data)));
+  } catch(e) {
+    document.getElementById('warmupContent').innerHTML = '<div class="error-state">Warmup content is being updated — check back shortly, or see your coach for the current sequence.</div>';
+  }
+}
+
+loadWarmup();
+</script>
+</body>
+</html>
