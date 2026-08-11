@@ -68,6 +68,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .rtable td.num{color:var(--muted);width:36px;}
 .rtable td.dur{color:var(--gold);font-family:var(--fd);font-weight:700;white-space:nowrap;}
 .rtable .item-cue{display:block;font-size:12px;color:var(--dim);font-style:italic;margin-top:3px;}
+.item-video{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-family:var(--fd);font-weight:700;letter-spacing:.3px;color:var(--gold);margin-top:5px;padding:2px 8px;background:var(--gold-glow);border:1px solid var(--gold-dim);border-radius:4px;text-transform:uppercase;}
+.item-video:hover{background:#2a2200;}
 
 /* GATE BOX */
 .gate-box{background:#1a1400;border:1px solid var(--gold-dim);border-radius:10px;padding:20px 22px;margin-bottom:14px;}
@@ -183,6 +185,7 @@ function parseWarmupRows(rows) {
       item:       (r['ITEM']||'').toString().trim(),
       detail:     (r['DETAIL']||'').toString().trim(),
       cue:        (r['CUE']||'').toString().trim(),
+      video:      (r['VIDEO_URL']||'').toString().trim(),
       style:      (r['STYLE']||'').toString().trim().toLowerCase()
     }))
     .filter(r => r.phase && r.item);
@@ -213,8 +216,10 @@ function renderWarmup(rows) {
     if (tableRows.length) {
       html += '<table class="rtable"><thead><tr><th style="width:36px">#</th><th>Item</th><th>Detail</th></tr></thead><tbody>';
       tableRows.forEach((r, i) => {
+        const hasVideo = r.video && /^https?:\/\//i.test(r.video);
         html += '<tr><td class="num">' + (i+1) + '</td><td>' + r.item
           + (r.cue ? '<span class="item-cue">' + r.cue + '</span>' : '')
+          + (hasVideo ? '<a class="item-video" href="' + r.video + '" target="_blank" rel="noopener">▶ Watch</a>' : '')
           + '</td><td class="dur">' + r.detail + '</td></tr>';
       });
       html += '</tbody></table>';
