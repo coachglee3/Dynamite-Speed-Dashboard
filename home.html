@@ -3,161 +3,294 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dynamite Speed Academy — San Diego, CA</title>
+<title>Dynamite Speed Academy — Test #1 Prototype (Not Live)</title>
 <meta name="description" content="Lee Brothers Academy — session-based speed and football performance training for athletes ages 6–18 in San Diego, CA.">
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="https://i.imgur.com/9umCYT5.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,700;1,800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-:root{
-  --gold:#F5C518;--gold-dim:#c9a012;--gold-glow:rgba(245,197,24,.10);
-  --black:#09090b;--s1:#111113;--s2:#18181b;--s3:#242428;
-  --bdr:#2c2c30;--bdr2:#38383e;--text:#f4f4f5;--dim:#888;--muted:#555;
-  --speed:#F5C518;--football:#e05555;--combined:#4caf72;--youth:#38bdf8;
-  --fd:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
-}
-body{background:var(--black);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.6;overflow-x:hidden;}
-a{color:inherit;text-decoration:none;}
-img{display:block;}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} *{animation-duration:.01ms!important;transition-duration:.01ms!important;} }
 
-/* ─── NAV ──────────────────────────────────────────────────── */
-.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,11,.92);border-bottom:1px solid var(--bdr);backdrop-filter:blur(14px);height:58px;display:flex;align-items:center;padding:0 24px;gap:20px;}
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — brand-neutral interface. --brand-accent is the only
+   swappable identity color; everything else is neutral or semantic.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#0a0a0b;
+  --bg-2:#0f0f11;
+  --charcoal:#151517;
+  --warm-gray:#1b1815;         /* slight warmth, echoes photography */
+  --ink:#f3f2ee;
+  --dim:#9b9b9f;
+  --muted:#5c5c60;
+  --border:rgba(255,255,255,.09);
+  --border-strong:rgba(255,255,255,.16);
+
+  --glass-bg:rgba(18,18,21,.52);
+  --glass-bg-warm:rgba(26,23,20,.50);
+  --glass-hi:rgba(255,255,255,.05);
+
+  /* Configurable brand accent — swap this one variable to re-skin
+     the whole interface. Currently gold to match production. */
+  --brand-accent:#F5C518;
+  --brand-accent-dim:#c9a012;
+  --brand-accent-ink:#151107;   /* text color on top of accent */
+
+  /* Semantic — independent of brand accent */
+  --success:#4caf72;
+  --danger:#e05555;
+  --warning:#e08844;
+  --info:#38bdf8;
+
+  /* Program identity colors — independent of brand accent */
+  --speed:#F5C518;
+  --football:#e05555;
+  --combined:#4caf72;
+
+  --fd:'Barlow Condensed',sans-serif;
+  --fb:'Barlow',sans-serif;
+  --radius:16px;
+  --radius-sm:10px;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:15px;line-height:1.6;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+img{display:block;max-width:100%;}
+button{font-family:inherit;}
+:focus-visible{outline:2px solid var(--brand-accent);outline-offset:2px;border-radius:4px;}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLASS SURFACE — the signature treatment for Test #1.
+   ═══════════════════════════════════════════════════════════════ */
+.glass{
+  background:var(--glass-bg);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  backdrop-filter:blur(22px) saturate(150%);
+  -webkit-backdrop-filter:blur(22px) saturate(150%);
+  box-shadow:0 12px 40px rgba(0,0,0,.4), inset 0 1px 0 var(--glass-hi);
+}
+.glass-warm{ background:var(--glass-bg-warm); }
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .glass{ background:rgba(16,16,18,.94); }
+  .glass-warm{ background:rgba(24,21,18,.94); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEST BANNER — makes clear this is a prototype, not production
+   ═══════════════════════════════════════════════════════════════ */
+.test-banner{
+  background:var(--warning);color:#1a1000;text-align:center;
+  font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:.5px;
+  padding:8px 16px;position:sticky;top:0;z-index:200;
+}
+.test-banner a{text-decoration:underline;}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV
+   ═══════════════════════════════════════════════════════════════ */
+.nav{position:sticky;top:34px;z-index:100;background:rgba(10,10,11,.86);border-bottom:1px solid var(--border);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);height:58px;display:flex;align-items:center;padding:0 20px;gap:16px;}
 .nav-logo{display:flex;align-items:center;gap:10px;}
-.nav-logo img{height:30px;width:auto;}
-.nav-logo-text{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--dim);letter-spacing:.5px;text-transform:uppercase;}
+.nav-logo img{height:28px;width:auto;}
+.nav-logo-text{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--dim);letter-spacing:.5px;text-transform:uppercase;}
 .nav-links{display:flex;align-items:center;gap:2px;margin-left:auto;}
-.nav-link{font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);padding:6px 13px;border-radius:6px;transition:color .15s,background .15s;white-space:nowrap;}
-.nav-link:hover{color:var(--text);background:var(--s2);}
-.nav-cta{background:var(--gold);color:var(--black)!important;border-radius:7px;padding:7px 16px!important;font-weight:800!important;}
-.nav-cta:hover{background:#e6b800!important;}
-.nav-mobile-btn{display:none;background:none;border:1px solid var(--bdr);border-radius:6px;padding:5px 10px;color:var(--dim);cursor:pointer;font-size:18px;margin-left:auto;}
-@media(max-width:820px){
+.nav-link{font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);padding:6px 12px;border-radius:6px;transition:color .15s,background .15s;white-space:nowrap;}
+.nav-link:hover{color:var(--ink);background:var(--charcoal);}
+.nav-cta{background:var(--brand-accent);color:var(--brand-accent-ink)!important;border-radius:7px;padding:7px 16px!important;font-weight:800!important;}
+.nav-cta:hover{filter:brightness(1.08);}
+.nav-mobile-btn{display:none;background:none;border:1px solid var(--border-strong);border-radius:6px;padding:6px 10px;color:var(--dim);cursor:pointer;font-size:18px;margin-left:auto;min-width:44px;min-height:44px;}
+@media(max-width:860px){
   .nav-links{display:none;}
-  .nav-links.open{display:flex;flex-direction:column;align-items:flex-start;position:absolute;top:58px;left:0;right:0;background:var(--s1);border-bottom:1px solid var(--bdr);padding:12px 20px;gap:4px;z-index:200;}
+  .nav-links.open{display:flex;flex-direction:column;align-items:flex-start;position:absolute;top:92px;left:0;right:0;background:var(--charcoal);border-bottom:1px solid var(--border);padding:12px 20px;gap:2px;z-index:150;}
   .nav-mobile-btn{display:block;}
 }
 
-/* ─── SECTION SHELL ────────────────────────────────────────── */
-.section{padding:96px 24px;position:relative;}
-.section-inner{max-width:1080px;margin:0 auto;}
-.section-label{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);opacity:.8;margin-bottom:12px;}
-.section-title{font-family:var(--fd);font-size:clamp(30px,4.2vw,46px);font-weight:900;letter-spacing:-1px;line-height:1.05;color:var(--text);margin-bottom:16px;}
-.section-sub{font-size:15px;color:var(--dim);max-width:540px;line-height:1.7;}
-.divider{height:1px;background:linear-gradient(90deg,transparent,var(--bdr),transparent);border:none;}
+/* ═══════════════════════════════════════════════════════════════
+   SHELL / SECTION SPACING
+   ═══════════════════════════════════════════════════════════════ */
+.shell{max-width:1240px;margin:0 auto;padding:0 20px;}
+.section{padding:44px 0;}
+.section-label{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--brand-accent);opacity:.85;margin-bottom:10px;}
+.section-title{font-family:var(--fd);font-size:clamp(26px,3.6vw,38px);font-weight:900;letter-spacing:-.5px;line-height:1.05;color:var(--ink);margin-bottom:6px;}
+.section-sub{font-size:14px;color:var(--dim);max-width:520px;line-height:1.6;}
+.section-head-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
 
-/* ─── ANNOUNCEMENT BAR — slim, single item, alert/info only ────── */
-.ann-bar{
-  background:#1a0800;border-bottom:2px solid var(--football);
-  overflow:hidden;transition:max-height .3s ease,opacity .25s ease;
-  max-height:80px;
+/* ═══════════════════════════════════════════════════════════════
+   PORTAL BAND — Athlete Dashboard + Dynamite Update
+   Mobile: stacked (Dashboard, then Update) exactly per hierarchy.
+   Desktop: side by side, "Athlete Dashboard | Dynamite Update".
+   ═══════════════════════════════════════════════════════════════ */
+.portal-wrap{
+  position:relative;
+  padding:28px 0 8px;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(245,197,24,.06) 0%, transparent 65%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
 }
-.ann-bar.info-type{background:#1a1400;border-bottom-color:var(--gold-dim);}
-.ann-bar.hidden{max-height:0;opacity:0;border-bottom-width:0;}
-.ann-bar-inner{
-  max-width:1080px;margin:0 auto;padding:10px 20px;
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+.portal-band{display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:920px){
+  .portal-band{grid-template-columns:1.15fr 1fr;align-items:stretch;}
 }
-.ann-bar-icon{font-size:16px;flex-shrink:0;}
-.ann-bar-text{flex:1;min-width:0;font-size:13px;color:var(--dim);}
-.ann-bar-text strong{color:var(--text);font-weight:700;}
-.ann-bar-dismiss{
-  background:none;border:1px solid var(--bdr2);color:var(--muted);
-  border-radius:5px;padding:3px 10px;font-family:var(--fd);font-size:11px;
-  font-weight:700;letter-spacing:.5px;cursor:pointer;flex-shrink:0;
-  transition:all .15s;text-transform:uppercase;
-}
-.ann-bar-dismiss:hover{border-color:var(--gold-dim);color:var(--gold);}
 
-/* ─── HERO ─────────────────────────────────────────────────── */
+/* Athlete login card */
+.login-card{padding:26px 24px;display:flex;flex-direction:column;gap:14px;}
+.login-eyebrow{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--brand-accent);}
+.login-title{font-family:var(--fd);font-size:26px;font-weight:900;letter-spacing:-.5px;color:var(--ink);}
+.login-desc{font-size:13.5px;color:var(--dim);line-height:1.6;max-width:420px;}
+.code-form{display:flex;gap:0;align-items:stretch;border:1px solid var(--border-strong);border-radius:11px;overflow:hidden;background:rgba(0,0,0,.25);}
+.code-input{
+  flex:1;background:transparent;border:none;color:var(--ink);
+  font-family:var(--fd);font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  padding:13px 16px;min-height:48px;
+}
+.code-input::placeholder{color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:none;font-family:var(--fb);}
+.code-input:focus{outline:none;}
+.code-submit{
+  background:var(--brand-accent);color:var(--brand-accent-ink);border:none;
+  padding:0 20px;font-family:var(--fd);font-size:20px;font-weight:800;cursor:pointer;
+  min-width:56px;transition:filter .15s;
+}
+.code-submit:hover{filter:brightness(1.08);}
+.login-hint{font-size:12px;color:var(--muted);}
+.login-hint a{color:var(--brand-accent);border-bottom:1px solid var(--brand-accent-dim);}
+.code-err{font-size:12px;color:var(--danger);min-height:16px;}
+
+/* Update card */
+.update-card{padding:22px 24px;display:flex;flex-direction:column;gap:10px;}
+.update-card.hidden{display:none;}
+.update-top{display:flex;align-items:center;gap:10px;}
+.update-icon{font-size:20px;flex-shrink:0;}
+.update-eyebrow{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
+.update-title{font-family:var(--fd);font-size:19px;font-weight:800;color:var(--ink);}
+.update-body{font-size:13.5px;color:var(--dim);line-height:1.6;}
+.update-link{font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--brand-accent);border-bottom:1px solid var(--brand-accent-dim);align-self:flex-start;padding-bottom:1px;}
+.update-card.type-alert{border-color:rgba(224,85,85,.35);}
+.update-card.type-alert .update-eyebrow{color:var(--danger);}
+.update-skel{font-size:12px;color:var(--muted);font-family:var(--fd);letter-spacing:.5px;}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO — compact, open, photography-forward. No glass here.
+   ═══════════════════════════════════════════════════════════════ */
 .hero{
-  min-height:82vh;display:flex;align-items:center;justify-content:center;
-  position:relative;padding:60px 24px;text-align:center;overflow:hidden;
+  position:relative;min-height:46vh;display:flex;align-items:center;
+  padding:56px 0;overflow:hidden;
+  background-image:linear-gradient(180deg,rgba(10,10,11,.35) 0%,rgba(10,10,11,.72) 70%,var(--bg) 100%),url('https://i.imgur.com/9jrFHCx.jpeg');
+  background-size:cover;background-position:center 35%;
 }
-.hero-content{position:relative;z-index:2;max-width:720px;}
-.hero-eyebrow{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
-.hero-title{font-family:var(--fd);font-weight:900;letter-spacing:-2px;line-height:.95;font-size:clamp(46px,8vw,92px);color:var(--text);margin-bottom:18px;}
-.hero-title span{color:var(--gold);}
-.hero-sub{font-size:18px;color:#d8d8da;max-width:520px;margin:0 auto 36px;line-height:1.6;}
-.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.hero-inner{position:relative;z-index:2;max-width:640px;}
+.hero-eyebrow{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--brand-accent);margin-bottom:14px;}
+.hero-title{font-family:var(--fd);font-weight:900;letter-spacing:-1.5px;line-height:.97;font-size:clamp(34px,6vw,60px);color:var(--ink);margin-bottom:14px;}
+.hero-sub{font-size:16px;color:#dcdcda;max-width:460px;margin-bottom:26px;line-height:1.6;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-primary{background:var(--brand-accent);color:var(--brand-accent-ink);border:none;border-radius:9px;padding:14px 26px;font-family:var(--fd);font-size:15px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;min-height:44px;transition:filter .15s,transform .1s;}
+.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.24);color:var(--ink);border-radius:9px;padding:13px 24px;font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;min-height:44px;transition:all .15s;}
+.btn-ghost:hover{border-color:var(--brand-accent-dim);color:var(--brand-accent);}
 
-/* ─── WHY US — motion-icon slots (replaces photo placeholders) ── */
-.why-icon-slot{
-  aspect-ratio:4/3;border-radius:8px;background:var(--s3);
-  display:flex;align-items:center;justify-content:center;
+/* ═══════════════════════════════════════════════════════════════
+   PROGRAMS — scroll-snap on mobile, grid on desktop, no library.
+   ═══════════════════════════════════════════════════════════════ */
+.prog-viewport{position:relative;}
+.prog-track{
+  display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:2px 2px 10px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
 }
-.why-icon-slot svg{width:46%;height:46%;}
-.btn-primary{background:var(--gold);color:var(--black);border:none;border-radius:8px;padding:15px 32px;font-family:var(--fd);font-size:16px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;display:inline-block;transition:all .15s;}
-.btn-primary:hover{background:#e6b800;transform:translateY(-2px);}
-.btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:14px 28px;font-family:var(--fd);font-size:15px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;display:inline-block;transition:all .15s;}
-.btn-ghost:hover{border-color:var(--gold-dim);color:var(--gold);}
+.prog-track::-webkit-scrollbar{height:5px;}
+.prog-track::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px;}
+.prog-card{
+  flex:0 0 78%;scroll-snap-align:start;padding:24px 22px;
+  display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;
+}
+.prog-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.prog-card.speed::before{background:var(--speed);}
+.prog-card.football::before{background:var(--football);}
+.prog-card.combined::before{background:linear-gradient(90deg,var(--speed),var(--combined));}
+.prog-name{font-family:var(--fd);font-size:21px;font-weight:800;letter-spacing:.3px;}
+.prog-card.speed .prog-name{color:var(--speed);}
+.prog-card.football .prog-name{color:var(--football);}
+.prog-card.combined .prog-name{color:var(--combined);}
+.prog-price{font-family:var(--fd);font-size:15px;color:var(--brand-accent);font-weight:700;}
+.prog-price small{color:var(--dim);font-weight:400;}
+.prog-desc{font-size:13.5px;color:var(--dim);line-height:1.6;flex:1;}
+.prog-link{font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink);border-bottom:1px solid var(--border-strong);padding-bottom:2px;align-self:flex-start;}
+.prog-card:hover .prog-link{color:var(--brand-accent);border-color:var(--brand-accent-dim);}
+.prog-controls{display:flex;justify-content:flex-end;gap:8px;margin-top:10px;}
+.prog-arrow{
+  width:44px;height:44px;border-radius:50%;background:var(--charcoal);
+  border:1px solid var(--border-strong);color:var(--ink);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.prog-arrow:hover{border-color:var(--brand-accent-dim);color:var(--brand-accent);}
+.prog-arrow:disabled{opacity:.3;cursor:not-allowed;}
+@media(min-width:700px){ .prog-card{flex:0 0 46%;} }
+@media(min-width:1020px){
+  .prog-track{display:grid;grid-template-columns:repeat(3,1fr);overflow:visible;scroll-snap-type:none;}
+  .prog-card{flex:none;}
+  .prog-controls{display:none;}
+}
 
-/* ─── PROGRAMS — condensed ─────────────────────────────────── */
-.programs-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:40px;}
-.prog-mini{background:var(--s2);border:1px solid var(--bdr);border-radius:12px;padding:26px 24px;position:relative;overflow:hidden;transition:transform .18s,border-color .18s;}
-.prog-mini::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-.prog-mini.speed::before{background:var(--speed);}
-.prog-mini.football::before{background:var(--football);}
-.prog-mini.combined::before{background:linear-gradient(90deg,var(--speed),var(--combined));}
-.prog-mini:hover{transform:translateY(-3px);border-color:var(--bdr2);}
-.prog-mini-name{font-family:var(--fd);font-size:21px;font-weight:800;letter-spacing:.3px;margin-bottom:4px;}
-.prog-mini.speed .prog-mini-name{color:var(--speed);}
-.prog-mini.football .prog-mini-name{color:var(--football);}
-.prog-mini.combined .prog-mini-name{color:var(--combined);}
-.prog-mini-price{font-family:var(--fd);font-size:15px;color:var(--gold);font-weight:700;margin-bottom:12px;}
-.prog-mini-price small{color:var(--dim);font-weight:400;}
-.prog-mini-desc{font-size:13.5px;color:var(--dim);line-height:1.6;margin-bottom:18px;}
-.prog-mini-link{font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text);border-bottom:1px solid var(--bdr2);padding-bottom:2px;}
-.prog-mini:hover .prog-mini-link{color:var(--gold);border-color:var(--gold-dim);}
+/* ═══════════════════════════════════════════════════════════════
+   TOP PERFORMANCES
+   ═══════════════════════════════════════════════════════════════ */
+.perf-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:700px){ .perf-grid{grid-template-columns:repeat(3,1fr);} }
+.perf-card{padding:26px 24px;text-align:left;}
+.perf-label{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
+.perf-val{font-family:var(--fd);font-size:clamp(38px,5vw,50px);font-weight:900;color:var(--brand-accent);line-height:1;margin-bottom:8px;}
+.perf-val small{font-size:16px;color:var(--dim);font-weight:600;margin-left:4px;}
+.perf-meta{font-size:12.5px;color:var(--dim);}
+.perf-loading{grid-column:1/-1;text-align:center;padding:24px;color:var(--muted);font-size:13px;font-family:var(--fd);letter-spacing:.5px;}
+.perf-footer{margin-top:18px;text-align:center;}
 
-/* ─── WHY US — icon + line pairs ───────────────────────────── */
-.why-list{display:flex;flex-direction:column;gap:1px;background:var(--bdr);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;margin-top:40px;}
-.why-row{display:grid;grid-template-columns:180px 1fr;gap:24px;background:var(--s2);padding:26px;align-items:center;}
-.why-title{font-family:var(--fd);font-size:19px;font-weight:800;color:var(--text);margin-bottom:6px;}
-.why-desc{font-size:13.5px;color:var(--dim);line-height:1.6;max-width:440px;}
-@media(max-width:600px){.why-row{grid-template-columns:100px 1fr;padding:18px;}}
+/* ═══════════════════════════════════════════════════════════════
+   QUICK LINKS
+   ═══════════════════════════════════════════════════════════════ */
+.qlinks-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(min-width:700px){ .qlinks-grid{grid-template-columns:repeat(4,1fr);} }
+.qlink{padding:18px 16px;display:flex;flex-direction:column;gap:8px;min-height:88px;justify-content:center;transition:border-color .15s,transform .15s;}
+.qlink:hover{border-color:var(--brand-accent-dim);transform:translateY(-2px);}
+.qlink-icon{font-size:20px;}
+.qlink-label{font-family:var(--fd);font-size:14.5px;font-weight:800;color:var(--ink);letter-spacing:.2px;}
 
-/* ─── PROOF STRIP ──────────────────────────────────────────── */
-.proof-section{background:var(--s1);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);}
-.proof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;margin-top:36px;border:1px solid var(--bdr);border-radius:12px;overflow:hidden;}
-.proof-cell{padding:26px 18px;text-align:center;border-right:1px solid var(--bdr);background:var(--s2);}
-.proof-cell:last-child{border-right:none;}
-.proof-num{font-family:var(--fd);font-size:clamp(26px,3.4vw,36px);font-weight:900;color:var(--gold);line-height:1;}
-.proof-lbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:6px;font-weight:600;}
-.proof-loading{grid-column:1/-1;text-align:center;padding:30px;color:var(--muted);font-size:13px;font-family:var(--fd);letter-spacing:.5px;}
-.proof-note{margin-top:14px;font-size:11.5px;color:var(--muted);text-align:center;font-style:italic;}
+/* ═══════════════════════════════════════════════════════════════
+   UPCOMING SESSION
+   ═══════════════════════════════════════════════════════════════ */
+.session-card{padding:24px 26px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;}
+.session-info{display:flex;flex-direction:column;gap:4px;}
+.session-eyebrow{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--brand-accent);}
+.session-loc{font-family:var(--fd);font-size:22px;font-weight:800;color:var(--ink);}
+.session-when{font-size:14px;color:var(--dim);}
+.session-empty{font-size:14px;color:var(--muted);}
 
-/* ─── SESSIONS TEASER ──────────────────────────────────────── */
-.sessions-teaser-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:36px;}
-.st-card{background:var(--s2);border:1px solid var(--bdr);border-radius:12px;padding:22px 24px;border-left:3px solid var(--gold);}
-.st-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.st-date{font-family:var(--fd);font-size:19px;font-weight:800;color:var(--text);}
-.st-prog{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:4px;}
-.st-meta{font-size:13px;color:var(--dim);margin-bottom:14px;}
-.st-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--bdr);}
-.st-price{font-family:var(--fd);font-size:20px;font-weight:900;color:var(--gold);}
-.st-spots{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:4px;}
-.sessions-link-row{margin-top:24px;text-align:center;}
-.text-link{font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--gold-dim);padding-bottom:2px;}
-.sessions-empty{grid-column:1/-1;text-align:center;padding:30px;color:var(--muted);font-size:13px;}
-
-/* ─── CLOSING ──────────────────────────────────────────────── */
-.closing{background:linear-gradient(135deg,var(--s1) 0%,#1a1400 55%,var(--s1) 100%);border-top:1px solid var(--bdr);padding:88px 24px;text-align:center;}
-.closing-inner{max-width:640px;margin:0 auto;}
-.closing-title{font-family:var(--fd);font-size:clamp(34px,6vw,58px);font-weight:900;letter-spacing:-1px;color:var(--text);margin-bottom:10px;}
-.closing-title span{color:var(--gold);}
-.closing-sub{font-size:15px;color:var(--dim);margin-bottom:14px;}
-.closing-addr{font-size:13px;color:var(--muted);margin-bottom:30px;}
-.closing-addr a{color:var(--gold);}
+/* ═══════════════════════════════════════════════════════════════
+   FINAL CTA — allowed to carry more brand color, intentionally
+   ═══════════════════════════════════════════════════════════════ */
+.closing{
+  background:linear-gradient(135deg,var(--bg-2) 0%,#1a1400 60%,var(--bg-2) 100%);
+  border-top:1px solid var(--border);padding:72px 0;text-align:center;
+}
+.closing-title{font-family:var(--fd);font-size:clamp(30px,5vw,50px);font-weight:900;letter-spacing:-1px;color:var(--ink);margin-bottom:8px;}
+.closing-title span{color:var(--brand-accent);}
+.closing-sub{font-size:14.5px;color:var(--dim);margin-bottom:26px;}
 .closing-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
 
-/* ─── FOOTER ───────────────────────────────────────────────── */
-.footer{background:var(--s1);border-top:1px solid var(--bdr);padding:32px 24px;text-align:center;}
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+.footer{background:var(--bg-2);border-top:1px solid var(--border);padding:30px 24px;text-align:center;}
 .footer-text{font-size:12px;color:var(--muted);}
-.footer-text a{color:var(--gold);}
+.footer-text a{color:var(--brand-accent);}
+
+/* fade-in */
+.fade-up{opacity:0;transform:translateY(16px);transition:opacity .45s ease,transform .45s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
 </style>
 </head>
 <body>
+
+<div class="test-banner">🧪 TEST #1 PROTOTYPE — not the live site · <a href="home.html">View current homepage →</a></div>
 
 <nav class="nav">
   <div class="nav-logo">
@@ -166,139 +299,165 @@ img{display:block;}
   </div>
   <div class="nav-links" id="navLinks">
     <a class="nav-link" href="#programs">Programs</a>
-    <a class="nav-link" href="#sessions">Sessions</a>
+    <a class="nav-link" href="#performances">Performances</a>
     <a class="nav-link" href="coaches.html">Coaches</a>
     <a class="nav-link" href="faq.html">FAQ</a>
-    <a class="nav-link" href="warmup.html">Warmup</a>
     <a class="nav-link" href="index.html">Dashboard</a>
-    <a class="nav-link" href="registration.html">Register</a>
     <a class="nav-link nav-cta" href="booking.html">Book Now</a>
   </div>
-  <button class="nav-mobile-btn" onclick="toggleNav()" aria-label="Menu">☰</button>
+  <button class="nav-mobile-btn" onclick="toggleNav()" aria-label="Toggle menu" aria-expanded="false">☰</button>
 </nav>
 
-<!-- ANNOUNCEMENT BAR — live from Highlights sheet, ALERT/INFO only, single item -->
-<div class="ann-bar hidden" id="annBar">
-  <div class="ann-bar-inner">
-    <span class="ann-bar-icon" id="annBarIcon">⚠️</span>
-    <span class="ann-bar-text" id="annBarText"></span>
-    <button class="ann-bar-dismiss" onclick="dismissAnnBar()">Dismiss ✕</button>
+<!-- ═══ PORTAL BAND — Athlete Dashboard | Dynamite Update ═══ -->
+<div class="portal-wrap">
+  <div class="shell">
+    <div class="portal-band">
+
+      <!-- Athlete Dashboard login -->
+      <form class="glass login-card" id="codeForm" onsubmit="return submitAthleteCode(event)">
+        <div>
+          <div class="login-eyebrow">Athlete Dashboard</div>
+          <div class="login-title">View your times, jumps &amp; performance history.</div>
+        </div>
+        <div class="code-form">
+          <label for="athleteCodeInput" class="visually-hidden" style="position:absolute;left:-9999px">Athlete or family code</label>
+          <input class="code-input" id="athleteCodeInput" type="text" placeholder="Enter athlete code" maxlength="12" autocomplete="off" autocapitalize="characters">
+          <button class="code-submit" type="submit" aria-label="Go to dashboard">→</button>
+        </div>
+        <div class="code-err" id="codeErr"></div>
+        <div class="login-hint">Need a code? <a href="mailto:Lbasdc@gmail.com">Contact your coach →</a></div>
+      </form>
+
+      <!-- Dynamite Update -->
+      <div class="glass glass-warm update-card hidden" id="updateCard">
+        <div class="update-top">
+          <span class="update-icon" id="updateIcon">📢</span>
+          <span class="update-eyebrow" id="updateEyebrow">Dynamite Update</span>
+        </div>
+        <div class="update-title" id="updateTitle"></div>
+        <div class="update-body" id="updateBody"></div>
+        <a class="update-link" id="updateLink" href="booking.html" style="display:none">View All →</a>
+      </div>
+
+    </div>
   </div>
 </div>
 
-<!-- HERO -->
-<section class="hero" style="background-image:linear-gradient(180deg,rgba(9,9,11,.45) 0%,rgba(9,9,11,.85) 75%,var(--black) 100%),url('https://i.imgur.com/9jrFHCx.jpeg');background-size:cover;background-position:center;">
-  <div class="hero-content">
+<!-- ═══ HERO — compact, photography-forward ═══ -->
+<section class="hero">
+  <div class="shell hero-inner">
     <div class="hero-eyebrow">San Diego, CA · Ages 6–18</div>
-    <h1 class="hero-title">Speed. Movement.<br><span>Performance.</span></h1>
+    <h1 class="hero-title">Speed. Movement.<br>Performance.</h1>
     <p class="hero-sub">Real, measurable sprint speed and football skills — timed with elite ArenaGear technology every rep.</p>
     <div class="hero-btns">
-      <a class="btn-primary" href="booking.html">Book a Session</a>
-      <a class="btn-ghost" href="#programs">See Programs ↓</a>
+      <a class="btn-primary" href="#programs">View Programs →</a>
+      <a class="btn-ghost" href="booking.html">Book a Session</a>
     </div>
   </div>
 </section>
 
-<hr class="divider">
-
-<!-- 2 — PROGRAMS -->
+<!-- ═══ PROGRAMS ═══ -->
 <section class="section" id="programs">
-  <div class="section-inner">
-    <div class="section-label">What We Offer</div>
-    <h2 class="section-title">Choose Your Program</h2>
-    <p class="section-sub">Every program runs on the same principle — max speed, max quality, minimum fatigue.</p>
-    <div class="programs-row">
-      <div class="prog-mini speed">
-        <div class="prog-mini-name">⚡ Speed Academy</div>
-        <div class="prog-mini-price">$20 <small>/ session</small></div>
-        <p class="prog-mini-desc">Pure sprint development — timed every rep with ArenaGear FAT.</p>
-        <a class="prog-mini-link" href="faq.html#training">Learn More →</a>
+  <div class="shell">
+    <div class="section-head-row">
+      <div>
+        <div class="section-label">What We Offer</div>
+        <h2 class="section-title">Choose Your Program</h2>
+        <p class="section-sub">Every program runs on the same principle — max speed, max quality, minimum fatigue.</p>
       </div>
-      <div class="prog-mini football">
-        <div class="prog-mini-name">🏈 Football Skills</div>
-        <div class="prog-mini-price">$20 <small>/ session</small></div>
-        <p class="prog-mini-desc">Position-specific movement, footwork, and game-speed mechanics.</p>
-        <a class="prog-mini-link" href="faq.html#training">Learn More →</a>
+    </div>
+
+    <div class="prog-viewport">
+      <div class="prog-track" id="progTrack" tabindex="0" aria-label="Programs, scroll or use arrow buttons">
+        <div class="glass prog-card speed">
+          <div class="prog-name">⚡ Speed Academy</div>
+          <div class="prog-price">$15 <small>/ session</small></div>
+          <p class="prog-desc">Pure sprint development — timed every rep with ArenaGear FAT.</p>
+          <a class="prog-link" href="faq.html#training">Learn More →</a>
+        </div>
+        <div class="glass prog-card football">
+          <div class="prog-name">🏈 Football Skills</div>
+          <div class="prog-price">$15 <small>/ session</small></div>
+          <p class="prog-desc">Position-specific movement, footwork, and game-speed mechanics.</p>
+          <a class="prog-link" href="faq.html#training">Learn More →</a>
+        </div>
+        <div class="glass prog-card combined">
+          <div class="prog-name">🐆 Dual Academy</div>
+          <div class="prog-price">$20 <small>/ session</small></div>
+          <p class="prog-desc">Both academies back to back — the complete package.</p>
+          <a class="prog-link" href="faq.html#training">Learn More →</a>
+        </div>
       </div>
-      <div class="prog-mini combined">
-        <div class="prog-mini-name">🐆 Dual Academy</div>
-        <div class="prog-mini-price">$30 <small>/ session</small></div>
-        <p class="prog-mini-desc">Both academies back to back — the complete package.</p>
-        <a class="prog-mini-link" href="faq.html#training">Learn More →</a>
+      <div class="prog-controls">
+        <button class="prog-arrow" id="progPrev" onclick="scrollPrograms(-1)" aria-label="Previous program">‹</button>
+        <button class="prog-arrow" id="progNext" onclick="scrollPrograms(1)" aria-label="Next program">›</button>
       </div>
     </div>
   </div>
 </section>
 
-<hr class="divider">
+<!-- ═══ TOP PERFORMANCES ═══ -->
+<section class="section" id="performances">
+  <div class="shell">
+    <div class="section-label">The Evidence</div>
+    <h2 class="section-title">Top Performances</h2>
+    <p class="section-sub" style="margin-bottom:24px">Live from this season's data — what the program actually produces.</p>
+    <div class="perf-grid" id="perfGrid">
+      <div class="perf-loading">Loading season performances…</div>
+    </div>
+    <div class="perf-footer">
+      <a class="prog-link" href="index.html">View All Results →</a>
+    </div>
+  </div>
+</section>
 
-<!-- 3 — WHY US -->
+<!-- ═══ QUICK LINKS ═══ -->
 <section class="section">
-  <div class="section-inner">
-    <div class="section-label">Why It Works</div>
-    <h2 class="section-title">Why Dynamite Speed</h2>
-    <div class="why-list">
-      <div class="why-row">
-        <div class="why-icon-slot"><svg viewBox="0 0 100 70"><polygon points="0,10 45,10 68,35 45,60 0,60 23,35" fill="#F5C518"></polygon></svg></div>
-        <div>
-          <div class="why-title">ArenaGear FAT Timing</div>
-          <p class="why-desc">Every sprint measured electronically to the hundredth. No hand-timing error — athletes see their real MPH after every rep.</p>
-        </div>
-      </div>
-      <div class="why-row">
-        <div class="why-icon-slot"><svg viewBox="0 0 100 70"><polygon points="10,35 55,15 45,35 55,55" fill="#F5C518"></polygon></svg></div>
-        <div>
-          <div class="why-title">Feed the Cats Philosophy</div>
-          <p class="why-desc">Short, max-intensity reps with full recovery. No grinding, no junk volume — quality over quantity, always.</p>
-        </div>
-      </div>
-      <div class="why-row">
-        <div class="why-icon-slot"><svg viewBox="0 0 100 70"><polygon points="0,10 45,10 68,35 45,60 0,60 23,35" fill="#F5C518" opacity="0.35"></polygon><polygon points="30,10 75,10 98,35 75,60 30,60 53,35" fill="#F5C518"></polygon></svg></div>
-        <div>
-          <div class="why-title">Record, Rank, Publish</div>
-          <p class="why-desc">Every athlete's number is tracked and published every session. Speed grows like a tree — we track every inch.</p>
-        </div>
-      </div>
+  <div class="shell">
+    <div class="section-label">Quick Access</div>
+    <h2 class="section-title" style="margin-bottom:22px">Where You Need to Go</h2>
+    <div class="qlinks-grid">
+      <a class="glass qlink" href="booking.html">
+        <span class="qlink-icon">📅</span>
+        <span class="qlink-label">Schedule &amp; Sessions</span>
+      </a>
+      <a class="glass qlink" href="registration.html">
+        <span class="qlink-icon">📝</span>
+        <span class="qlink-label">Register</span>
+      </a>
+      <a class="glass qlink" href="index.html">
+        <span class="qlink-icon">📊</span>
+        <span class="qlink-label">Athlete Dashboard</span>
+      </a>
+      <a class="glass qlink" href="faq.html">
+        <span class="qlink-icon">📚</span>
+        <span class="qlink-label">Resources</span>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- 4 — PROOF STRIP (live) -->
-<section class="section proof-section">
-  <div class="section-inner">
-    <div class="section-label">The Numbers</div>
-    <h2 class="section-title">Best 10m Fly MPH — By Age Group</h2>
-    <p class="section-sub">Live from our season data — top speed logged so far this season, by group.</p>
-    <div class="proof-grid" id="proofGrid">
-      <div class="proof-loading">Loading season data…</div>
-    </div>
-    <div class="proof-note">Pulled live from the same roster and sprint data used on the Athlete Dashboard.</div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- 5 — SESSIONS TEASER (live) -->
-<section class="section" id="sessions">
-  <div class="section-inner">
+<!-- ═══ UPCOMING SESSION ═══ -->
+<section class="section">
+  <div class="shell">
     <div class="section-label">Book Now</div>
-    <h2 class="section-title">Upcoming Sessions</h2>
-    <p class="section-sub">Sessions run at Thrive Park, San Diego. Rolling enrollment — join or pause anytime.</p>
-    <div class="sessions-teaser-grid" id="sessionsTeaser">
-      <div class="sessions-empty">Loading next sessions…</div>
-    </div>
-    <div class="sessions-link-row">
-      <a class="text-link" href="booking.html">View Full Schedule →</a>
+    <h2 class="section-title" style="margin-bottom:20px">Upcoming Session</h2>
+    <div class="glass session-card" id="sessionCard">
+      <div class="session-info">
+        <div class="session-eyebrow">Next Up</div>
+        <div class="session-loc" id="sessionLoc">Loading…</div>
+        <div class="session-when" id="sessionWhen"></div>
+      </div>
+      <a class="btn-primary" href="booking.html">View Full Schedule →</a>
     </div>
   </div>
 </section>
 
-<!-- 6 — CLOSING -->
+<!-- ═══ FINAL CTA ═══ -->
 <section class="closing">
-  <div class="closing-inner">
+  <div class="shell">
     <div class="closing-title">Ready to Get <span>Faster?</span></div>
     <p class="closing-sub">Every cat in this program gets faster. Trust the process.</p>
-    <p class="closing-addr">Thrive Park · SDSU Mission Valley River Park, San Diego, CA · <a href="https://maps.google.com?q=Thrive+Park+San+Diego+CA" target="_blank" rel="noopener">Open in Maps ↗</a></p>
     <div class="closing-btns">
       <a class="btn-primary" href="booking.html">Book a Session</a>
       <a class="btn-ghost" href="registration.html">Register Your Athlete</a>
@@ -307,20 +466,41 @@ img{display:block;}
 </section>
 
 <footer class="footer">
-  <div class="footer-text">© 2026 Lee Brothers Academy · Dynamite Speed Academy · San Diego, CA · <a href="mailto:Lbasdc@gmail.com">Lbasdc@gmail.com</a></div>
+  <div class="footer-text">© 2026 Lee Brothers Academy · Dynamite Speed Academy · San Diego, CA · <a href="mailto:Lbasdc@gmail.com">Lbasdc@gmail.com</a> · <strong>Test #1 Prototype</strong></div>
 </footer>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// MOBILE NAV — matches toggle behavior used sitewide
+// NAV
 // ═══════════════════════════════════════════════════════════════
 function toggleNav(){
-  document.getElementById('navLinks').classList.toggle('open');
+  var nl = document.getElementById('navLinks');
+  var open = nl.classList.toggle('open');
+  document.querySelector('.nav-mobile-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
 }
 document.addEventListener('click', function(e){
   var nl = document.getElementById('navLinks');
   if(!nl.contains(e.target) && !e.target.closest('.nav-mobile-btn')) nl.classList.remove('open');
 });
+
+// ═══════════════════════════════════════════════════════════════
+// ATHLETE CODE — redirects into existing index.html doLogin() flow.
+// No auth logic duplicated here — this only builds a URL.
+// ═══════════════════════════════════════════════════════════════
+function submitAthleteCode(evt){
+  evt.preventDefault();
+  var input = document.getElementById('athleteCodeInput');
+  var errEl = document.getElementById('codeErr');
+  var code = input.value.trim();
+  errEl.textContent = '';
+  if(!code){
+    errEl.textContent = 'Enter your athlete code to continue.';
+    input.focus();
+    return false;
+  }
+  window.location.href = 'index.html?code=' + encodeURIComponent(code.toUpperCase());
+  return false;
+}
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG — same Sheet/GIDs as production home.html
@@ -336,7 +516,6 @@ var HIGHLIGHTS_GID = '381306568';
 function gvizUrl(gid){
   return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&gid=' + gid;
 }
-
 async function gvizFetch(gid){
   try{
     var res = await fetch(gvizUrl(gid));
@@ -347,7 +526,6 @@ async function gvizFetch(gid){
     return JSON.parse(txt.slice(s, e+1));
   }catch(err){ return null; }
 }
-
 function gvizRows(data){
   if(!data || !data.table) return [];
   var cols = (data.table.cols||[]).map(function(c){ return c.label||''; });
@@ -369,184 +547,91 @@ function gvizRows(data){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PROOF STRIP — best MPH by age group, computed live
-// Excludes Jayden Kim (confirmed test data) per project rules
+// TOP PERFORMANCES — overall bests (no names), reusing the same
+// roster + sprint HS/Youth sheets as the production proof strip.
 // ═══════════════════════════════════════════════════════════════
-var R = { CODE:'ROSTER ID', NAME:'FULL NAME', PROG:'PROGRAM', AGEGRP:'AGE GROUP', GROUP:'GROUP\n(HS)' };
-var HSCOL = { NAME:'ATHLETE\nNAME', MPH:'10FLY\nMPH' };
-var YACOL = { NAME:'ATHLETE\nNAME', MPH:'10FLY\nMPH' };
+var R = { NAME:'FULL NAME', AGEGRP:'AGE GROUP', GROUP:'GROUP\n(HS)' };
+var HSCOL = { NAME:'ATHLETE\nNAME', F10BEST:'10FLY\nBEST', D40BEST:'40M\nBEST', TBJDEC:'TBJ\ndecimal', TBJFT:'TBJ\nft' };
+var YACOL = { NAME:'ATHLETE\nNAME', F10BEST:'10FLY\nBEST', D40BEST:'40Y\nBEST', TBJDEC:'TBJ\ndecimal', TBJFT:'TBJ\nft' };
 
 function isTestAthlete(name){
   var n = (name||'').trim().toLowerCase();
   return n === 'jayden kim' || n.indexOf('test') === 0;
 }
 
-// Single shared fetch — powers the proof strip so the sheet is only hit
-// once per page load.
-async function loadSeasonData(){
-  var rosterData = await gvizFetch(ROSTER_GID);
-  var hsData = await gvizFetch(SPRINT_HS_GID);
-  var yaData = await gvizFetch(SPRINT_YOUTH_GID);
-
-  var roster = gvizRows(rosterData).filter(function(r){
-    var name = (r[R.NAME]||'').trim();
-    return name.length > 1 && !isTestAthlete(name);
-  });
-  var hsRows = gvizRows(hsData);
-  var yaRows = gvizRows(yaData);
-
-  // Best MPH per athlete name, from whichever sheet has their rows
-  var bestByName = {};
-  function track(name, mphStr){
-    var mph = parseFloat(mphStr);
-    if(isNaN(mph) || mph <= 0 || isTestAthlete(name)) return;
-    if(!bestByName[name] || mph > bestByName[name]) bestByName[name] = mph;
-  }
-  hsRows.forEach(function(r){ track((r[HSCOL.NAME]||'').trim(), r[HSCOL.MPH]); });
-  yaRows.forEach(function(r){ track((r[YACOL.NAME]||'').trim(), r[YACOL.MPH]); });
-
-  return { roster: roster, bestByName: bestByName };
-}
-
-function renderProofStrip(data){
-  var grid = document.getElementById('proofGrid');
-  var groupBest = {};
-  var groupOrder = [];
-
-  data.roster.forEach(function(a){
-    var name = (a[R.NAME]||'').trim();
-    var prog = (a[R.PROG]||'').toString().trim().toUpperCase();
-    var label = prog.indexOf('YOUTH') === 0 ? (a[R.AGEGRP]||'').trim() : (a[R.GROUP]||'').trim();
-    if(!label) return;
-    var mph = data.bestByName[name];
-    if(mph == null) return;
-    if(!(label in groupBest)){ groupBest[label] = mph; groupOrder.push(label); }
-    else if(mph > groupBest[label]) groupBest[label] = mph;
-  });
-
-  const AGE_ORDER = {
-    "U8": 0,
-    "U10": 1,
-    "U12": 2,
-    "U14": 3
-  };
-
-  // Only keep labels we have an explicit order for — anything else (HS
-  // groups like G1/G2, or an unexpected label) is dropped rather than
-  // sorted with an undefined comparator, which was silently producing
-  // an unpredictable position instead of an error.
-  groupOrder = groupOrder.filter(function(label){ return label in AGE_ORDER; });
-
-  groupOrder.sort(function(a,b){
-    return AGE_ORDER[a] - AGE_ORDER[b];
-  });
-
-  if(!groupOrder.length){
-    grid.innerHTML = '<div class="proof-loading">Season data not available yet — check back soon.</div>';
-    return;
-  }
-
-  grid.innerHTML = groupOrder.slice(0, 6).map(function(label){
-    var val = groupBest[label];
-    return '<div class="proof-cell"><div class="proof-num">' + val.toFixed(1) + '</div><div class="proof-lbl">' + label + ' · mph</div></div>';
-  }).join('');
-}
-
-async function loadProofStrip(){
-  var grid = document.getElementById('proofGrid');
+async function loadPerformances(){
+  var grid = document.getElementById('perfGrid');
   try{
-    var data = await loadSeasonData();
-    renderProofStrip(data);
-  }catch(e){
-    grid.innerHTML = '<div class="proof-loading">Season data temporarily unavailable.</div>';
-  }
-}
+    var rosterData = await gvizFetch(ROSTER_GID);
+    var hsData = await gvizFetch(SPRINT_HS_GID);
+    var yaData = await gvizFetch(SPRINT_YOUTH_GID);
 
-// ═══════════════════════════════════════════════════════════════
-// SESSIONS TEASER — next 2 upcoming slots, live
-// ═══════════════════════════════════════════════════════════════
-var PROG_COLORS = { speed:'#F5C518', football:'#e05555', combined:'#4caf72' };
-var PROG_BG     = { speed:'#221a00', football:'#1f0808', combined:'#081a10' };
-var PROG_LABELS = { speed:'Speed Academy', football:'Football Skills', combined:'Dual Academy' };
-
-function parseSlotsForTeaser(rows){
-  return rows.filter(function(r){ return (r['SLOT_ID']||'').trim() && (r['DATE']||'').trim(); })
-    .map(function(r){
-      return {
-        slotId: (r['SLOT_ID']||'').trim(),
-        date: (r['DATE']||'').trim(),
-        program: (r['PROGRAM']||'').trim().toLowerCase(),
-        startTime: (r['START_TIME']||'').trim(),
-        endTime: (r['END_TIME']||'').trim(),
-        maxCapacity: parseInt(r['MAX_CAPACITY']||'0') || 0,
-        price: (r['PRICE']||'').trim(),
-        status: (r['STATUS']||'OPEN').trim().toUpperCase()
-      };
+    var roster = gvizRows(rosterData).filter(function(r){
+      var name = (r[R.NAME]||'').trim();
+      return name.length > 1 && !isTestAthlete(name);
     });
-}
+    var ageByName = {};
+    roster.forEach(function(a){
+      var name = (a[R.NAME]||'').trim();
+      ageByName[name] = (a[R.AGEGRP]||'').trim() || (a[R.GROUP]||'').trim() || '';
+    });
 
-function parseBookingsForTeaser(rows){
-  return rows.filter(function(r){ return (r['SLOT_ID']||'').trim(); })
-    .map(function(r){ return { slotId: (r['SLOT_ID']||'').trim() }; });
-}
+    var hsRows = gvizRows(hsData);
+    var yaRows = gvizRows(yaData);
 
-async function loadSessionsTeaser(){
-  var el = document.getElementById('sessionsTeaser');
-  try{
-    var schData = await gvizFetch(SCHEDULE_GID);
-    var bkData = await gvizFetch(BOOKINGS_GID);
-    var slots = schData ? parseSlotsForTeaser(gvizRows(schData)) : [];
-    var bookings = bkData ? parseBookingsForTeaser(gvizRows(bkData)) : [];
+    var best10Fly = null, best40 = null, bestTBJ = null;
 
-    var today = new Date(); today.setHours(0,0,0,0);
-    var upcoming = slots
-      .filter(function(sl){ return new Date(sl.date+'T12:00:00') >= today && sl.status !== 'CANCELLED' && sl.status !== 'CLOSED'; })
-      .sort(function(a,b){ return new Date(a.date) - new Date(b.date); })
-      .slice(0, 2);
-
-    if(!upcoming.length){
-      el.innerHTML = '<div class="sessions-empty">No sessions currently scheduled. <a href="mailto:Lbasdc@gmail.com" style="color:var(--gold)">Contact coach →</a></div>';
-      return;
+    function considerFly(name, val){
+      var n = parseFloat(val);
+      if(isNaN(n) || n <= 0 || isTestAthlete(name)) return;
+      if(!best10Fly || n < best10Fly.val) best10Fly = { val:n, age: ageByName[name]||'' };
+    }
+    function consider40(name, val){
+      var n = parseFloat(val);
+      if(isNaN(n) || n <= 0 || isTestAthlete(name)) return;
+      if(!best40 || n < best40.val) best40 = { val:n, age: ageByName[name]||'' };
+    }
+    function considerTBJ(name, dec, ft){
+      var n = parseFloat(dec) || parseFloat(ft);
+      if(isNaN(n) || n <= 0 || isTestAthlete(name)) return;
+      if(!bestTBJ || n > bestTBJ.val) bestTBJ = { val:n, age: ageByName[name]||'' };
     }
 
-    el.innerHTML = upcoming.map(function(slot){
-      var color = PROG_COLORS[slot.program] || '#888';
-      var bg = PROG_BG[slot.program] || '#242428';
-      var label = PROG_LABELS[slot.program] || slot.program;
-      var count = bookings.filter(function(b){ return b.slotId === slot.slotId; }).length;
-      var left = slot.maxCapacity ? Math.max(0, slot.maxCapacity - count) : null;
-      var spotsText = left === null ? 'Open' : (left === 0 ? 'Full' : left + ' left');
-      var spotsColor = left === 0 ? '#e05555' : (left !== null && left <= 3 ? '#e08844' : '#4caf72');
+    hsRows.forEach(function(r){
+      var name = (r[HSCOL.NAME]||'').trim();
+      considerFly(name, r[HSCOL.F10BEST]);
+      consider40(name, r[HSCOL.D40BEST]);
+      considerTBJ(name, r[HSCOL.TBJDEC], r[HSCOL.TBJFT]);
+    });
+    yaRows.forEach(function(r){
+      var name = (r[YACOL.NAME]||'').trim();
+      considerFly(name, r[YACOL.F10BEST]);
+      consider40(name, r[YACOL.D40BEST]);
+      considerTBJ(name, r[YACOL.TBJDEC], r[YACOL.TBJFT]);
+    });
 
-      var d = new Date(slot.date+'T12:00:00');
-      var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      var dateLabel = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
-      var timeLabel = slot.startTime + (slot.endTime ? ' – ' + slot.endTime : '');
-      var price = slot.price ? '$' + slot.price.replace(/[$]/g,'') : '—';
+    var cards = [];
+    if(best10Fly) cards.push({ label:'Fastest 10m Fly', val:best10Fly.val.toFixed(2)+'s', meta:(best10Fly.age?best10Fly.age+' Best':'Season Best') });
+    if(best40)     cards.push({ label:'Fastest 40-Yard Dash', val:best40.val.toFixed(2)+'s', meta:(best40.age?best40.age+' Best':'Season Best') });
+    if(bestTBJ)    cards.push({ label:'Best Triple Broad Jump', val:bestTBJ.val.toFixed(1)+' ft', meta:(bestTBJ.age?bestTBJ.age+' Best':'Season Best') });
 
-      return '<div class="st-card" style="border-left-color:' + color + '">'
-        + '<div class="st-top">'
-        + '<div class="st-date">' + dateLabel + '</div>'
-        + '<div class="st-prog" style="background:' + bg + ';color:' + color + '">' + label + '</div>'
-        + '</div>'
-        + '<div class="st-meta">🕐 ' + timeLabel + '</div>'
-        + '<div class="st-bottom">'
-        + '<div class="st-price">' + price + '</div>'
-        + '<div class="st-spots" style="background:' + bg + ';color:' + spotsColor + '">' + spotsText + '</div>'
-        + '</div>'
-        + '</div>';
+    if(!cards.length){
+      grid.innerHTML = '<div class="perf-loading">Season data not available yet — check back soon.</div>';
+      return;
+    }
+    grid.innerHTML = cards.map(function(c){
+      return '<div class="glass perf-card"><div class="perf-label">'+c.label+'</div><div class="perf-val">'+c.val+'</div><div class="perf-meta">'+c.meta+'</div></div>';
     }).join('');
   }catch(e){
-    el.innerHTML = '<div class="sessions-empty">Schedule temporarily unavailable. <a href="booking.html" style="color:var(--gold)">Check booking page →</a></div>';
+    grid.innerHTML = '<div class="perf-loading">Season data temporarily unavailable.</div>';
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ANNOUNCEMENT BAR — live from Highlights sheet tab
-// Alert/Info only — HIGHLIGHT (good-news) items are booking.html's job
+// DYNAMITE UPDATE — reuses existing Highlights sheet (GID 381306568).
+// Priority: ALERT > INFO > HIGHLIGHT — picks one, hides entirely if none.
 // ═══════════════════════════════════════════════════════════════
-function parseAnnouncementRows(rows){
+function parseUpdateRows(rows){
   var today = new Date(); today.setHours(0,0,0,0);
   var live = rows.filter(function(r){
     return (r['ACTIVE']||'').toString().trim().toUpperCase() === 'TRUE';
@@ -556,45 +641,103 @@ function parseAnnouncementRows(rows){
     var expDate = new Date(exp + 'T00:00:00');
     return expDate >= today;
   });
-  var alerts = live.filter(function(r){ return (r['TYPE']||'').toString().trim().toUpperCase() === 'ALERT'; });
-  var infos  = live.filter(function(r){ return (r['TYPE']||'').toString().trim().toUpperCase() === 'INFO'; });
-  return { alerts: alerts, infos: infos };
+  function byType(t){ return live.filter(function(r){ return (r['TYPE']||'').toString().trim().toUpperCase() === t; }); }
+  return byType('ALERT')[0] || byType('INFO')[0] || byType('HIGHLIGHT')[0] || null;
 }
 
-function dismissAnnBar(){
-  document.getElementById('annBar').classList.add('hidden');
-  try{ sessionStorage.setItem('ds_ann_dismissed', '1'); }catch(e){}
-}
-
-async function loadAnnouncementBar(){
-  try{
-    if(sessionStorage.getItem('ds_ann_dismissed') === '1') return;
-  }catch(e){}
-
-  var bar = document.getElementById('annBar');
+async function loadUpdate(){
+  var card = document.getElementById('updateCard');
   try{
     var data = await gvizFetch(HIGHLIGHTS_GID);
     if(!data) return;
-    var rows = gvizRows(data);
-    var parsed = parseAnnouncementRows(rows);
-    var item = parsed.alerts[0] || parsed.infos[0];
+    var item = parseUpdateRows(gvizRows(data));
     if(!item) return;
 
-    var isAlert = (item['TYPE']||'').toString().trim().toUpperCase() === 'ALERT';
-    var icon = (item['ICON']||'').toString().trim() || (isAlert ? '⚠️' : '📢');
+    var type = (item['TYPE']||'').toString().trim().toUpperCase();
+    var icon = (item['ICON']||'').toString().trim() || (type === 'ALERT' ? '⚠️' : '📢');
     var title = (item['TITLE']||'').toString().trim();
     var body = (item['BODY']||'').toString().trim();
 
-    document.getElementById('annBarIcon').textContent = icon;
-    document.getElementById('annBarText').innerHTML = (title ? '<strong>' + title + '</strong> — ' : '') + body;
-    bar.classList.toggle('info-type', !isAlert);
-    bar.classList.remove('hidden');
-  }catch(e){ /* non-critical — bar just stays hidden on failure */ }
+    document.getElementById('updateIcon').textContent = icon;
+    document.getElementById('updateEyebrow').textContent = 'Dynamite Update';
+    document.getElementById('updateTitle').textContent = title;
+    document.getElementById('updateBody').textContent = body;
+    card.classList.toggle('type-alert', type === 'ALERT');
+    card.classList.remove('hidden');
+  }catch(e){ /* stays hidden on failure */ }
 }
 
-loadProofStrip();
-loadSessionsTeaser();
-loadAnnouncementBar();
+// ═══════════════════════════════════════════════════════════════
+// UPCOMING SESSION — next slot only, same schedule/bookings source
+// ═══════════════════════════════════════════════════════════════
+function parseSlotsForCard(rows){
+  return rows.filter(function(r){ return (r['SLOT_ID']||'').trim() && (r['DATE']||'').trim(); })
+    .map(function(r){
+      return {
+        date: (r['DATE']||'').trim(),
+        program: (r['PROGRAM']||'').trim().toLowerCase(),
+        startTime: (r['START_TIME']||'').trim(),
+        endTime: (r['END_TIME']||'').trim(),
+        location: (r['LOCATION']||'').trim(),
+        status: (r['STATUS']||'OPEN').trim().toUpperCase()
+      };
+    });
+}
+var PROG_LABELS_S = { speed:'Speed Academy', football:'Football Skills', combined:'Dual Academy' };
+
+async function loadUpcomingSession(){
+  var locEl = document.getElementById('sessionLoc');
+  var whenEl = document.getElementById('sessionWhen');
+  try{
+    var schData = await gvizFetch(SCHEDULE_GID);
+    var slots = schData ? parseSlotsForCard(gvizRows(schData)) : [];
+    var today = new Date(); today.setHours(0,0,0,0);
+    var upcoming = slots
+      .filter(function(sl){ return new Date(sl.date+'T12:00:00') >= today && sl.status !== 'CANCELLED' && sl.status !== 'CLOSED'; })
+      .sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
+
+    if(!upcoming.length){
+      locEl.textContent = 'No sessions scheduled';
+      whenEl.textContent = 'Check back soon or contact your coach.';
+      return;
+    }
+    var slot = upcoming[0];
+    var d = new Date(slot.date+'T12:00:00');
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var dateLabel = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+    var timeLabel = slot.startTime + (slot.endTime ? ' – ' + slot.endTime : '');
+    var progLabel = PROG_LABELS_S[slot.program] || slot.program;
+
+    locEl.textContent = slot.location || 'Thrive Park, San Diego';
+    whenEl.textContent = dateLabel + ' • ' + timeLabel + ' — ' + progLabel;
+  }catch(e){
+    locEl.textContent = 'Schedule temporarily unavailable';
+    whenEl.textContent = '';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROGRAMS — arrow controls for the mobile/tablet scroll track
+// ═══════════════════════════════════════════════════════════════
+function scrollPrograms(dir){
+  var track = document.getElementById('progTrack');
+  var card = track.querySelector('.prog-card');
+  var amount = card ? card.getBoundingClientRect().width + 14 : 280;
+  track.scrollBy({ left: dir * amount, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FADE-IN
+// ═══════════════════════════════════════════════════════════════
+var obs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.06 });
+document.querySelectorAll('.fade-up').forEach(function(el){ obs.observe(el); });
+
+loadPerformances();
+loadUpdate();
+loadUpcomingSession();
 </script>
 </body>
 </html>
