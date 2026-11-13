@@ -140,7 +140,8 @@ button{font-family:inherit;}
   padding:26px 0 58px;
 }
 
-.portal-band{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:36px;}
+/* Portal panels — reduce glass tint opacity by 10% without fading content. */
+.portal-band{--glass-bg:rgba(255,255,255,.063);--glass-bg-2:rgba(28,20,10,.27);display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:36px;}
 @media(min-width:920px){ .portal-band{grid-template-columns:1.15fr 1fr;align-items:stretch;} }
 
 /* Athlete login card */
