@@ -645,6 +645,18 @@ function applyProgramVisibility() {
   selectProg('ya');
 }
 applyProgramVisibility();
+  (function bootstrapAthleteCodeFromURL(){
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var code = (params.get('code') || '').trim();
+    if (!code) return;
+    var yaInput = document.getElementById('yaInp');
+    if (!yaInput) return;
+    history.replaceState(null, '', window.location.pathname);
+    yaInput.value = code.toUpperCase();
+    doLogin('ya');
+  } catch(e) {}
+})();
 document.getElementById('hsInp').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin('hs'); });
 document.getElementById('yaInp').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin('ya'); });
 
